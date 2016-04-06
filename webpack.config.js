@@ -1,22 +1,20 @@
-const path = require('path');
-
 module.exports = {
-  entry: [
-    'babel-polyfill',
-    './index.js'
-  ],
+  entry: './src/kakapo.js',
+  output: {
+    publicPath: 'http://localhost:8090/assets',
+    path: './dist',
+    filename: 'kakapo.js',
+    libraryTarget: 'umd',
+    library: 'Kakapo'
+  },
   module: {
     loaders: [{
       test: /\.js$/,
       exclude: /(node_modules|bower_components)/,
-      loader: 'babel-loader',
-      query: {
-        presets: ['es2015']
-      }
+      loader: 'babel'
     }]
   },
-  output: {
-    path: './dist',
-    filename: 'app.js'
+  resolve: {
+    extensions: ['', '.js']
   }
 };
