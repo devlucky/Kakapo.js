@@ -1,11 +1,12 @@
-import db from './db';
+export * from './db';
+export * from './factory';
 
-console.log(db)
-
-class Kakapo {
+export class Kakapo {
   constructor() {
     
   }
-}
 
-export default Kakapo;
+  foo() {
+    console.log('foo')
+  }
+}
