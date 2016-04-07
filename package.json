@@ -27,7 +27,6 @@
     "ghooks": "^1.2.0",
     "http-server": "~0.7.1",
     "mocha-phantomjs": "^4.0.1",
-    "tap-browser-color": "^0.1.2",
     "tap-spec": "^4.1.1",
     "tape": "^4.5.1",
     "tape-dom": "0.0.10",

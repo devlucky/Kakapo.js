@@ -7,24 +7,23 @@ export class DB {
 
   register(name, factory) {
     this.factories[name] = factory;
+    this.store[name] = [];
   }
 
   create(factoryName, number) {
-    const factory = this.factories[factoryName];
-    if (!factory) {
-      throw Error(`Factory ${factoryName} not found`);
-    }
+    this.checkFactoryPresence(factoryName);
 
-    let instances = this.store[factoryName] || [];
+    const factory = this.factories[factoryName];
+    let records = this.store[factoryName] || [];
+
     while (number) {
-      instances.push(this.decorateFactory(factoryName, factory(faker)));
+      records.push(this.decorateFactory(factoryName, factory(faker)));
       number--;
     }
 
-    this.store[factoryName] = instances;
+    this.store[factoryName] = records;
   }
 
-  //TODO: throw error if factoryName doesn't exist
   find(factoryName, id) {
     const factory = this.factoryFor(factoryName);
     if (!factory) return;
@@ -35,32 +34,42 @@ export class DB {
   }
 
   push(factoryName, content) {
-    const factory = this.factoryFor(factoryName);
-    if (!factory) return;
+    this.checkFactoryPresence(factoryName);
 
-    let factoryInstances = this.store[factoryName] || [];
+    const factory = this.factoryFor(factoryName);
+    let records = this.store[factoryName] || [];
 
     if (!Array.isArray(content)) {
       content = [content];
     }
 
-    factoryInstances.push(...content);
+    records.push(...content);
 
-    this.store[factoryName] = factoryInstances;
+    this.store[factoryName] = records;
   }
 
-  //TODO: throw error if factoryName doesn't exist
   filter(factoryName, filterFunc) {
+    this.checkFactoryPresence(factoryName);
 
+    return this.store[factoryName].filter(filterFunc);
+  } 
+
+  checkFactoryPresence(name) {
+    const factory = this.factoryFor(name);
+    if (!factory) throw Error(`Factory ${name} not found`);
+  }
+
+  all(factoryName) {
+    return this.store[factoryName];
   }
 
   factoryFor(factoryName) {
     return this.factories[factoryName];
   }
 
-  decorateFactory(factoryName, instance) {
-    instance.id = this.uuid('factoryName');
-    return instance;
+  decorateFactory(factoryName, record) {
+    record.id = this.uuid('factoryName');
+    return record;
   }
 
   uuid(factoryName) {

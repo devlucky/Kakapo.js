@@ -56,9 +56,25 @@ export default () => {
     const db = new DB();
     db.register('user', userFactory);
     db.create('user', 5);
-    const user = db.find('user', 2);
+    const user2 = db.find('user', 2);
+    const user6 = db.find('user', 6);
 
-    assert.ok(user.id === 2 && user.firstName === 'hector', 'Finds the second user');
+    assert.ok(user2.id === 2 && user2.firstName === 'hector', 'Finds the second user');
+    assert.ok(!user6, 'Return undefined is no user found');
+    assert.end();
+  });
+
+  test('DB#filter', assert => {
+    const db = new DB();
+    db.register('user', userFactory);
+    db.push('user', {id: 1, firstName: 'hector', lastName: 'zarco', country: 'spain'});
+    db.push('user', {id: 2, firstName: 'joan', lastName: 'romano', country: 'spain'});
+    db.push('user', {id: 3, firstName: 'alex', lastName: 'manzella', country: 'italy'});
+    const users = db.filter('user', u => u.country === 'spain');
+
+    assert.ok(users.length === 2, 'Return the expected records');
+    assert.ok(users[0].id === 1, 'The fist record is correct');
+    assert.ok(users[1].id === 2, 'The second record is correct');
     assert.end();
   });
 
@@ -67,10 +83,41 @@ export default () => {
     db.register('user', userFactory);
     db.push('user', userFactory());
     db.push('user', [userFactory(), userFactory()]);
+    db.push('user', {id: 2, customAttr: 'customValue'});
+
+    assert.ok(db.store.user.length === 4, 'Pushes the records to the store');
+    assert.ok(db.store.user[0].id === undefined, 'Doesnt add the incremental id for pushed records');
+    assert.ok(db.store.user[2].lastName === 'zarco', 'The last user lastName is correct');
+    assert.ok(db.find('user', 2).customAttr === 'customValue', 'Is able to find the the custom record by id');
+    assert.end();
+  });
+
+  test('DB#all', assert => {
+    const db = new DB();
+    db.register('user', userFactory);
+    db.create('user', 10);
+
+    assert.ok(db.all('user').length === 10, 'Return all the users on the database');
+
+    db.create('user', 2);
+  
+    assert.ok(db.all('user').length === 12, 'Return the expected number of users after adding new ones');    
     assert.end();
   });
 
   test('DB#reset', assert => {
+    const db = new DB();
+    db.register('user', userFactory);
+    db.create('user', 2);
+
+    assert.ok(db.store.user.length === 2, 'The state is set up properly');
+    assert.ok(db.factoryFor('user'), 'Is able to return the user factory');
+
+    db.reset();
+
+    assert.ok(!db.store.user, 'The state clean up');
+    assert.ok(!db.factoryFor('user'), 'No factories are present');
+
     assert.end();
   });
 }
