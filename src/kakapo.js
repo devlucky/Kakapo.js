@@ -1,7 +1,9 @@
 export * from './db';
+export * from './router';
+export * from './server';
 
 export class Kakapo {
-  constructor() {
-    
+  constructor(config) {
+    this.config = config;
   }
 }

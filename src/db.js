@@ -10,6 +10,7 @@ export class DB {
     this.store[name] = [];
   }
 
+  //TODO: This method must return the generated data
   create(factoryName, number) {
     this.checkFactoryPresence(factoryName);
 
