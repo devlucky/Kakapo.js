@@ -8,7 +8,7 @@
     "dev": "webpack-dev-server --progress --colors --port 8090",
     "test": "npm run test:watch & npm run test:server",
     "test:watch": "watchify tests/index.js -o tests/test_bundle.js -t [ babelify --presets [ es2015 ] ] -v",
-    "test:server": "serve ./tests && open http://localhost:3000/"
+    "test:server": "serve ./tests & open http://localhost:3000/"
   },
   "repository": {
     "type": "git",
