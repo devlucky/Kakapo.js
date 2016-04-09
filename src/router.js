@@ -1,8 +1,7 @@
-import pathToRegexp from 'path-to-regexp';
+import {fakeXMLHttpRequest, reset as resetXMLHttpRequest} from './interceptors/xmlhttprequest';
+import {fakeFetch, reset as resetFetch} from './interceptors/fetch';
 
 const defaultConfig = {strategies: ['fetch', 'XMLHttpRequest']};
-const nativeFetch = window.fetch;
-const nativeXMLHttpRequest = window.XMLHttpRequest;
 
 export class Router {
   //TODO: Support 'config.host'
@@ -34,37 +33,16 @@ export class Router {
 
   intercept(strategies) {
     if (strategies.indexOf('fetch') > -1) {
-      window.fetch = this.fakeFetch.bind(this);
+      window.fetch = fakeFetch(this.routes);
     }
 
     if (strategies.indexOf('XMLHttpRequest') > -1) {
-      window.XMLHttpRequest = this.fakeXMLHttpRequest.bind(this);
+      window.XMLHttpRequest = fakeXMLHttpRequest(this.routes);
     }
   }
 
-  fakeFetch(url, options = {}) {
-    const method = options.method || 'GET';
-    const routes = this.routes[method];
-    let routeHandler;
-    let params;
-
-    Object.keys(routes).forEach((path) => {
-      let routeRegex = pathToRegexp(path);
-
-      if (!routeHandler && routeRegex.exec(url)) {
-        routeHandler = routes[path];
-        params = routeRegex.exec(url);
-      }
-    });
-
-    if (routeHandler) {
-      return Promise.resolve(routeHandler({params}));
-    }
-
-    return nativeFetch(url, options);
-  }
-
-  fakeXMLHttpRequest() {
-
+  reset() {
+    resetFetch();
+    resetXMLHttpRequest();   
   }
 }

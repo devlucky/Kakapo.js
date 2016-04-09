@@ -1,12 +1,16 @@
 import tapeTest from 'tape';
 import {Router} from '../src/kakapo';
 
+let router;
+
 const userHandler = () => {
 
 };
 
 function before() {
-
+  if (router && router.reset) {
+    router.reset();
+  }
 };
 
 function test(title, cb) {
@@ -17,9 +21,15 @@ function test(title, cb) {
 }
 
 export default () => {
+  test('Router#config', assert => {
+    router = new Router({
+      host: 'custom'
+    });
+    assert.end();
+  });
   test('Router#get', assert => {
     assert.plan(5);
-    const router = new Router();
+    router = new Router();
   
     router.get('/comments', () => {
       assert.ok(true, 'comments handler is fired');
@@ -51,6 +61,8 @@ export default () => {
   //   assert.end()
   // }); 
   test('Router#XMLHttpRequest', assert => {
+    assert.plan(1);
+    router = new Router();
     var xhr = new XMLHttpRequest();
 
     xhr.onreadystatechange = () => {
@@ -62,6 +74,12 @@ export default () => {
     xhr.send();
 
     assert.end();
+  });
+  test('Router#strategies', assert => {
+    const strategies = ['fetch'];
+    router = new Router({strategies});
+
+    assert.end()
   });
   // test('Router#response.params', assert => {
   //   assert.end();
