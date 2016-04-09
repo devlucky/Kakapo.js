@@ -21,7 +21,9 @@ export const fakeFetch = (serverRoutes) => {
     });
 
     if (routeHandler) {
-      return Promise.resolve(routeHandler({params}));
+      const body = options.body;
+      //TODO: Wrap resolve result into a Response instance, check https://github.com/devlucky/Kakapo.js/issues/16
+      return Promise.resolve(routeHandler({params, body}));
     }
 
     return nativeFetch(url, options);

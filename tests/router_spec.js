@@ -51,9 +51,32 @@ export default () => {
       assert.ok(response.users[0].firstName === 'hector', 'The fake response is triggered');
     });
   }); 
-  // test('Router#post', assert => {
-  //   assert.end()
-  // }); 
+  test('Router#post', assert => {
+    assert.plan(2);
+    router = new Router();
+    const body = JSON.stringify({firstName: 'Joan', lastName: 'Romano'});
+    router.post('/users', (request) => {
+      const parsedBody = JSON.parse(request.body);
+      assert.ok(request.body === body, 'Return the expected request body');
+      assert.ok(parsedBody.firstName === 'Joan', 'The user firstName matches the expect value');
+      
+      return {
+        status: 'success',
+        record: parsedBody
+      };
+    });
+
+    fetch('/users', {
+      method: 'POST',
+      body
+    }).then((response) => {
+      
+    });
+
+    fetch('fixtures.json').then((response) => {
+      
+    });
+  }); 
   // test('Router#put', assert => {
   //   assert.end()
   // }); 
