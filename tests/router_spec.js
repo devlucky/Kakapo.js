@@ -61,19 +61,39 @@ export default () => {
   //   assert.end()
   // }); 
   test('Router#XMLHttpRequest', assert => {
-    assert.plan(1);
-    router = new Router();
-    var xhr = new XMLHttpRequest();
+    assert.plan(6);
 
+    router = new Router();
+    router.get('/comments', (request) => {
+      assert.ok(request.params, 'Request params is present');
+      assert.ok(true, 'Comment handler is reached');
+
+      return [
+        {text: 'First comment'},
+        {text: 'Second comment'}
+      ];
+    });
+
+    let xhr = new XMLHttpRequest();
     xhr.onreadystatechange = () => {
-      if (xhr.readyState == 4 && xhr.status == 200) {
-        
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        const response = JSON.parse(xhr.responseText);
+        assert.ok(true, 'Fires a normal handler using XMLHttpRequest');
+        assert.ok(response.user_ids.length === 3, 'Return the real data');
       }
     };
-    xhr.open("GET", "fixtures.json", true);
+    xhr.open('GET', 'fixtures.json', true);
     xhr.send();
 
-    assert.end();
+    let xhr2 = new XMLHttpRequest();
+    xhr2.onreadystatechange = () => {
+      if (xhr2.readyState === 4 && xhr2.status === 200) {
+        assert.ok(true, 'Fires a fake handler using XMLHttpRequest');
+        assert.ok(xhr2.responseText[0].text === 'First comment', 'Return the fake data as responseText');
+      }
+    };
+    xhr2.open('GET', '/comments', true);
+    xhr2.send();    
   });
   test('Router#strategies', assert => {
     const strategies = ['fetch'];
