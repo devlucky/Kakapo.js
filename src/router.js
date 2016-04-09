@@ -1,7 +1,8 @@
-const defaultConfig = {
-  strategies: ['fetch', 'XMLHttpRequest']
-};
+import pathToRegexp from 'path-to-regexp';
+
+const defaultConfig = {strategies: ['fetch', 'XMLHttpRequest']};
 const nativeFetch = window.fetch;
+const nativeXMLHttpRequest = window.XMLHttpRequest;
 
 export class Router {
   //TODO: Support 'config.host'
@@ -31,25 +32,39 @@ export class Router {
     this.routes[method][path] = handler;
   }
 
-  //TODO: Use config
   intercept(strategies) {
     if (strategies.indexOf('fetch') > -1) {
       window.fetch = this.fakeFetch.bind(this);
+    }
+
+    if (strategies.indexOf('XMLHttpRequest') > -1) {
+      window.XMLHttpRequest = this.fakeXMLHttpRequest.bind(this);
     }
   }
 
   fakeFetch(url, options = {}) {
     const method = options.method || 'GET';
     const routes = this.routes[method];
-    let matchesAnyRoute = false;
+    let routeHandler;
+    let params;
 
-    Object.keys(routes).forEach((route) => {
-      debugger
+    Object.keys(routes).forEach((path) => {
+      let routeRegex = pathToRegexp(path);
+
+      if (!routeHandler && routeRegex.exec(url)) {
+        routeHandler = routes[path];
+        params = routeRegex.exec(url);
+      }
     });
-    //TODO: If doesn't match any of the registered routes, just use 'nativeFetch'
 
-    if (!matchesAnyRoute) {
-      return nativeFetch(url, options);
+    if (routeHandler) {
+      return Promise.resolve(routeHandler({params}));
     }
+
+    return nativeFetch(url, options);
+  }
+
+  fakeXMLHttpRequest() {
+
   }
 }
