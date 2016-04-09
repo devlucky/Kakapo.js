@@ -12,11 +12,20 @@ export const fakeFetch = (serverRoutes) => {
     let params;
 
     Object.keys(methodRoutes).forEach((path) => {
-      let routeRegex = pathToRegexp(path);
-
+      let placeholders = [];
+      let routeRegex = pathToRegexp(path, placeholders);
+      
       if (!routeHandler && routeRegex.exec(url)) {
         routeHandler = methodRoutes[path];
         params = routeRegex.exec(url);
+
+        if (placeholders.length) {
+          params.shift();
+          params = params.reduce((prev, current, i) => {
+            prev[placeholders[i].name] = current;
+            return prev;
+          }, {});
+        }
       }
     });
 

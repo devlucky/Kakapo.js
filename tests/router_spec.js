@@ -70,19 +70,24 @@ export default () => {
       method: 'POST',
       body
     }).then((response) => {
-      
-    });
-
-    fetch('fixtures.json').then((response) => {
-      
+      //TODO: Check if response if an instance of window.Response
     });
   }); 
   // test('Router#put', assert => {
   //   assert.end()
   // }); 
-  // test('Router#delete', assert => {
-  //   assert.end()
-  // }); 
+  test('Router#delete', assert => {
+    assert.plan(3);
+    router = new Router();
+    router.delete('/users/:user_id/comments/:comment_id', (request) => {
+      assert.ok(request.params.user_id === "1", 'Request params have the expected user_id');
+      assert.ok(request.params.comment_id === "2", 'Request params have the expected comment_id');
+    });
+
+    fetch('/users/1/comments/2', {method: 'DELETE'}).then(() => {
+      assert.ok(true, 'The handler is reached');
+    });
+  }); 
   test('Router#XMLHttpRequest', assert => {
     assert.plan(6);
 
