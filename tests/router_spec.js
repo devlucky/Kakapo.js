@@ -73,9 +73,17 @@ export default () => {
       //TODO: Check if response if an instance of window.Response
     });
   }); 
-  // test('Router#put', assert => {
-  //   assert.end()
-  // }); 
+  test('Router#put', assert => {
+    assert.plan(2);
+    router = new Router();
+    router.put('/users', (request) => {
+      assert.ok(request.query.page === '1', 'The page query param is returned');
+    });
+
+    fetch('/users?page=1', {method: 'PUT'}).then(() => {
+      assert.ok(true, 'The handler is fired when query params are present');
+    });
+  }); 
   test('Router#delete', assert => {
     assert.plan(3);
     router = new Router();

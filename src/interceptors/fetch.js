@@ -2,14 +2,26 @@ import pathToRegexp from 'path-to-regexp';
 let routes;
 const nativeFetch = window.fetch;
 
+const queryFrom = (url = '') => {
+  return url.split('&').reduce((prev, current) => {
+    let [key, value] = current.split('=');
+    if (key) prev[key] = value;
+
+    return prev;
+  }, {});
+};
+
 export const fakeFetch = (serverRoutes) => {
   routes = serverRoutes;
 
   return (url, options = {}) => {
+    const chunks = url.split('?');
     const method = options.method || 'GET';
     const methodRoutes = routes[method];
     let routeHandler;
     let params;
+    let query = chunks[1];
+    url = chunks[0];
 
     Object.keys(methodRoutes).forEach((path) => {
       let placeholders = [];
@@ -18,6 +30,7 @@ export const fakeFetch = (serverRoutes) => {
       if (!routeHandler && routeRegex.exec(url)) {
         routeHandler = methodRoutes[path];
         params = routeRegex.exec(url);
+        query = queryFrom(query);
 
         if (placeholders.length) {
           params.shift();
@@ -31,8 +44,8 @@ export const fakeFetch = (serverRoutes) => {
 
     if (routeHandler) {
       const body = options.body;
-      //TODO: Wrap resolve result into a Response instance, check https://github.com/devlucky/Kakapo.js/issues/16
-      return Promise.resolve(routeHandler({params, body}));
+      //TODO: Wrap 'resolve' result into a Response instance, check https://github.com/devlucky/Kakapo.js/issues/16
+      return Promise.resolve(routeHandler({params, query, body}));
     }
 
     return nativeFetch(url, options);
