@@ -36,4 +36,28 @@ export default () => {
       assert.ok(true, 'Enter in the error handler');
     });
   });
+  test('Response#body', assert => {
+    assert.plan(1);
+    router = new Router();
+  
+    router.get('/users/:id', (request) => {
+      return new Response(200, {id: request.params.id, type: 'user'});
+    });
+
+    fetch('/users/1').then(r => r.json()).then(r => {
+      assert.ok(r.id == 1 && r.type === 'user', 'Response body is the expected one');
+    });
+  });
+  test('Response#headers', assert => {
+    assert.plan(1);
+    router = new Router();
+  
+    router.get('/users/:id', (request) => {
+      return new Response(200, {}, {'x-header-1': 'one', 'x-header-2': 'two'});
+    });
+
+    fetch('/users/1').then(r => {
+      //TODO: Check request headers 
+    });
+  });
 };

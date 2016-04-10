@@ -1,5 +1,5 @@
 export class Response {
-  constructor(code = 200, body, headers) {
+  constructor(code = 200, body = {}, headers) {
     this.code = code;
     this.body = body;
     this.headers = headers;
