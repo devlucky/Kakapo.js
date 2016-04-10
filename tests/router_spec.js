@@ -1,111 +1,155 @@
-import tapeTest from 'tape';
+import test from 'tape';
 import {Router} from '../src/kakapo';
-
-let router;
-
-const userHandler = () => {
-
-};
-
-function before() {
-  if (router && router.reset) {
-    router.reset();
-  }
-};
-
-function test(title, cb) {
-  tapeTest(title, (...args) => {
-    before();
-    cb(...args);
-  });
-}
 
 export default () => {
   test('Router#config', assert => {
-    router = new Router({
+    const router = new Router({
       host: 'custom'
     });
+
     assert.end();
   });
+
   test('Router#get', assert => {
-    assert.plan(6);
-    router = new Router();
-  
-    router.get('/comments', () => {
-      assert.ok(true, 'comments handler is fired');
+    assert.plan(9);
+
+    const router = new Router();
+
+    router.get('/comments', request => {
+      assert.equal(typeof request, 'object', 'Request is present.');
     });
-    router.get('/users/:user_id', (request) => {
-      assert.ok(request.params, 'Request params is present');
-      assert.ok(true, 'User handler is fired');
+
+    router.get('/users/:user_id', request => {
+      assert.equal(typeof request, 'object', 'Request is present.');
+      assert.equal(typeof request.params, 'object', 'Params are present');
 
       return {
         users: [{firstName: 'hector'}]
       };
     });
 
-    fetch('fixtures.json').then((response) => {
-      assert.ok(response instanceof Response, 'Fires a normal handler');
+    fetch('fixtures.json').then(response => {
+      assert.ok(true, 'Handler is fired by native function.');
+      assert.ok(response instanceof Response, 'Response instance is returned');
     });
-    fetch('/comments');
-    fetch('/users/1').then((response) => {
-      assert.ok(response instanceof Response, 'Return a Response instance');
-      response.json().then(r => {
-        assert.ok(r.users[0].firstName === 'hector', 'The fake response is triggered');
+
+    fetch('/comments').then(response => {
+      assert.ok(true, 'Handler is fired by fake function.');
+      assert.ok(response instanceof Response, 'Response instance is returned');
+    });
+
+    fetch('/users/1').then(response => {
+      assert.ok(response instanceof Response, 'Response instance is returned');
+      response.json().then(response => {
+        const firstName = response.users[0].firstName;
+        assert.equal(firstName, 'hector', 'Fake response is returned');
       });
     });
-  }); 
+  });
+
   test('Router#post', assert => {
-    assert.plan(3);
-    router = new Router();
+    assert.plan(6);
+
+    const router = new Router();
     const body = JSON.stringify({firstName: 'Joan', lastName: 'Romano'});
-    router.post('/users', (request) => {
+
+    router.post('/users', request => {
       const parsedBody = JSON.parse(request.body);
-      assert.ok(request.body === body, 'Return the expected request body');
-      assert.ok(parsedBody.firstName === 'Joan', 'The user firstName matches the expect value');
-      
+      const firstName = parsedBody.firstName;
+
+      assert.equal(typeof request, 'object', 'Request is present.');
+      assert.equal(request.body, body, 'Expected request body is returned');
+      assert.equal(firstName, 'Joan', 'Request body has expected values.');
+
       return {
         status: 'success',
         record: parsedBody
       };
     });
 
-    fetch('/users', {
-      method: 'POST',
-      body
-    }).then(r => r.json()).then(r => {
-      assert.ok(r.status === 'success' && r.record.firstName === 'Joan', 'The response.json() result is the expected one');
-    });
-  }); 
+    fetch('/users', { method: 'POST', body })
+      .then(response => response.json())
+      .then(response => {
+        const status = response.status;
+        const firstName = response.record.firstName;
+
+        assert.equal(typeof response, 'object', 'Response is present.');
+        assert.equal(status, 'success', 'Expected status is returned');
+        assert.equal(firstName, 'Joan', 'Response body has expected values.');
+      });
+  });
+
   test('Router#put', assert => {
-    assert.plan(2);
-    router = new Router();
-    router.put('/users', (request) => {
-      assert.ok(request.query.page === '1', 'The page query param is returned');
-    });
-
-    fetch('/users?page=1', {method: 'PUT'}).then(() => {
-      assert.ok(true, 'The handler is fired when query params are present');
-    });
-  }); 
-  test('Router#delete', assert => {
-    assert.plan(3);
-    router = new Router();
-    router.delete('/users/:user_id/comments/:comment_id', (request) => {
-      assert.ok(request.params.user_id === "1", 'Request params have the expected user_id');
-      assert.ok(request.params.comment_id === "2", 'Request params have the expected comment_id');
-    });
-
-    fetch('/users/1/comments/2', {method: 'DELETE'}).then(() => {
-      assert.ok(true, 'The handler is reached');
-    });
-  }); 
-  test('Router#XMLHttpRequest', assert => {
     assert.plan(6);
 
-    router = new Router();
-    router.get('/comments', (request) => {
-      assert.ok(request.params, 'Request params is present');
-      assert.ok(true, 'Comment handler is reached');
+    const router = new Router();
+
+    router.put('/users', request => {
+      const query = request.query;
+      const page = query.page;
+
+      assert.equal(typeof request, 'object', 'Request is present.');
+      assert.equal(typeof query, 'object', 'Request query is returned.');
+      assert.equal(page, '1', 'Request query has expected values.');
+
+      return {
+        status: 'success',
+        query
+      };
+    });
+
+    fetch('/users?page=1', { method: 'PUT' })
+      .then(response => response.json())
+      .then(response => {
+        const status = response.status;
+        const page = response.query.page;
+
+        assert.equal(typeof response, 'object', 'Response is present.');
+        assert.equal(status, 'success', 'Expected status is returned');
+        assert.equal(page, '1', 'Response body has expected values.');
+      });
+  });
+
+  test('Router#delete', assert => {
+    assert.plan(6);
+
+    const router = new Router();
+
+    router.delete('/users/:user_id/comments/:comment_id', request => {
+      const params = request.params;
+      const commentId = request.params.comment_id;
+
+      assert.equal(typeof request, 'object', 'Request is present.');
+      assert.equal(typeof params, 'object', 'Request params are present.');
+      assert.equal(commentId, '2', 'Request params have expected values.');
+
+      return {
+        status: 'success',
+        params
+      };
+    });
+
+    fetch('/users/1/comments/2', { method: 'DELETE' })
+      .then(response => response.json())
+      .then(response => {
+        const status = response.status;
+        const userId = response.params.user_id;
+
+        assert.equal(typeof response, 'object', 'Response is present.');
+        assert.equal(status, 'success', 'Expected status is returned.');
+        assert.equal(userId, '1', 'Response body has expected values.');
+      });
+  });
+
+  test('Router#XMLHttpRequest', assert => {
+    assert.plan(8);
+
+    const router = new Router();
+    router.get('/comments', request => {
+      const params = request.params;
+
+      assert.equal(typeof request, 'object', 'Request is present.');
+      assert.equal(typeof params, 'object', 'Request params are present.');
 
       return [
         {text: 'First comment'},
@@ -113,34 +157,40 @@ export default () => {
       ];
     });
 
-    let xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
+    const xhr2 = new XMLHttpRequest();
+
     xhr.onreadystatechange = () => {
       if (xhr.readyState === 4 && xhr.status === 200) {
         const response = JSON.parse(xhr.responseText);
-        assert.ok(true, 'Fires a normal handler using XMLHttpRequest');
-        assert.ok(response.user_ids.length === 3, 'Return the real data');
+        const userIds = response.user_ids;
+
+        assert.ok(true, 'Handler is fired by a native function.');
+        assert.equal(typeof response, 'object', 'Response is present.');
+        assert.equal(userIds.length, 3, 'Response body has expected values.');
       }
     };
     xhr.open('GET', 'fixtures.json', true);
     xhr.send();
 
-    let xhr2 = new XMLHttpRequest();
     xhr2.onreadystatechange = () => {
       if (xhr2.readyState === 4 && xhr2.status === 200) {
-        assert.ok(true, 'Fires a fake handler using XMLHttpRequest');
-        assert.ok(xhr2.responseText[0].text === 'First comment', 'Return the fake data as responseText');
+        const response = xhr2.responseText;
+        const texts = response;
+
+        assert.ok(true, 'Handler is fired by a fake function.');
+        assert.equal(typeof response, 'object', 'Response is present.');
+        assert.equal(texts.length, 2, 'Response body has expected values.');
       }
     };
     xhr2.open('GET', '/comments', true);
-    xhr2.send();    
+    xhr2.send();
   });
+
   test('Router#strategies', assert => {
     const strategies = ['fetch'];
-    router = new Router({strategies});
+    const router = new Router({strategies});
 
-    assert.end()
+    assert.end();
   });
-  // test('Router#response.params', assert => {
-  //   assert.end();
-  // });
-}
+};
