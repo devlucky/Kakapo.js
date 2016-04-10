@@ -1,57 +1,34 @@
-import pathToRegexp from 'path-to-regexp';
-let routes;
+import pathMatch from 'path-match';
+import parseUrl from 'parse-url';
+
 const nativeFetch = window.fetch;
 
-const queryFrom = (url = '') => {
-  return url.split('&').reduce((prev, current) => {
-    let [key, value] = current.split('=');
-    if (key) prev[key] = value;
-
-    return prev;
-  }, {});
-};
-
 export const fakeFetch = (serverRoutes) => {
-  routes = serverRoutes;
-
   return (url, options = {}) => {
-    const chunks = url.split('?');
+    const body = options.body || '';
     const method = options.method || 'GET';
-    const methodRoutes = routes[method];
-    let routeHandler;
-    let params;
-    let query = chunks[1];
-    url = chunks[0];
+    const methodRoutes = serverRoutes[method];
 
-    Object.keys(methodRoutes).forEach((path) => {
-      let placeholders = [];
-      let routeRegex = pathToRegexp(path, placeholders);
-      
-      if (!routeHandler && routeRegex.exec(url)) {
-        routeHandler = methodRoutes[path];
-        params = routeRegex.exec(url);
-        query = queryFrom(query);
-
-        if (placeholders.length) {
-          params.shift();
-          params = params.reduce((prev, current, i) => {
-            prev[placeholders[i].name] = current;
-            return prev;
-          }, {});
-        }
-      }
+    const pathname = parseUrl(url).pathname;
+    const routeHandler = Object.keys(methodRoutes).find(path => {
+      const match = pathMatch()(path);
+      return match(pathname);
     });
 
-    if (routeHandler) {
-      const body = options.body;
-      //TODO: Wrap 'resolve' result into a Response instance, check https://github.com/devlucky/Kakapo.js/issues/16
-      return Promise.resolve(routeHandler({params, query, body}));
+    if (!routeHandler) {
+      return nativeFetch(url, options);
     }
 
-    return nativeFetch(url, options);
-  }
+    const query = parseUrl(url).search;
+    const match = pathMatch()(routeHandler);
+    const params = match(pathname);
+
+    // @TODO: Wrap 'resolve' result into a Response instance,
+    // check https://github.com/devlucky/Kakapo.js/issues/16
+    return Promise.resolve(routeHandler({params, query, body}));
+  };
 };
 
 export const reset = () => {
   window.fetch = nativeFetch;
-}
+};
