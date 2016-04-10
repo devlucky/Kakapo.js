@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run serve | npm run dev",
     "dev": "webpack-dev-server --progress --colors --port 8090",
-    "test": "npm run test:watch & npm run test:server",
+    "test": "npm-run-all -p test:watch test:server",
     "test:watch": "watchify tests/index.js -o tests/test_bundle.js -t [ babelify --presets [ es2015 ] ] -v",
     "test:server": "serve ./tests & open http://localhost:3000/"
   },
@@ -29,6 +29,7 @@
     "ghooks": "^1.2.0",
     "http-server": "~0.7.1",
     "mocha-phantomjs": "^4.0.1",
+    "npm-run-all": "1.7.0",
     "serve": "1.4.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.5.1",
