@@ -16,10 +16,12 @@ export default () => {
     const router = new Router();
 
     router.get('/comments', request => {
+      assert.comment('router GET /comments');
       assert.equal(typeof request, 'object', 'Request is present.');
     });
 
     router.get('/users/:user_id', request => {
+      assert.comment('router GET /users/:user_id');
       assert.equal(typeof request, 'object', 'Request is present.');
       assert.equal(typeof request.params, 'object', 'Params are present');
 
@@ -29,17 +31,21 @@ export default () => {
     });
 
     fetch('fixtures.json').then(response => {
+      assert.comment('fetch GET fixtures.json');
       assert.ok(true, 'Handler is fired by native function.');
       assert.ok(response instanceof Response, 'Response instance is returned');
     });
 
     fetch('/comments').then(response => {
+      assert.comment('fetch GET /comments');
       assert.ok(true, 'Handler is fired by fake function.');
       assert.ok(response instanceof Response, 'Response instance is returned');
     });
 
     fetch('/users/1').then(response => {
+      assert.comment('fetch GET /users/1');
       assert.ok(response instanceof Response, 'Response instance is returned');
+
       response.json().then(response => {
         const firstName = response.users[0].firstName;
         assert.equal(firstName, 'hector', 'Fake response is returned');
@@ -57,6 +63,7 @@ export default () => {
       const parsedBody = JSON.parse(request.body);
       const firstName = parsedBody.firstName;
 
+      assert.comment('router POST /users');
       assert.equal(typeof request, 'object', 'Request is present.');
       assert.equal(request.body, body, 'Expected request body is returned');
       assert.equal(firstName, 'Joan', 'Request body has expected values.');
@@ -73,6 +80,7 @@ export default () => {
         const status = response.status;
         const firstName = response.record.firstName;
 
+        assert.comment('fetch POST /users');
         assert.equal(typeof response, 'object', 'Response is present.');
         assert.equal(status, 'success', 'Expected status is returned');
         assert.equal(firstName, 'Joan', 'Response body has expected values.');
@@ -88,6 +96,7 @@ export default () => {
       const query = request.query;
       const page = query.page;
 
+      assert.comment('router PUT /users');
       assert.equal(typeof request, 'object', 'Request is present.');
       assert.equal(typeof query, 'object', 'Request query is returned.');
       assert.equal(page, '1', 'Request query has expected values.');
@@ -104,6 +113,7 @@ export default () => {
         const status = response.status;
         const page = response.query.page;
 
+        assert.comment('fetch PUT /users?page=1');
         assert.equal(typeof response, 'object', 'Response is present.');
         assert.equal(status, 'success', 'Expected status is returned');
         assert.equal(page, '1', 'Response body has expected values.');
@@ -119,6 +129,7 @@ export default () => {
       const params = request.params;
       const commentId = request.params.comment_id;
 
+      assert.comment('router DELETE /users/:user_id/comments/:comment_id');
       assert.equal(typeof request, 'object', 'Request is present.');
       assert.equal(typeof params, 'object', 'Request params are present.');
       assert.equal(commentId, '2', 'Request params have expected values.');
@@ -135,6 +146,7 @@ export default () => {
         const status = response.status;
         const userId = response.params.user_id;
 
+        assert.comment('fetch DELETE /users/1/comments/2');
         assert.equal(typeof response, 'object', 'Response is present.');
         assert.equal(status, 'success', 'Expected status is returned.');
         assert.equal(userId, '1', 'Response body has expected values.');
@@ -148,6 +160,7 @@ export default () => {
     router.get('/comments', request => {
       const params = request.params;
 
+      assert.comment('router GET /comments');
       assert.equal(typeof request, 'object', 'Request is present.');
       assert.equal(typeof params, 'object', 'Request params are present.');
 
@@ -165,6 +178,7 @@ export default () => {
         const response = JSON.parse(xhr.responseText);
         const userIds = response.user_ids;
 
+        assert.comment('xhr GET fixtures.json');
         assert.ok(true, 'Handler is fired by a native function.');
         assert.equal(typeof response, 'object', 'Response is present.');
         assert.equal(userIds.length, 3, 'Response body has expected values.');
@@ -178,6 +192,7 @@ export default () => {
         const response = xhr2.responseText;
         const texts = response;
 
+        assert.comment('xhr GET /comments');
         assert.ok(true, 'Handler is fired by a fake function.');
         assert.equal(typeof response, 'object', 'Response is present.');
         assert.equal(texts.length, 2, 'Response body has expected values.');
