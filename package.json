@@ -2,7 +2,7 @@
   "name": "kakapo",
   "version": "0.1.1",
   "description": "Next generation mocking library in Javascript",
-  "main": "index.js",
+  "main": "src/kakapo.js",
   "scripts": {
     "start": "npm run serve | npm run dev",
     "dev": "webpack-dev-server --progress --colors --port 8090",

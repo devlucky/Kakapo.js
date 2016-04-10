@@ -3,10 +3,6 @@ import {Router} from '../src/kakapo';
 
 let router;
 
-const userHandler = () => {
-
-};
-
 function before() {
   if (router && router.reset) {
     router.reset();
@@ -131,13 +127,15 @@ export default () => {
     xhr2.open('GET', '/comments', true);
     xhr2.send();    
   });
+  //TODO: Not implemented
   test('Router#strategies', assert => {
     const strategies = ['fetch'];
     router = new Router({strategies});
 
     assert.end()
   });
-  // test('Router#response.params', assert => {
-  //   assert.end();
-  // });
+  //TODO: Not implemented
+  test('Router#response.params', assert => {
+    assert.end();
+  });
 }
