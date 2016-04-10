@@ -5,7 +5,6 @@ import {Response as KakapoResponse} from '../kakapo';
 
 const nativeFetch = window.fetch;
 
-//TODO: Handle response headers
 const fakeResponse = function(response = {}, headers = {}) {
   const responseStr = JSON.stringify(response);
 
@@ -16,6 +15,7 @@ export const fakeFetch = (serverRoutes) => {
   return (url, options = {}) => {
     const body = options.body || '';
     const method = options.method || 'GET';
+    const headers = options.headers || {};
     const handlers = serverRoutes[method];
 
     const pathname = parseUrl(url).pathname;
@@ -29,7 +29,7 @@ export const fakeFetch = (serverRoutes) => {
     const handler = handlers[route];
     const query = queryString.parse(parseUrl(url).search);
     const params = matchesPathname(route);
-    const handlerResponse = handler({params, query, body});
+    const handlerResponse = handler({params, query, body, headers});
 
     if (handlerResponse instanceof KakapoResponse) {
       const result = fakeResponse(handlerResponse.body, handlerResponse.headers);

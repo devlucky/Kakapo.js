@@ -3,6 +3,7 @@ import kakapoSpecs from './kakapo_spec';
 import dbSpec from './db_spec';
 import routerSpec from './router_spec';
 import responseSpec from './response_spec';
+import requestSpec from './request_spec';
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -15,5 +16,6 @@ function init() {
   // kakapoSpecs()
   // dbSpec();
   // routerSpec();
-  responseSpec();
+  // responseSpec();
+  requestSpec();
 }
