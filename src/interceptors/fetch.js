@@ -5,7 +5,7 @@ import parseUrl from 'parse-url';
 const nativeFetch = window.fetch;
 
 //TODO: Handle response headers
-let fakeResponse = function(response = {}) {
+const fakeResponse = function(response = {}) {
   const responseStr = JSON.stringify(response);
 
   return new Response(responseStr);
