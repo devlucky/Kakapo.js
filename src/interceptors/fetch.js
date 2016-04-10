@@ -4,6 +4,13 @@ import parseUrl from 'parse-url';
 
 const nativeFetch = window.fetch;
 
+//TODO: Handle response headers
+let fakeResponse = function(response = {}) {
+  const responseStr = JSON.stringify(response);
+
+  return new Response(responseStr);
+};
+
 export const fakeFetch = (serverRoutes) => {
   return (url, options = {}) => {
     const body = options.body || '';
@@ -22,9 +29,7 @@ export const fakeFetch = (serverRoutes) => {
     const query = queryString.parse(parseUrl(url).search);
     const params = matchesPathname(route);
 
-    // @TODO: Wrap 'resolve' result into a Response instance,
-    // check https://github.com/devlucky/Kakapo.js/issues/16
-    return Promise.resolve(handler({params, query, body}));
+    return Promise.resolve(fakeResponse(handler({params, query, body})));
   };
 };
 
