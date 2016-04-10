@@ -6,10 +6,10 @@ import {Response as KakapoResponse} from '../kakapo';
 const nativeFetch = window.fetch;
 
 //TODO: Handle response headers
-const fakeResponse = function(response = {}) {
+const fakeResponse = function(response = {}, headers = {}) {
   const responseStr = JSON.stringify(response);
 
-  return new window.Response(responseStr);
+  return new window.Response(responseStr, {headers});
 };
 
 export const fakeFetch = (serverRoutes) => {
@@ -32,13 +32,12 @@ export const fakeFetch = (serverRoutes) => {
     const handlerResponse = handler({params, query, body});
 
     if (handlerResponse instanceof KakapoResponse) {
-      const fakeBody = fakeResponse(handlerResponse.body);
-
+      const result = fakeResponse(handlerResponse.body, handlerResponse.headers);
       if (handlerResponse.isErrored) {
-        return Promise.reject(fakeBody);
+        return Promise.reject(result);
       }
 
-      return Promise.resolve(fakeBody);
+      return Promise.resolve(result);
     }
 
     return Promise.resolve(fakeResponse(handlerResponse));

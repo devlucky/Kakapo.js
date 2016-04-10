@@ -49,7 +49,7 @@ export default () => {
     });
   });
   test('Response#headers', assert => {
-    assert.plan(1);
+    assert.plan(2);
     router = new Router();
   
     router.get('/users/:id', (request) => {
@@ -57,7 +57,8 @@ export default () => {
     });
 
     fetch('/users/1').then(r => {
-      //TODO: Check request headers 
+      assert.ok(r.headers.get('x-header-1') === 'one', 'The first header is correct');
+      assert.ok(r.headers.get('x-header-2') === 'two', 'The second header is correct');
     });
   });
 };
