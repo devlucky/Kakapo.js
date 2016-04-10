@@ -1,3 +1,4 @@
+import queryString from 'query-string';
 import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
 
@@ -7,25 +8,23 @@ export const fakeFetch = (serverRoutes) => {
   return (url, options = {}) => {
     const body = options.body || '';
     const method = options.method || 'GET';
-    const methodRoutes = serverRoutes[method];
+    const handlers = serverRoutes[method];
 
     const pathname = parseUrl(url).pathname;
-    const routeHandler = Object.keys(methodRoutes).find(path => {
-      const match = pathMatch()(path);
-      return match(pathname);
-    });
+    const matchesPathname = path => pathMatch()(path)(pathname);
+    const route = Object.keys(handlers).find(matchesPathname);
 
-    if (!routeHandler) {
+    if (!route) {
       return nativeFetch(url, options);
     }
 
-    const query = parseUrl(url).search;
-    const match = pathMatch()(routeHandler);
-    const params = match(pathname);
+    const handler = handlers[route];
+    const query = queryString.parse(parseUrl(url).search);
+    const params = matchesPathname(route);
 
     // @TODO: Wrap 'resolve' result into a Response instance,
     // check https://github.com/devlucky/Kakapo.js/issues/16
-    return Promise.resolve(routeHandler({params, query, body}));
+    return Promise.resolve(handler({params, query, body}));
   };
 };
 
