@@ -24,7 +24,7 @@ export default () => {
     assert.end();
   });
   test('Router#get', assert => {
-    assert.plan(5);
+    assert.plan(6);
     router = new Router();
   
     router.get('/comments', () => {
@@ -44,11 +44,14 @@ export default () => {
     });
     fetch('/comments');
     fetch('/users/1').then((response) => {
-      assert.ok(response.users[0].firstName === 'hector', 'The fake response is triggered');
+      assert.ok(response instanceof Response, 'Return a Response instance');
+      response.json().then(r => {
+        assert.ok(r.users[0].firstName === 'hector', 'The fake response is triggered');
+      });
     });
   }); 
   test('Router#post', assert => {
-    assert.plan(2);
+    assert.plan(3);
     router = new Router();
     const body = JSON.stringify({firstName: 'Joan', lastName: 'Romano'});
     router.post('/users', (request) => {
@@ -65,8 +68,8 @@ export default () => {
     fetch('/users', {
       method: 'POST',
       body
-    }).then((response) => {
-      //TODO: Check if response if an instance of window.Response
+    }).then(r => r.json()).then(r => {
+      assert.ok(r.status === 'success' && r.record.firstName === 'Joan', 'The response.json() result is the expected one');
     });
   }); 
   test('Router#put', assert => {

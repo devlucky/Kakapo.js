@@ -1,9 +1,16 @@
 import queryString from 'query-string';
 import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
-import {Response} from '../kakapo';
+import {Response as KakapoResponse} from '../kakapo';
 
 const nativeFetch = window.fetch;
+
+//TODO: Handle response headers
+const fakeResponse = function(response = {}) {
+  const responseStr = JSON.stringify(response);
+
+  return new window.Response(responseStr);
+};
 
 export const fakeFetch = (serverRoutes) => {
   return (url, options = {}) => {
@@ -24,16 +31,17 @@ export const fakeFetch = (serverRoutes) => {
     const params = matchesPathname(route);
     const handlerResponse = handler({params, query, body});
 
-    if (handlerResponse instanceof Response) {
+    if (handlerResponse instanceof KakapoResponse) {
+      const fakeBody = fakeResponse(handlerResponse.body);
+
       if (handlerResponse.isErrored) {
-        return Promise.reject(handlerResponse.body);
+        return Promise.reject(fakeBody);
       }
 
-      return Promise.resolve(handlerResponse.body);
+      return Promise.resolve(fakeBody);
     }
-    // @TODO: Wrap 'resolve' result into a Response instance,
-    // check https://github.com/devlucky/Kakapo.js/issues/16
-    return Promise.resolve(handlerResponse);
+
+    return Promise.resolve(fakeResponse(handlerResponse));
   };
 };
 
