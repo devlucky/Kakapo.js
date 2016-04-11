@@ -30,11 +30,12 @@ export default () => {
       };
     });
 
-    fetch('fixtures.json').then(response => {
-      assert.comment('fetch GET fixtures.json');
+    fetch('/doesnt_exist').then(response => {
+      assert.comment('fetch GET /doesnt_exist');
       assert.ok(true, 'Handler is fired by native function.');
       assert.ok(response instanceof Response, 'Response instance is returned');
-    });
+    })
+    .catch(err => console.log(err));
 
     fetch('/comments').then(response => {
       assert.comment('fetch GET /comments');
@@ -154,7 +155,7 @@ export default () => {
   });
 
   test('Router#XMLHttpRequest', assert => {
-    assert.plan(8);
+    assert.plan(7);
 
     const router = new Router();
     router.get('/comments', request => {
@@ -174,17 +175,15 @@ export default () => {
     const xhr2 = new XMLHttpRequest();
 
     xhr.onreadystatechange = () => {
-      if (xhr.readyState === 4 && xhr.status === 200) {
-        const response = JSON.parse(xhr.responseText);
-        const userIds = response.user_ids;
+      if (xhr.readyState === 4) {
+        const response = xhr.responseText;
 
-        assert.comment('xhr GET fixtures.json');
+        assert.comment('xhr GET doesnt_exist');
         assert.ok(true, 'Handler is fired by a native function.');
-        assert.equal(typeof response, 'object', 'Response is present.');
-        assert.equal(userIds.length, 3, 'Response body has expected values.');
+        assert.equal(typeof response, 'string', 'Response is present.');
       }
     };
-    xhr.open('GET', 'fixtures.json', true);
+    xhr.open('GET', '/doesnt_exist', true);
     xhr.send();
 
     xhr2.onreadystatechange = () => {
