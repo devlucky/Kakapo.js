@@ -1,83 +1,81 @@
 import faker from 'faker';
+import _ from 'lodash';
 
 export class DB {
   constructor() {
     this.setInitialState();
   }
 
-  register(name, factory) {
-    this.factories[name] = factory;
-    this.store[name] = [];
+  register(collectionName, factory) {
+    this.factories[collectionName] = factory;
+    this.store[collectionName] = [];
   }
 
   //TODO: This method must return the generated data
-  create(factoryName, number) {
-    this.checkFactoryPresence(factoryName);
+  create(collectionName, size) {
+    this.checkFactoryPresence(collectionName);
 
-    const factory = this.factories[factoryName];
-    let records = this.store[factoryName] || [];
+    const factory = this.factories[collectionName];
+    const records = this.store[collectionName] || [];
 
-    while (number) {
-      records.push(this.decorateFactory(factoryName, factory(faker)));
-      number--;
+    while (size--) {
+      const record = factory(faker);
+      Object.keys(record).forEach(field => record[field] = record[field]());
+      records.push(this.decorateFactory(collectionName, record));
     }
 
-    this.store[factoryName] = records;
+    this.store[collectionName] = records;
   }
 
-  find(factoryName, id) {
-    const factory = this.factoryFor(factoryName);
-    if (!factory) return;
+  find(collectionName, conditions) {
+    const factory = this.factoryFor(collectionName);
 
-    return this.store[factoryName].find(element => {
-      return element.id === id;
-    });
-  }
-
-  push(factoryName, content) {
-    this.checkFactoryPresence(factoryName);
-
-    const factory = this.factoryFor(factoryName);
-    let records = this.store[factoryName] || [];
-
-    if (!Array.isArray(content)) {
-      content = [content];
+    if (!factory) {
+      return;
     }
+
+    return _.find(this.store[collectionName], conditions);
+  }
+
+  push(collectionName, record) {
+    this.checkFactoryPresence(collectionName);
+
+    const factory = this.factoryFor(collectionName);
+    const records = this.store[collectionName] || [];
+    const content = _.castArray(record);
 
     records.push(...content);
 
-    this.store[factoryName] = records;
+    this.store[collectionName] = records;
   }
 
-  filter(factoryName, filterFunc) {
-    this.checkFactoryPresence(factoryName);
-
-    return this.store[factoryName].filter(filterFunc);
-  } 
+  filter(collectionName, conditions) {
+    this.checkFactoryPresence(collectionName);
+    return _.filter(this.store[collectionName], conditions);
+  }
 
   checkFactoryPresence(name) {
-    const factory = this.factoryFor(name);
-    if (!factory) throw Error(`Factory ${name} not found`);
+    if (!this.factoryFor(name)) {
+      throw Error(`Factory ${name} not found`);
+    }
   }
 
-  all(factoryName) {
-    return this.store[factoryName];
+  all(collectionName) {
+    return this.store[collectionName];
   }
 
-  factoryFor(factoryName) {
-    return this.factories[factoryName];
+  factoryFor(collectionName) {
+    return this.factories[collectionName];
   }
 
-  decorateFactory(factoryName, record) {
-    record.id = this.uuid('factoryName');
-    return record;
+  decorateFactory(collectionName, record) {
+    return Object.assign({}, record, {id: this.uuid(collectionName)});
   }
 
-  uuid(factoryName) {
-    let id = this._uuids[factoryName] || 0;
+  uuid(collectionName) {
+    const id = this._uuids[collectionName] || 0;
 
-    id++;
-    this._uuids[factoryName] = id;
+    this._uuids[collectionName] = id + 1;
 
     return id;
   }

@@ -9,7 +9,7 @@ function init() {
   tapeDom.installCSS();
   tapeDom.stream(tape);
 
-  //kakapoSpec();
+  // kakapoSpec();
   databaseSpec();
-  routerSpec();
+  // routerSpec();
 }

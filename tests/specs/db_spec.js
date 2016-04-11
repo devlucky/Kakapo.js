@@ -1,19 +1,18 @@
 import tapeTest from 'tape';
 import {DB} from '../../src/kakapo';
 
-const userFactory = () => {
-  return {
-    firstName: 'hector',
-    lastName: 'zarco'
-  };
-}
+const userFactory = faker => ({
+  firstName: faker.name.firstName,
+  lastName: faker.name.lastName,
+  avatar: faker.internet.avatar
+});
 
 const commentFactory = () => {
   return {
-    text: 'foo',
-    likes: 3
+    text: () => 'foo',
+    likes: () => 3
   };
-}
+};
 
 function before() {
 
@@ -54,27 +53,33 @@ export const databaseSpec = () => {
 
   test('DB#find', assert => {
     const db = new DB();
+
     db.register('user', userFactory);
     db.create('user', 5);
-    const user2 = db.find('user', 2);
-    const user6 = db.find('user', 6);
 
-    assert.ok(user2.id === 2 && user2.firstName === 'hector', 'Finds the second user');
-    assert.ok(!user6, 'Return undefined is no user found');
+    const name = db.all('user')[0].firstName;
+    const user1 = db.find('user', user => user.id === 2);
+    const user2 = db.find('user', {firstName: name});
+
+    assert.equal(user1.id, 2, 'Finds user with function as condition.');
+    assert.equal(user2.firstName, name, 'Finds user with object as condition.');
+
     assert.end();
   });
 
   test('DB#filter', assert => {
     const db = new DB();
-    db.register('user', userFactory);
-    db.push('user', {id: 1, firstName: 'hector', lastName: 'zarco', country: 'spain'});
-    db.push('user', {id: 2, firstName: 'joan', lastName: 'romano', country: 'spain'});
-    db.push('user', {id: 3, firstName: 'alex', lastName: 'manzella', country: 'italy'});
-    const users = db.filter('user', u => u.country === 'spain');
+    const newUsers = [];
 
-    assert.ok(users.length === 2, 'Return the expected records');
-    assert.ok(users[0].id === 1, 'The fist record is correct');
-    assert.ok(users[1].id === 2, 'The second record is correct');
+    db.register('user', userFactory);
+    db.create('user', 5);
+
+    const users = db.filter('user', user => user.id > 2);
+    const user = db.filter('user', {id: 2});
+
+    assert.equal(users.length, 2, 'Filters users with function as condition.');
+    assert.equal(user.id, 2, 'Filters users with object as condition.');
+
     assert.end();
   });
 
