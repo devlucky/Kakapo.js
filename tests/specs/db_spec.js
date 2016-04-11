@@ -29,9 +29,10 @@ function test(title, cb) {
 export const databaseSpec = () => {
   test('DB # register', assert => {
     const db = new DB();
+
     db.register('user', userFactory);
 
-    assert.ok(typeof db.factoryFor('user') === 'function', 'The factory is registered properly');
+    assert.ok(_.isFunction(db.factories.user), 'Registers factory properly');
     assert.end();
   });
 
