@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import tapeTest from 'tape';
 import {DB} from '../../src/kakapo';
 
@@ -100,29 +101,29 @@ export const databaseSpec = () => {
 
   test('DB#all', assert => {
     const db = new DB();
+
     db.register('user', userFactory);
     db.create('user', 10);
 
-    assert.ok(db.all('user').length === 10, 'Return all the users on the database');
+    const users = db.all('user');
 
-    db.create('user', 2);
+    assert.equal(users.length, 10, 'Returns all users from store.');
+    assert.ok(_.isArray(users), 'Returns all users from store as array.');
 
-    assert.ok(db.all('user').length === 12, 'Return the expected number of users after adding new ones');
     assert.end();
   });
 
   test('DB#reset', assert => {
     const db = new DB();
+
     db.register('user', userFactory);
     db.create('user', 2);
 
-    assert.ok(db.store.user.length === 2, 'The state is set up properly');
-    assert.ok(db.factoryFor('user'), 'Is able to return the user factory');
-
     db.reset();
 
-    assert.ok(!db.store.user, 'The state clean up');
-    assert.ok(!db.factoryFor('user'), 'No factories are present');
+    assert.ok(_.isEmpty(db.store), 'Cleans up all stores.');
+    assert.ok(_.isEmpty(db.factories), 'Cleans up all factories.');
+    assert.ok(_.isEmpty(db._uuids), 'Cleans up all identifiers.');
 
     assert.end();
   });
