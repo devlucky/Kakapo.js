@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import tapeTest from 'tape';
+import test from 'tape';
 import {DB} from '../../src/kakapo';
 
 const userFactory = faker => ({
@@ -7,17 +7,6 @@ const userFactory = faker => ({
   lastName: faker.name.lastName,
   avatar: faker.internet.avatar
 });
-
-function before() {
-
-};
-
-function test(title, cb) {
-  tapeTest(title, (...args) => {
-    before();
-    cb(...args);
-  });
-}
 
 export const databaseSpec = () => {
   test('DB # register', assert => {
