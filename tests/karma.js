@@ -1,6 +1,6 @@
 import tape from 'tape';
-import kakapoSpecs from './kakapo_spec';
-import dbSpec from './db_spec';
-import routerSpec from './router_spec';
+import { kakapoSpec, databaseSpec, routerSpec } from './specs';
 
+//kakapoSpec();
+databaseSpec();
 routerSpec();
