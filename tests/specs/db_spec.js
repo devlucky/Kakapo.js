@@ -8,13 +8,6 @@ const userFactory = faker => ({
   avatar: faker.internet.avatar
 });
 
-const commentFactory = () => {
-  return {
-    text: () => 'foo',
-    likes: () => 3
-  };
-};
-
 function before() {
 
 };
@@ -33,23 +26,22 @@ export const databaseSpec = () => {
     db.register('user', userFactory);
 
     assert.ok(_.isFunction(db.factories.user), 'Registers factory properly');
+
     assert.end();
   });
 
   test('DB # create', assert => {
     const db = new DB();
-    db.register('user', userFactory);
-    db.register('comment', commentFactory);
-    db.create('user', 5);
-    db.create('comment', 1);
 
-    assert.ok(db.store.user.length === 5, 'Users are created');
-    assert.ok(db.store.comment.length === 1, 'Comments are created');
+    db.register('user', userFactory);
+    db.create('user', 5);
+
+    assert.equal(db.store.user.length, 5, 'Creates users in empty store.');
 
     db.create('user', 2);
 
-    assert.ok(db.store.user.length === 7, 'New users are there');
-    assert.ok(db.store.comment.length === 1, 'Comment has the same length');
+    assert.equal(db.store.user.length, 7, 'Creates users in non-empty store');
+
     assert.end();
   });
 
