@@ -8,8 +8,8 @@
     "dev": "webpack-dev-server --progress --colors --port 8090",
     "test": "./node_modules/karma/bin/karma start .karma.conf.js --single-run",
     "test:dev": "npm-run-all -p test:watch test:server",
-    "test:watch": "watchify tests/index.js -o tests/test_bundle.js -t [ babelify --presets [ es2015 ] ] -v",
-    "test:server": "serve ./tests & open http://localhost:3000/"
+    "test:watch": "watchify tests/tape-dom.js -o tests/browser/test_bundle.js -t [ babelify --presets [ es2015 ] ] -v",
+    "test:server": "serve ./tests/browser & open http://localhost:3000/"
   },
   "repository": {
     "type": "git",
