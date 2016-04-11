@@ -57,7 +57,7 @@ export const databaseSpec = () => {
     db.register('user', userFactory);
     db.create('user', 5);
 
-    const name = db.all('user')[0].firstName;
+    const name = db.store.user[0].firstName;
     const user1 = db.find('user', user => user.id === 2);
     const user2 = db.find('user', {firstName: name});
 
@@ -86,14 +86,15 @@ export const databaseSpec = () => {
     const db = new DB();
 
     db.register('user', userFactory);
-    db.push('user', userFactory());
-    db.push('user', [userFactory(), userFactory()]);
-    db.push('user', {id: 2, customAttr: 'customValue'});
+    db.push('user', {id: 1, name: 'Rick'});
+    db.push('user', {id: 2, name: 'Morty'});
+    db.push('user', {id: 3, name: 'ICE-T'});
 
-    assert.ok(db.store.user.length === 4, 'Pushes the records to the store');
-    assert.ok(db.store.user[0].id === undefined, 'Doesnt add the incremental id for pushed records');
-    assert.ok(db.store.user[2].lastName === 'zarco', 'The last user lastName is correct');
-    assert.ok(db.find('user', 2).customAttr === 'customValue', 'Is able to find the the custom record by id');
+    const users = db.store.user;
+
+    assert.equal(users.length, 3, 'Pushes all records to store.');
+    assert.equal(users[0].name, 'Rick', 'Pushes all records in valid order.');
+
     assert.end();
   });
 
