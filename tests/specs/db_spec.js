@@ -1,5 +1,5 @@
 import tapeTest from 'tape';
-import {DB} from '../src/kakapo';
+import {DB} from '../../src/kakapo';
 
 const userFactory = () => {
   return {
@@ -26,11 +26,11 @@ function test(title, cb) {
   });
 }
 
-export default () => {
+export const databaseSpec = () => {
   test('DB#register', assert => {
     const db = new DB();
     db.register('user', userFactory);
-      
+
     assert.ok(typeof db.factoryFor('user') === 'function', 'The factory is registered properly');
     assert.end();
   });
@@ -100,8 +100,8 @@ export default () => {
     assert.ok(db.all('user').length === 10, 'Return all the users on the database');
 
     db.create('user', 2);
-  
-    assert.ok(db.all('user').length === 12, 'Return the expected number of users after adding new ones');    
+
+    assert.ok(db.all('user').length === 12, 'Return the expected number of users after adding new ones');
     assert.end();
   });
 
@@ -120,4 +120,4 @@ export default () => {
 
     assert.end();
   });
-}
+};

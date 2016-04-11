@@ -1,5 +1,5 @@
 import tapeTest from 'tape';
-import {DB, Router, Server} from '../src/kakapo';
+import {DB, Router, Server} from '../../src/kakapo';
 
 function before() {
 
@@ -12,7 +12,7 @@ function test(title, cb) {
   });
 }
 
-export default () => {
+export const serverSpec = () => {
   test('Server#config', assert => {
     const server = new Server({
       delay: 100
@@ -29,4 +29,4 @@ export default () => {
 
     assert.end();
   });
-});
+};

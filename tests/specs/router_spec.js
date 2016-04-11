@@ -1,7 +1,7 @@
 import test from 'tape';
-import {Router} from '../src/kakapo';
+import {Router} from '../../src/kakapo';
 
-export default () => {
+export const routerSpec = () => {
   test('Router#config', assert => {
     const router = new Router({
       host: 'custom'

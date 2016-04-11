@@ -1,5 +1,5 @@
 import tapeTest from 'tape';
-import {Kakapo} from '../src/kakapo';
+import {Kakapo} from '../../src/kakapo';
 
 function before() {
 
@@ -12,7 +12,7 @@ function test(title, cb) {
   });
 }
 
-export default () => {
+export const kakapoSpec = () => {
   test('Kakapo', assert => {
     let kakapo = new Kakapo();
     let db = new Db();
@@ -21,4 +21,4 @@ export default () => {
 
     assert.end();
   });
-}
+};
