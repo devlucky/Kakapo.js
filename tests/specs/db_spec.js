@@ -74,11 +74,11 @@ export const databaseSpec = () => {
     db.register('user', userFactory);
     db.create('user', 5);
 
-    const users = db.filter('user', user => user.id > 2);
-    const user = db.filter('user', {id: 2});
+    const users1 = db.filter('user', user => user.id > 2);
+    const users2 = db.filter('user', {id: 2});
 
-    assert.equal(users.length, 2, 'Filters users with function as condition.');
-    assert.equal(user.id, 2, 'Filters users with object as condition.');
+    assert.equal(users1.length, 2, 'Filters users with function as condition.');
+    assert.equal(users2.length, 1, 'Filters users with object as condition.');
 
     assert.end();
   });
