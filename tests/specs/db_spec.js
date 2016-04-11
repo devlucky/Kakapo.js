@@ -69,7 +69,6 @@ export const databaseSpec = () => {
 
   test('DB#filter', assert => {
     const db = new DB();
-    const newUsers = [];
 
     db.register('user', userFactory);
     db.create('user', 5);
@@ -85,6 +84,7 @@ export const databaseSpec = () => {
 
   test('DB#push', assert => {
     const db = new DB();
+
     db.register('user', userFactory);
     db.push('user', userFactory());
     db.push('user', [userFactory(), userFactory()]);
