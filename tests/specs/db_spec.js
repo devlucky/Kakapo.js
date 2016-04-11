@@ -27,7 +27,7 @@ function test(title, cb) {
 }
 
 export const databaseSpec = () => {
-  test('DB#register', assert => {
+  test('DB # register', assert => {
     const db = new DB();
     db.register('user', userFactory);
 
@@ -35,7 +35,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB#create', assert => {
+  test('DB # create', assert => {
     const db = new DB();
     db.register('user', userFactory);
     db.register('comment', commentFactory);
@@ -52,7 +52,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB#find', assert => {
+  test('DB # find', assert => {
     const db = new DB();
 
     db.register('user', userFactory);
@@ -68,7 +68,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB#filter', assert => {
+  test('DB # filter', assert => {
     const db = new DB();
 
     db.register('user', userFactory);
@@ -83,7 +83,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB#push', assert => {
+  test('DB # push', assert => {
     const db = new DB();
 
     db.register('user', userFactory);
@@ -99,7 +99,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB#all', assert => {
+  test('DB # all', assert => {
     const db = new DB();
 
     db.register('user', userFactory);
@@ -113,7 +113,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB#reset', assert => {
+  test('DB # reset', assert => {
     const db = new DB();
 
     db.register('user', userFactory);
