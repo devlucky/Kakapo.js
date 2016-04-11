@@ -1,6 +1,6 @@
 module.exports = function(config) {
   config.set({
-    browsers: ['Chrome'],
+    browsers: ['Firefox'],
     frameworks: ['browserify', 'tap'],
     files: [
       'tests/karma.js'
