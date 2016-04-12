@@ -6,12 +6,16 @@ export class DB {
     this.setInitialState();
   }
 
-  register(collectionName, factory) {
-    this.factories[collectionName] = factory;
-    this.store[collectionName] = [];
+  all(collectionName) {
+    return this.store[collectionName];
   }
 
-  //TODO: This method must return the generated data
+  checkFactoryPresence(name) {
+    if (!this.factoryFor(name)) {
+      throw Error(`Factory ${name} not found`);
+    }
+  }
+
   create(collectionName, size) {
     this.checkFactoryPresence(collectionName);
 
@@ -25,6 +29,19 @@ export class DB {
     }
 
     this.store[collectionName] = records;
+  }
+
+  decorateFactory(collectionName, record) {
+    return Object.assign({}, record, {id: this.uuid(collectionName)});
+  }
+
+  factoryFor(collectionName) {
+    return this.factories[collectionName];
+  }
+
+  filter(collectionName, conditions) {
+    this.checkFactoryPresence(collectionName);
+    return _.filter(this.store[collectionName], conditions);
   }
 
   find(collectionName, conditions) {
@@ -49,35 +66,9 @@ export class DB {
     this.store[collectionName] = records;
   }
 
-  filter(collectionName, conditions) {
-    this.checkFactoryPresence(collectionName);
-    return _.filter(this.store[collectionName], conditions);
-  }
-
-  checkFactoryPresence(name) {
-    if (!this.factoryFor(name)) {
-      throw Error(`Factory ${name} not found`);
-    }
-  }
-
-  all(collectionName) {
-    return this.store[collectionName];
-  }
-
-  factoryFor(collectionName) {
-    return this.factories[collectionName];
-  }
-
-  decorateFactory(collectionName, record) {
-    return Object.assign({}, record, {id: this.uuid(collectionName)});
-  }
-
-  uuid(collectionName) {
-    const id = this._uuids[collectionName] || 0;
-
-    this._uuids[collectionName] = id + 1;
-
-    return id;
+  register(collectionName, factory) {
+    this.factories[collectionName] = factory;
+    this.store[collectionName] = [];
   }
 
   reset() {
@@ -88,5 +79,13 @@ export class DB {
     this.factories = {};
     this.store = {};
     this._uuids = {};
+  }
+
+  uuid(collectionName) {
+    const id = this._uuids[collectionName] || 0;
+
+    this._uuids[collectionName] = id + 1;
+
+    return id;
   }
 }
