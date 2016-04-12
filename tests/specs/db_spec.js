@@ -32,6 +32,18 @@ export const databaseSpec = () => {
     assert.end();
   });
 
+  test('DB # decorateFactory', assert => {
+    const db = new DB();
+
+    db.register('user', userFactory);
+
+    const user = db.decorateFactory('user', {name: 'Morty'});
+
+    assert.ok(_.has(user, 'id'), 'Decorates record by adding id field to it.');
+
+    assert.end();
+  });
+
   test('DB # register', assert => {
     const db = new DB();
 
