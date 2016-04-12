@@ -132,6 +132,9 @@ export const databaseSpec = () => {
     assert.equal(users.length, 3, 'Pushes all records to store.');
     assert.equal(users[0].name, 'Rick', 'Pushes all records in valid order.');
 
+    assert.throws(() => db.push('game', {title: 'Hotline Miami'}),
+      'Throws error when factory doesn\'t exist.');
+
     assert.end();
   });
 
