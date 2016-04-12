@@ -33,7 +33,7 @@ export const fakeFetch = (serverRoutes) => {
 
     if (handlerResponse instanceof KakapoResponse) {
       const result = fakeResponse(handlerResponse.body, handlerResponse.headers);
-      if (handlerResponse.isErrored) {
+      if (handlerResponse.error) {
         return Promise.reject(result);
       }
 

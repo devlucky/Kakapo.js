@@ -14,7 +14,7 @@
  * this one must cover all the cases.
  */
 import tapeTest from 'tape';
-import {Router} from '../src/kakapo';
+import {Router} from '../../src/kakapo';
 
 let router;
 
@@ -31,7 +31,7 @@ function test(title, cb) {
   });
 }
 
-export default () => {
+export const requestSpec = () => {
   test('Request#headers', assert => {
     assert.plan(2);
     router = new Router();
@@ -54,10 +54,10 @@ export default () => {
   });
   //TODO: This test should test explicitly the contents of request.params
   test('Request#params', assert => {
-
+    assert.end();
   });
   //TODO: This test should test explicitly the contents of request.query
   test('Request#query', assert => {
-
+    assert.end();
   });
 }

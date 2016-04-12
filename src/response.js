@@ -5,7 +5,11 @@ export class Response {
     this.headers = headers;
   }
 
-  get isErrored() {
+  get error() {
     return this.code >= 400 ? true : false;
+  }
+
+  get ok() {
+    return this.code >= 200 && this.code <= 299;
   }
 }

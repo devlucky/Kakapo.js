@@ -1,5 +1,5 @@
 import tapeTest from 'tape';
-import {Router, Response} from '../src/kakapo';
+import {Router, Response} from '../../src/kakapo';
 
 let router;
 
@@ -16,7 +16,7 @@ function test(title, cb) {
   });
 }
 
-export default () => {
+export const responseSpec = () => {
   test('Response#code', assert => {
     assert.plan(2);
     router = new Router();
