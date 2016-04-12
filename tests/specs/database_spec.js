@@ -108,11 +108,13 @@ export const databaseSpec = () => {
     db.create('user', 5);
 
     const name = db.store.user[0].firstName;
+    const game = db.find('game', {title: 'Hotline Miami'});
     const user1 = db.find('user', user => user.id === 2);
     const user2 = db.find('user', {firstName: name});
 
     assert.equal(user1.id, 2, 'Finds user with function as condition.');
     assert.equal(user2.firstName, name, 'Finds user with object as condition.');
+    assert.equal(game, undefined, 'Finds nothing on empty collection.');
 
     assert.end();
   });

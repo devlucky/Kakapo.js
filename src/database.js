@@ -44,12 +44,6 @@ export class Database {
   }
 
   find(collectionName, conditions) {
-    const factory = this.factoryFor(collectionName);
-
-    if (!factory) {
-      return;
-    }
-
     return _.find(this.store[collectionName], conditions);
   }
 
