@@ -19,6 +19,19 @@ export const databaseSpec = () => {
     assert.end();
   });
 
+  test('DB # checkFactoryPresence', assert => {
+    const db = new DB();
+
+    db.register('user', userFactory);
+
+    assert.doesNotThrow(() => db.checkFactoryPresence('user'),
+      'Doesn\'t throw error when factory is present.');
+    assert.throws(() => db.checkFactoryPresence('game'),
+      'Throws error when factory is not present.');
+
+    assert.end();
+  });
+
   test('DB # register', assert => {
     const db = new DB();
 
