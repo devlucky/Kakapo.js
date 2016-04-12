@@ -60,6 +60,17 @@ export const databaseSpec = () => {
     assert.end();
   });
 
+  test('DB # uuid', assert => {
+    const db = new DB();
+
+    db.register('user', userFactory);
+
+    assert.equal(db.uuid('user'), 0, 'Returns 0 as first identifier.');
+    assert.equal(db.uuid('user'), 1, 'Returns bigger identifier than before.');
+
+    assert.end();
+  });
+
   test('DB # register', assert => {
     const db = new DB();
 
