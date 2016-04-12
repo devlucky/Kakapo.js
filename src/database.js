@@ -40,7 +40,7 @@ export class Database {
 
   filter(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-    return _.filter(this.store[collectionName], conditions);
+    return _.cloneDeep(_.filter(this.store[collectionName], conditions));
   }
 
   find(collectionName, conditions) {
