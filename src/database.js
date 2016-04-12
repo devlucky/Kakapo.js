@@ -1,7 +1,7 @@
 import faker from 'faker';
 import _ from 'lodash';
 
-export class DB {
+export class Database {
   constructor() {
     this.setInitialState();
   }
