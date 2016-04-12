@@ -41,11 +41,11 @@ export class Database {
 
   filter(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-    return _.cloneDeep(_.filter(this.store[collectionName], conditions));
+    return _.filter(this.store[collectionName], conditions);
   }
 
   find(collectionName, conditions) {
-    return _.cloneDeep(_.find(this.store[collectionName], conditions));
+    return _.find(this.store[collectionName], conditions);
   }
 
   push(collectionName, record) {
