@@ -6,9 +6,11 @@
   "scripts": {
     "start": "npm run serve | npm run dev",
     "dev": "webpack-dev-server --progress --colors --port 8090",
-    "test": "npm run test:watch & npm run test:server",
-    "test:watch": "watchify tests/index.js -o tests/test_bundle.js -t [ babelify --presets [ es2015 ] ] -v",
-    "test:server": "serve ./tests & open http://localhost:3000/"
+    "test": "./node_modules/karma/bin/karma start .karma.conf.js --single-run",
+    "test:watch": "./node_modules/karma/bin/karma start .karma.conf.js",
+    "test:browser": "npm-run-all -p test:browser:watch test:browser:server",
+    "test:browser:watch": "watchify tests/tape-dom.js -o tests/browser/test_bundle.js -t [ babelify --presets [ es2015 ] ] -v",
+    "test:browser:server": "serve ./tests/browser & open http://localhost:3000/"
   },
   "repository": {
     "type": "git",
@@ -28,7 +30,12 @@
     "browserify": "^13.0.0",
     "ghooks": "^1.2.0",
     "http-server": "~0.7.1",
+    "karma": "0.13.22",
+    "karma-browserify": "5.0.3",
+    "karma-firefox-launcher": "0.1.7",
+    "karma-tap": "1.0.4",
     "mocha-phantomjs": "^4.0.1",
+    "npm-run-all": "1.7.0",
     "serve": "1.4.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.5.1",
@@ -44,5 +51,17 @@
     "path-match": "1.2.4",
     "path-to-regexp": "^1.2.1",
     "query-string": "4.1.0"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
   }
 }
