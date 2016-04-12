@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import test from 'tape';
-import {DB} from '../../src/kakapo';
+import { Database } from '../../src/kakapo';
 
 const userFactory = faker => ({
   firstName: faker.name.firstName,
