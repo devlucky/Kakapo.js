@@ -17,4 +17,5 @@ install:
 script:
   - npm test
 notifications:
+  slack: kakapojs:qupCg35LI0wTRxPdGnApf00v
   email: false
