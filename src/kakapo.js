@@ -1,6 +1,6 @@
-export * from './database';
-export * from './router';
-export * from './server';
+export { Database } from './database';
+export { Router } from './router';
+export { Server } from './server';
 
 export class Kakapo {
   constructor(config) {

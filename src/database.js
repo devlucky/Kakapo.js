@@ -25,13 +25,13 @@ export class Database {
     while (size--) {
       const record = factory(faker);
       Object.keys(record).forEach(field => record[field] = record[field]());
-      records.push(this.decorateFactory(collectionName, record));
+      records.push(this.decorateRecord(collectionName, record));
     }
 
     this.store[collectionName] = records;
   }
 
-  decorateFactory(collectionName, record) {
+  decorateRecord(collectionName, record) {
     return Object.assign({}, record, {id: this.uuid(collectionName)});
   }
 
