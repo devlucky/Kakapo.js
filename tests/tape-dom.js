@@ -1,6 +1,6 @@
 import tape from 'tape';
-import { 
-  databaseSpec, 
+import {
+  databaseSpec,
   routerSpec,
   responseSpec,
   requestSpec
@@ -14,8 +14,8 @@ function init() {
   tapeDom.installCSS();
   tapeDom.stream(tape);
 
-  // databaseSpec(); 
-  // routerSpec();
-  // responseSpec();
+  databaseSpec();
+  routerSpec();
+  responseSpec();
   requestSpec();
 }
