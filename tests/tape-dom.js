@@ -1,5 +1,10 @@
 import tape from 'tape';
-import { kakapoSpec, databaseSpec, routerSpec } from './specs';
+import { 
+  databaseSpec, 
+  routerSpec,
+  responseSpec,
+  requestSpec
+} from './specs';
 
 document.addEventListener('DOMContentLoaded', init);
 
@@ -9,7 +14,8 @@ function init() {
   tapeDom.installCSS();
   tapeDom.stream(tape);
 
-  //kakapoSpec();
-  databaseSpec();
-  routerSpec();
+  // databaseSpec(); 
+  // routerSpec();
+  // responseSpec();
+  requestSpec();
 }
