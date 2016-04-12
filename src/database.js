@@ -7,7 +7,7 @@ export class Database {
   }
 
   all(collectionName) {
-    return this.store[collectionName];
+    return this.filter(collectionName);
   }
 
   checkFactoryPresence(name) {
