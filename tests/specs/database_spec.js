@@ -8,6 +8,11 @@ const userFactory = faker => ({
   avatar: faker.internet.avatar
 });
 
+const commentFactory = faker => ({
+  title: 'He-yo',
+  content: faker.lorem.paragraph
+});
+
 export const databaseSpec = () => {
   test('DB # constructor', assert => {
     const db = new Database();
@@ -57,6 +62,26 @@ export const databaseSpec = () => {
     db.create('user', 2);
 
     assert.equal(db.store.user.length, 7, 'Creates users in non-empty store');
+
+    assert.end();
+  });
+
+  test('DB # create # fake values', assert => {
+    const db = new Database();
+
+    db.register('user', userFactory);
+    db.register('comment', commentFactory);
+
+    db.create('user', 5);
+    db.create('comment', 10);
+
+    const users = db.store.users;
+    const comments = db.store.comments;
+
+    assert.ok(_.every(users, user => _.isString(user.firstName)),
+      'Assigns valid, generated data for entities.');
+    assert.ok(_.every(comments, comment => _.isString(comment.title)),
+      'Assigns valid, static data for entities.');
 
     assert.end();
   });
@@ -167,9 +192,12 @@ export const databaseSpec = () => {
     const db = new Database();
 
     db.register('user', userFactory);
+    db.register('comment', commentFactory);
 
     assert.equal(db.uuid('user'), 0, 'Returns 0 as first identifier.');
     assert.equal(db.uuid('user'), 1, 'Returns bigger identifier than before.');
+    assert.equal(db.uuid('comment'), 0,
+      'Returns different identifier for separate collections.');
 
     assert.end();
   });
