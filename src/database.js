@@ -23,8 +23,7 @@ export class Database {
     const records = this.store[collectionName] || [];
 
     while (size--) {
-      const record = factory(faker);
-      Object.keys(record).forEach(field => record[field] = record[field]());
+      const record = _.mapValues(factory(faker), field => field());
       records.push(this.decorateRecord(collectionName, record));
     }
 
