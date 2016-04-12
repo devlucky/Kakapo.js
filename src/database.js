@@ -44,7 +44,7 @@ export class Database {
   }
 
   find(collectionName, conditions) {
-    return _.find(this.store[collectionName], conditions);
+    return _.cloneDeep(_.find(this.store[collectionName], conditions));
   }
 
   push(collectionName, record) {
