@@ -123,6 +123,9 @@ export const databaseSpec = () => {
     assert.equal(users1.length, 2, 'Filters users with function as condition.');
     assert.equal(users2.length, 1, 'Filters users with object as condition.');
 
+    assert.throws(() => db.filter('game', {title: 'Hotline Miami'}),
+      'Throws error when factory doesn\'t exist.');
+
     assert.end();
   });
 
@@ -133,13 +136,14 @@ export const databaseSpec = () => {
     db.create('user', 5);
 
     const name = db.store.user[0].firstName;
-    const game = db.find('game', {title: 'Hotline Miami'});
     const user1 = db.find('user', user => user.id === 2);
     const user2 = db.find('user', {firstName: name});
 
     assert.equal(user1.id, 2, 'Finds user with function as condition.');
     assert.equal(user2.firstName, name, 'Finds user with object as condition.');
-    assert.equal(game, undefined, 'Finds nothing on empty collection.');
+
+    assert.throws(() => db.find('game', {title: 'Hotline Miami'}),
+      'Throws error when factory doesn\'t exist.');
 
     assert.end();
   });

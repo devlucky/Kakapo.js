@@ -45,6 +45,7 @@ export class Database {
   }
 
   find(collectionName, conditions) {
+    this.checkFactoryPresence(collectionName);
     return _.find(this.store[collectionName], conditions);
   }
 
