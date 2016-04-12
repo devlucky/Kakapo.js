@@ -10,7 +10,7 @@ const userFactory = faker => ({
 
 export const databaseSpec = () => {
   test('DB # constructor', assert => {
-    const db = new DB();
+    const database = new Database();
 
     assert.ok(_.isObject(db.store), 'Sets up initial store object.');
     assert.ok(_.isObject(db.factories), 'Sets up initial factorie object.');
@@ -20,7 +20,7 @@ export const databaseSpec = () => {
   });
 
   test('DB # all', assert => {
-    const db = new DB();
+    const database = new Database();
 
     db.register('user', userFactory);
     db.create('user', 10);
@@ -34,7 +34,7 @@ export const databaseSpec = () => {
   });
 
   test('DB # checkFactoryPresence', assert => {
-    const db = new DB();
+    const database = new Database();
 
     db.register('user', userFactory);
 
@@ -47,7 +47,7 @@ export const databaseSpec = () => {
   });
 
   test('DB # create', assert => {
-    const db = new DB();
+    const database = new Database();
 
     db.register('user', userFactory);
     db.create('user', 5);
@@ -62,7 +62,7 @@ export const databaseSpec = () => {
   });
 
   test('DB # decorateFactory', assert => {
-    const db = new DB();
+    const database = new Database();
 
     db.register('user', userFactory);
 
@@ -74,7 +74,7 @@ export const databaseSpec = () => {
   });
 
   test('DB # factoryFor', assert => {
-    const db = new DB();
+    const database = new Database();
 
     db.register('user', userFactory);
 
@@ -87,7 +87,7 @@ export const databaseSpec = () => {
   });
 
   test('DB # filter', assert => {
-    const db = new DB();
+    const database = new Database();
 
     db.register('user', userFactory);
     db.create('user', 5);
@@ -102,7 +102,7 @@ export const databaseSpec = () => {
   });
 
   test('DB # find', assert => {
-    const db = new DB();
+    const database = new Database();
 
     db.register('user', userFactory);
     db.create('user', 5);
@@ -118,7 +118,7 @@ export const databaseSpec = () => {
   });
 
   test('DB # push', assert => {
-    const db = new DB();
+    const database = new Database();
 
     db.register('user', userFactory);
     db.push('user', {id: 1, name: 'Rick'});
@@ -134,7 +134,7 @@ export const databaseSpec = () => {
   });
 
   test('DB # register', assert => {
-    const db = new DB();
+    const database = new Database();
 
     db.register('user', userFactory);
 
@@ -144,7 +144,7 @@ export const databaseSpec = () => {
   });
 
   test('DB # reset', assert => {
-    const db = new DB();
+    const database = new Database();
 
     db.register('user', userFactory);
     db.create('user', 2);
@@ -159,7 +159,7 @@ export const databaseSpec = () => {
   });
 
   test('DB # uuid', assert => {
-    const db = new DB();
+    const database = new Database();
 
     db.register('user', userFactory);
 
