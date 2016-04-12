@@ -44,6 +44,22 @@ export const databaseSpec = () => {
     assert.end();
   });
 
+  test('DB # factoryFor', assert => {
+    const db = new DB();
+
+    db.register('user', userFactory);
+
+    const factoryForExisting = db.factoryFor('user');
+    const factoryForNotExisting = db.factoryFor('game');
+
+    assert.ok(_.isFunction(factoryForExisting),
+      'Returns callback if factory exists.');
+    assert.ok(_.isUndefined(factoryForNotExisting),
+      'Returns undefined if factory doesn\'t exist.');
+
+    assert.end();
+  });
+
   test('DB # register', assert => {
     const db = new DB();
 
