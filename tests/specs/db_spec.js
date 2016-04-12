@@ -19,6 +19,20 @@ export const databaseSpec = () => {
     assert.end();
   });
 
+  test('DB # all', assert => {
+    const db = new DB();
+
+    db.register('user', userFactory);
+    db.create('user', 10);
+
+    const users = db.all('user');
+
+    assert.equal(users.length, 10, 'Returns all users from store.');
+    assert.ok(_.isArray(users), 'Returns all users from store as array.');
+
+    assert.end();
+  });
+
   test('DB # checkFactoryPresence', assert => {
     const db = new DB();
 
@@ -28,6 +42,21 @@ export const databaseSpec = () => {
       'Doesn\'t throw error when factory is present.');
     assert.throws(() => db.checkFactoryPresence('game'),
       'Throws error when factory is not present.');
+
+    assert.end();
+  });
+
+  test('DB # create', assert => {
+    const db = new DB();
+
+    db.register('user', userFactory);
+    db.create('user', 5);
+
+    assert.equal(db.store.user.length, 5, 'Creates users in empty store.');
+
+    db.create('user', 2);
+
+    assert.equal(db.store.user.length, 7, 'Creates users in non-empty store');
 
     assert.end();
   });
@@ -57,38 +86,17 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # uuid', assert => {
-    const db = new DB();
-
-    db.register('user', userFactory);
-
-    assert.equal(db.uuid('user'), 0, 'Returns 0 as first identifier.');
-    assert.equal(db.uuid('user'), 1, 'Returns bigger identifier than before.');
-
-    assert.end();
-  });
-
-  test('DB # register', assert => {
-    const db = new DB();
-
-    db.register('user', userFactory);
-
-    assert.ok(_.isFunction(db.factories.user), 'Registers factory properly');
-
-    assert.end();
-  });
-
-  test('DB # create', assert => {
+  test('DB # filter', assert => {
     const db = new DB();
 
     db.register('user', userFactory);
     db.create('user', 5);
 
-    assert.equal(db.store.user.length, 5, 'Creates users in empty store.');
+    const users1 = db.filter('user', user => user.id > 2);
+    const users2 = db.filter('user', {id: 2});
 
-    db.create('user', 2);
-
-    assert.equal(db.store.user.length, 7, 'Creates users in non-empty store');
+    assert.equal(users1.length, 2, 'Filters users with function as condition.');
+    assert.equal(users2.length, 1, 'Filters users with object as condition.');
 
     assert.end();
   });
@@ -109,21 +117,6 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # filter', assert => {
-    const db = new DB();
-
-    db.register('user', userFactory);
-    db.create('user', 5);
-
-    const users1 = db.filter('user', user => user.id > 2);
-    const users2 = db.filter('user', {id: 2});
-
-    assert.equal(users1.length, 2, 'Filters users with function as condition.');
-    assert.equal(users2.length, 1, 'Filters users with object as condition.');
-
-    assert.end();
-  });
-
   test('DB # push', assert => {
     const db = new DB();
 
@@ -140,16 +133,12 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # all', assert => {
+  test('DB # register', assert => {
     const db = new DB();
 
     db.register('user', userFactory);
-    db.create('user', 10);
 
-    const users = db.all('user');
-
-    assert.equal(users.length, 10, 'Returns all users from store.');
-    assert.ok(_.isArray(users), 'Returns all users from store as array.');
+    assert.ok(_.isFunction(db.factories.user), 'Registers factory properly');
 
     assert.end();
   });
@@ -165,6 +154,17 @@ export const databaseSpec = () => {
     assert.ok(_.isEmpty(db.store), 'Cleans up all stores.');
     assert.ok(_.isEmpty(db.factories), 'Cleans up all factories.');
     assert.ok(_.isEmpty(db._uuids), 'Cleans up all identifiers.');
+
+    assert.end();
+  });
+
+  test('DB # uuid', assert => {
+    const db = new DB();
+
+    db.register('user', userFactory);
+
+    assert.equal(db.uuid('user'), 0, 'Returns 0 as first identifier.');
+    assert.equal(db.uuid('user'), 1, 'Returns bigger identifier than before.');
 
     assert.end();
   });
