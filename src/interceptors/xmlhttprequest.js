@@ -3,8 +3,7 @@ import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
 
 import { interceptor } from './interceptor';
-
-const NativeXMLHttpRequest = window.XMLHttpRequest;
+import { NativeXMLHttpRequest } from '../helpers/nativeServices';
 
 export const fakeXMLHttpRequest = serverRoutes =>
   interceptor(serverRoutes, class fakeXMLHttpRequest {
@@ -42,7 +41,3 @@ export const fakeXMLHttpRequest = serverRoutes =>
       this.xhr.send();
     }
   });
-
-export const reset = () => {
-  window.XMLHttpRequest = NativeXMLHttpRequest;
-};

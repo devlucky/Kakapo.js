@@ -3,9 +3,8 @@ import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
 
 import { interceptor } from './interceptor';
+import { nativeFetch } from '../helpers/nativeServices';
 import {Response as KakapoResponse} from '../kakapo';
-
-const nativeFetch = window.fetch;
 
 const fakeResponse = function(response = {}, headers = {}) {
   const responseStr = JSON.stringify(response);
@@ -36,7 +35,3 @@ export const fakeFetch = serverRoutes =>
     const result = fakeResponse(response.body, response.headers);
     return response.error ? Promise.reject(result) : Promise.resolve(result);
   });
-
-export const reset = () => {
-  window.fetch = nativeFetch;
-};

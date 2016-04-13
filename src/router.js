@@ -1,7 +1,10 @@
-import {fakeXMLHttpRequest, reset as resetXMLHttpRequest} from './interceptors/xmlhttprequest';
-import {fakeFetch, reset as resetFetch} from './interceptors/fetch';
+import { fakeXMLHttpRequest } from './interceptors/xmlhttprequest';
+import { fakeFetch } from './interceptors/fetch';
+import { nativeFetch, NativeXMLHttpRequest } from './helpers/nativeServices';
 
-const defaultConfig = {strategies: ['fetch', 'XMLHttpRequest']};
+const defaultConfig = {
+  strategies: ['fetch', 'XMLHttpRequest']
+};
 
 export class Router {
   //TODO: Support 'config.host'
@@ -32,17 +35,17 @@ export class Router {
   }
 
   intercept(strategies) {
-    if (strategies.indexOf('fetch') > -1) {
+    if (!!~strategies.indexOf('fetch')) {
       window.fetch = fakeFetch(this.routes);
     }
 
-    if (strategies.indexOf('XMLHttpRequest') > -1) {
+    if (!!~strategies.indexOf('XMLHttpRequest')) {
       window.XMLHttpRequest = fakeXMLHttpRequest(this.routes);
     }
   }
 
   reset() {
-    resetFetch();
-    resetXMLHttpRequest();   
+    window.fetch = nativeFetch;
+    window.XMLHttpRequest = NativeXMLHttpRequest;
   }
 }
