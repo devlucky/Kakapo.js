@@ -5,7 +5,6 @@ import parseUrl from 'parse-url';
 import { interceptor } from './interceptor';
 
 export const name = 'XMLHttpRequest';
-
 export const reference = window.XMLHttpRequest;
 
 export const fakeService = serverRoutes =>
