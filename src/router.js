@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {fakeXMLHttpRequest, reset as resetXMLHttpRequest} from './interceptors/xmlhttprequest';
 import {fakeFetch, reset as resetFetch} from './interceptors/fetch';
 
@@ -12,23 +13,19 @@ export class Router {
   }
 
   get(...args) {
-    this.request('GET', ...args);
+    this.register('GET', ...args);
   }
 
   post(...args) {
-    this.request('POST', ...args);
+    this.register('POST', ...args);
   }
 
   put(...args) {
-    this.request('PUT', ...args);
+    this.register('PUT', ...args);
   }
 
   delete(...args) {
-    this.request('DELETE', ...args);
-  }
-
-  request(method, ...args) {
-    this.register(method, ...args);
+    this.register('DELETE', ...args);
   }
 
   register(method, path, handler) {
@@ -36,11 +33,11 @@ export class Router {
   }
 
   intercept(strategies) {
-    if (!!~strategies.indexOf('fetch')) {
+    if (_.includes(strategies, 'fetch')) {
       window.fetch = fakeFetch(this.routes);
     }
 
-    if (!!~strategies.indexOf('XMLHttpRequest')) {
+    if (_.includes(strategies, 'XMLHttpRequest')) {
       window.XMLHttpRequest = fakeXMLHttpRequest(this.routes);
     }
   }
