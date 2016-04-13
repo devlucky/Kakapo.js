@@ -3,12 +3,15 @@ import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
 
 import { interceptor } from './interceptor';
-import { NativeXMLHttpRequest } from '../helpers/nativeServices';
 
-export const fakeXMLHttpRequest = serverRoutes =>
+export const name = 'XMLHttpRequest';
+
+export const reference = window.XMLHttpRequest;
+
+export const fakeService = serverRoutes =>
   interceptor(serverRoutes, class fakeXMLHttpRequest {
     constructor(helpers) {
-      this.xhr = new NativeXMLHttpRequest();
+      this.xhr = new reference();
       this.getHandler = helpers.getHandler;
       this.getParams = helpers.getParams;
     }

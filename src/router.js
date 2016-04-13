@@ -1,6 +1,4 @@
-import { fakeXMLHttpRequest } from './interceptors/xmlhttprequest';
-import { fakeFetch } from './interceptors/fetch';
-import { nativeFetch, NativeXMLHttpRequest } from './helpers/nativeServices';
+import { interceptors } from './interceptors';
 
 const defaultConfig = {
   strategies: ['fetch', 'XMLHttpRequest']
@@ -35,17 +33,10 @@ export class Router {
   }
 
   intercept(strategies) {
-    if (!!~strategies.indexOf('fetch')) {
-      window.fetch = fakeFetch(this.routes);
-    }
-
-    if (!!~strategies.indexOf('XMLHttpRequest')) {
-      window.XMLHttpRequest = fakeXMLHttpRequest(this.routes);
-    }
+    _.forEach(strategies, name => interceptors[name].assign(this.routes));
   }
 
   reset() {
-    window.fetch = nativeFetch;
-    window.XMLHttpRequest = NativeXMLHttpRequest;
+    _.forEach(interceptors, interceptor => interceptor.reset());
   }
 }
