@@ -12,19 +12,23 @@ export class Router {
   }
 
   get(...args) {
-    this.register(...['GET', ...args]);
+    this.request('GET', ...args);
   }
 
   post(...args) {
-    this.register(...['POST', ...args]);
+    this.request('POST', ...args);
   }
 
   put(...args) {
-    this.register(...['PUT', ...args]);
+    this.request('PUT', ...args);
   }
 
   delete(...args) {
-    this.register(...['DELETE', ...args]);
+    this.request('DELETE', ...args);
+  }
+
+  request(method, ...args) {
+    this.register(method, ...args);
   }
 
   register(method, path, handler) {
@@ -32,17 +36,17 @@ export class Router {
   }
 
   intercept(strategies) {
-    if (strategies.indexOf('fetch') > -1) {
+    if (!!~strategies.indexOf('fetch')) {
       window.fetch = fakeFetch(this.routes);
     }
 
-    if (strategies.indexOf('XMLHttpRequest') > -1) {
+    if (!!~strategies.indexOf('XMLHttpRequest')) {
       window.XMLHttpRequest = fakeXMLHttpRequest(this.routes);
     }
   }
 
   reset() {
     resetFetch();
-    resetXMLHttpRequest();   
+    resetXMLHttpRequest();
   }
 }
