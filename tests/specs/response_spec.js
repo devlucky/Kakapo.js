@@ -20,7 +20,7 @@ export const responseSpec = () => {
   test('Response#code', assert => {
     assert.plan(2);
     router = new Router();
-  
+
     router.get('/users/:id', (request) => {
       const code = request.params.id == 1 ? 200 : 400;
 
@@ -39,7 +39,7 @@ export const responseSpec = () => {
   test('Response#body', assert => {
     assert.plan(1);
     router = new Router();
-  
+
     router.get('/users/:id', (request) => {
       return new Response(200, {id: request.params.id, type: 'user'});
     });
@@ -51,7 +51,7 @@ export const responseSpec = () => {
   test('Response#headers', assert => {
     assert.plan(2);
     router = new Router();
-  
+
     router.get('/users/:id', (request) => {
       return new Response(200, {}, {'x-header-1': 'one', 'x-header-2': 'two'});
     });
@@ -60,5 +60,17 @@ export const responseSpec = () => {
       assert.ok(r.headers.get('x-header-1') === 'one', 'The first header is correct');
       assert.ok(r.headers.get('x-header-2') === 'two', 'The second header is correct');
     });
+  });
+
+  test('Response # error', assert => {
+    assert.plan(1);
+    const response = new Response(404, {}, {'x-header-1': 'one'});
+    assert.ok(response.error, 'Is aware of error knowing the status code');
+  });
+
+  test('Response # ok', assert => {
+    assert.plan(1);
+    const response = new Response(204, {}, {'x-header-1': 'one'});
+    assert.ok(response.ok, 'Is aware of success knowing the status code');
   });
 };
