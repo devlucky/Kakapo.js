@@ -2,10 +2,10 @@ import * as xmlHttpRequest from './xmlhttprequest';
 import * as fetch from './fetch';
 
 const interceptor = ({name, reference, fakeService}) => ({
-  assign(routes) {
+  enable(routes) {
     window[name] = fakeService(routes);
   },
-  reset() {
+  disable() {
     window[name] = reference;
   }
 });

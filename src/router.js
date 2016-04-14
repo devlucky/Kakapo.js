@@ -33,10 +33,10 @@ export class Router {
   }
 
   intercept(strategies) {
-    _.forEach(strategies, name => interceptors[name].assign(this.routes));
+    _.forEach(strategies, name => interceptors[name].enable(this.routes));
   }
 
   reset() {
-    _.forEach(interceptors, interceptor => interceptor.reset());
+    _.forEach(interceptors, interceptor => interceptor.disable());
   }
 }
