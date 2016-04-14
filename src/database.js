@@ -13,7 +13,7 @@ export class Database {
   }
 
   all(collectionName) {
-    return this.filter(collectionName, {});
+    return this.store[collectionName];
   }
 
   checkFactoryPresence(name) {
@@ -47,12 +47,12 @@ export class Database {
 
   filter(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-    return _.filter(this.store[collectionName], conditions);
+    return _.filter(this.all(collectionName), conditions);
   }
 
   find(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-    return _.find(this.store[collectionName], conditions);
+    return _.find(this.all(collectionName), conditions);
   }
 
   push(collectionName, record) {
