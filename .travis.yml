@@ -16,6 +16,8 @@ install:
   - npm install
 script:
   - npm run test:travis
+after_success:
+  - npm run codecov
 notifications:
   slack: kakapojs:qupCg35LI0wTRxPdGnApf00v
   email: false
