@@ -1,5 +1,6 @@
 import faker from 'faker';
 import _ from 'lodash';
+import { recordFactory } from './recordFactory';
 
 export class Database {
   constructor() {
@@ -28,7 +29,7 @@ export class Database {
       records.push(this.decorateRecord(collectionName, record));
     }
 
-    this.store[collectionName] = records;
+    this._pushToStore(collectionName, records);
   }
 
   decorateRecord(collectionName, record) {
@@ -58,7 +59,7 @@ export class Database {
 
     records.push(...content);
 
-    this.store[collectionName] = records;
+    this._pushToStore(collectionName, records);
   }
 
   register(collectionName, factory) {
@@ -82,5 +83,15 @@ export class Database {
     this._uuids[collectionName] = id + 1;
 
     return id;
+  }
+
+  _update(collectionName, record) {
+    const originalRecord = this.find(collectionName, {id: record.id});
+    Object.assign(originalRecord, record);
+  }
+
+  _pushToStore(collectionName, records) {
+    this.store[collectionName] = records.map(record =>
+      recordFactory(record, collectionName, this));
   }
 }
