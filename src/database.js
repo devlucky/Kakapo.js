@@ -1,5 +1,11 @@
 import faker from 'faker';
 import _ from 'lodash';
+import { recordFactory } from './recordFactory';
+
+const pushToStore = (collectionName, records, database) => {
+  database.store[collectionName] = records.map(record =>
+    recordFactory(record, collectionName, database));
+};
 
 export class Database {
   constructor() {
@@ -7,7 +13,7 @@ export class Database {
   }
 
   all(collectionName) {
-    return this.filter(collectionName);
+    return this.store[collectionName];
   }
 
   checkFactoryPresence(name) {
@@ -28,7 +34,7 @@ export class Database {
       records.push(this.decorateRecord(collectionName, record));
     }
 
-    this.store[collectionName] = records;
+    pushToStore(collectionName, records, this);
   }
 
   decorateRecord(collectionName, record) {
@@ -41,12 +47,12 @@ export class Database {
 
   filter(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-    return _.filter(this.store[collectionName], conditions);
+    return _.filter(this.all(collectionName), conditions);
   }
 
   find(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-    return _.find(this.store[collectionName], conditions);
+    return _.find(this.all(collectionName), conditions);
   }
 
   push(collectionName, record) {
@@ -58,7 +64,7 @@ export class Database {
 
     records.push(...content);
 
-    this.store[collectionName] = records;
+    pushToStore(collectionName, records, this);
   }
 
   register(collectionName, factory) {

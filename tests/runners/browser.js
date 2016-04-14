@@ -15,7 +15,7 @@ function init() {
   tapeDom.stream(tape);
 
   databaseSpec();
-  routerSpec();
-  responseSpec();
-  requestSpec();
+  // routerSpec();
+  // responseSpec();
+  // requestSpec();
 }
