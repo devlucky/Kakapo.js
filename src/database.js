@@ -87,7 +87,7 @@ export class Database {
 
   _update(collectionName, record) {
     const originalRecord = this.find(collectionName, {id: record.id});
-    Object.assign(originalRecord, record);
+    return Object.assign(originalRecord, record);
   }
 
   _pushToStore(collectionName, records) {

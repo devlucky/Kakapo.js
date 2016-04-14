@@ -239,13 +239,18 @@ export const databaseSpec = () => {
 
     user1.firstName = 'NEW NAME';
 
-    db._update('user', user1);
-    db._update('user', user2);
+    const newUser1 = db._update('user', user1);
+    const newUser2 = db._update('user', user2);
 
     assert.notEqual(db.store.user[0].firstName, oldFirstname1,
       'Properly assigns new values to the record');
     assert.equal(db.store.user[1].firstName, oldFirstname2,
       'Leaves field exactly the same when no changes made.');
+
+    assert.notEqual(newUser1.firstName, oldFirstname1,
+      'Returns changed record.');
+    assert.equal(newUser2.firstName, oldFirstname2,
+      'Returns the same record when no changes made.');
 
     assert.end();
   });
@@ -280,13 +285,18 @@ export const databaseSpec = () => {
 
     user1.firstName = 'NEW NAME';
 
-    user1.save();
-    user2.save();
+    const newUser1 = user1.save();
+    const newUser2 = user2.save();
 
     assert.notEqual(db.store.user[0].firstName, oldFirstname1,
       'Properly assigns new values to the record');
     assert.equal(db.store.user[1].firstName, oldFirstname2,
       'Leaves field exactly the same when no changes made.');
+
+    assert.notEqual(newUser1.firstName, oldFirstname1,
+      'Returns changed record.');
+    assert.equal(newUser2.firstName, oldFirstname2,
+      'Returns the same record when no changes made.');
 
     assert.end();
   });
