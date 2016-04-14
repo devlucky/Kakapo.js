@@ -4,16 +4,15 @@
   "description": "Next generation mocking library in Javascript",
   "main": "src/kakapo.js",
   "scripts": {
-    "start": "npm run serve | npm run dev",
-    "dev": "webpack-dev-server --progress --colors --port 8090",
-    "test": "npm run test:browser",
-    "test:karma": "karma start .karma.conf.js --single-run",
-    "test:karma:watch": "karma start .karma.conf.js",
-    "test:travis": "karma start .karma.travis.conf.js --single-run",
-    "test:browser": "npm-run-all -p test:browser:watch test:browser:server",
-    "test:browser:watch": "watchify tests/runners/browser.js -o tests/browser/test_bundle.js -t [ babelify --presets [ es2015 ] ] -v",
-    "test:browser:server": "serve ./tests/browser & open http://localhost:3000/",
-    "codecov": "cat tests/coverage/*/lcov.info | codecov"
+    "dev": "scripts/dev",
+    "start": "scripts/start",
+    "test": "scripts/test",
+    "test:browser": "scripts/test.browser",
+    "test:browser:watch": "scripts/test.browser.watch",
+    "test:browser:server": "scripts/test.browser.server"
+    "test:karma": "scripts/test.karma",
+    "test:karma:watch": "scripts/test.karma.watch",
+    "test:travis": "scripts/test.travis",
   },
   "repository": {
     "type": "git",

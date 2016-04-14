@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+watchify tests/runners/browser.js -o tests/browser/test_bundle.js -t [ babelify --presets [ es2015 ] ] -v
