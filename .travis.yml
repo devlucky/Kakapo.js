@@ -19,5 +19,5 @@ script:
 after_success:
   - npm run codecov
 notifications:
-  slack: kakapojs:qupCg35LI0wTRxPdGnApf00v
+  slack: ghemoji:xtNp4azoF37EKUTqDHKHJpbR
   email: false
