@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import test from 'tape';
 import { Database } from '../../src/kakapo';
+import { recordFactory } from '../../src/recordFactory';
 
 const userFactory = faker => ({
   firstName: faker.name.firstName,
@@ -167,6 +168,24 @@ export const databaseSpec = () => {
     assert.end();
   });
 
+  test('DB # record # save', assert => {
+    const db = new Database();
+
+    db.register('user', userFactory);
+    db.create('user', 20);
+
+    db.store.user.forEach((user, index) => {
+      user.firstName = (index % 2) ? 'Hector' : 'Oskar';
+    });
+
+    assert.equal(_.filter(db.store.user, {firstName: 'Hector'}).length, 10,
+      'Properly saves changes on objects to store.');
+    assert.equal(_.filter(db.store.user, {firstName: 'Oskar'}).length, 10,
+      'Properly saves changes on objects to store.');
+
+    assert.end();
+  });
+
   test('DB # register', assert => {
     const db = new Database();
 
@@ -202,6 +221,47 @@ export const databaseSpec = () => {
     assert.equal(db.uuid('user'), 1, 'Returns bigger identifier than before.');
     assert.equal(db.uuid('comment'), 0,
       'Returns different identifier for separate collections.');
+
+    assert.end();
+  });
+
+  test('recordFactory # _update', assert => {
+    const db = new Database();
+
+    db.register('user', userFactory);
+    db.create('user', 2);
+
+    const user1 = db.store.user[0];
+    const user2 = db.store.user[1];
+
+    const oldFirstname1 = user1.firstName;
+    const oldFirstname2 = user2.firstName;
+
+    user1.firstName = 'NEW NAME';
+
+    db._update('user', user1);
+    db._update('user', user2);
+
+    assert.notEqual(db.store.user[0].firstName, oldFirstname1,
+      'Properly assigns new values to the record');
+    assert.equal(db.store.user[1].firstName, oldFirstname2,
+      'Leaves field exactly the same when no changes made.');
+
+    assert.end();
+  });
+
+  test('recordFactory', assert => {
+    const fakeObject = {
+      firstName: 'Spongebob',
+      lastName: 'Squarepants'
+    };
+
+    const fakeRecord = recordFactory(fakeObject);
+
+    assert.ok(_.has(fakeRecord, 'save'),
+      'Properly assigns new properties to new object.');
+    assert.ok(_.isFunction(fakeRecord.save),
+      'Assigns properties of valid type to new object.');
 
     assert.end();
   });
