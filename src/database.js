@@ -13,6 +13,7 @@ export class Database {
   }
 
   all(collectionName) {
+    this.checkFactoryPresence(collectionName);
     return this.store[collectionName];
   }
 
@@ -38,6 +39,7 @@ export class Database {
   }
 
   decorateRecord(collectionName, record) {
+    this.checkFactoryPresence(collectionName);
     return Object.assign({}, record, {id: this.uuid(collectionName)});
   }
 
@@ -83,8 +85,9 @@ export class Database {
   }
 
   uuid(collectionName) {
-    const id = this._uuids[collectionName] || 0;
+    this.checkFactoryPresence(collectionName);
 
+    const id = this._uuids[collectionName] || 0;
     this._uuids[collectionName] = id + 1;
 
     return id;

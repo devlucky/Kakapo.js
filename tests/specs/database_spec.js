@@ -35,6 +35,11 @@ export const databaseSpec = () => {
     assert.equal(users.length, 10, 'Returns all users from store.');
     assert.ok(_.isArray(users), 'Returns all users from store as array.');
 
+    assert.doesNotThrow(() => db.all('user'),
+      'Doesn\'t throw error when collection is present.');
+    assert.throws(() => db.all('game'),
+      'Throws error when collection is not present.');
+
     assert.end();
   });
 
@@ -44,9 +49,9 @@ export const databaseSpec = () => {
     db.register('user', userFactory);
 
     assert.doesNotThrow(() => db.checkFactoryPresence('user'),
-      'Doesn\'t throw error when factory is present.');
+      'Doesn\'t throw error when collection is present.');
     assert.throws(() => db.checkFactoryPresence('game'),
-      'Throws error when factory is not present.');
+      'Throws error when collection is not present.');
 
     assert.end();
   });
@@ -95,6 +100,11 @@ export const databaseSpec = () => {
 
     assert.ok(_.has(user, 'id'), 'Decorates record by adding id field to it.');
 
+    assert.doesNotThrow(() => db.decorateRecord('user'),
+      'Doesn\'t throw error when collection is present.');
+    assert.throws(() => db.decorateRecord('game'),
+      'Throws error when collection is not present.');
+
     assert.end();
   });
 
@@ -123,8 +133,10 @@ export const databaseSpec = () => {
     assert.equal(users1.length, 2, 'Filters users with function as condition.');
     assert.equal(users2.length, 1, 'Filters users with object as condition.');
 
-    assert.throws(() => db.filter('game', {title: 'Hotline Miami'}),
-      'Throws error when factory doesn\'t exist.');
+    assert.doesNotThrow(() => db.filter('user'),
+      'Doesn\'t throw error when collection is present.');
+    assert.throws(() => db.filter('game'),
+      'Throws error when collection is not present.');
 
     assert.end();
   });
@@ -142,8 +154,10 @@ export const databaseSpec = () => {
     assert.equal(user1.id, 2, 'Finds user with function as condition.');
     assert.equal(user2.firstName, name, 'Finds user with object as condition.');
 
-    assert.throws(() => db.find('game', {title: 'Hotline Miami'}),
-      'Throws error when factory doesn\'t exist.');
+    assert.doesNotThrow(() => db.find('user'),
+      'Doesn\'t throw error when collection is present.');
+    assert.throws(() => db.find('game'),
+      'Throws error when collection is not present.');
 
     assert.end();
   });
@@ -161,8 +175,10 @@ export const databaseSpec = () => {
     assert.equal(users.length, 3, 'Pushes all records to store.');
     assert.equal(users[0].name, 'Rick', 'Pushes all records in valid order.');
 
-    assert.throws(() => db.push('game', {title: 'Hotline Miami'}),
-      'Throws error when factory doesn\'t exist.');
+    assert.doesNotThrow(() => db.push('user', {}),
+      'Doesn\'t throw error when collection is present.');
+    assert.throws(() => db.push('game', {}),
+      'Throws error when collection is not present.');
 
     assert.end();
   });
@@ -205,9 +221,11 @@ export const databaseSpec = () => {
 
     db.reset();
 
-    assert.ok(_.isEmpty(db.store), 'Cleans up all stores.');
-    assert.ok(_.isEmpty(db.factories), 'Cleans up all factories.');
-    assert.ok(_.isEmpty(db._uuids), 'Cleans up all identifiers.');
+    assert.throws(() => db.all('user'),
+      'Cleans up all stores.');
+
+    assert.throws(() => db.checkFactoryPresence('user'),
+      'Cleans up all factories.');
 
     assert.end();
   });
@@ -222,6 +240,11 @@ export const databaseSpec = () => {
     assert.equal(db.uuid('user'), 1, 'Returns bigger identifier than before.');
     assert.equal(db.uuid('comment'), 0,
       'Returns different identifier for separate collections.');
+
+    assert.doesNotThrow(() => db.uuid('user'),
+      'Doesn\'t throw error when collection is present.');
+    assert.throws(() => db.uuid('game'),
+      'Throws error when collection is not present.');
 
     assert.end();
   });
