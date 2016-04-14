@@ -6,7 +6,7 @@ export class Response {
   }
 
   get error() {
-    return this.code >= 400 ? true : false;
+    return this.code >= 400;
   }
 
   get ok() {
