@@ -1,3 +1,7 @@
 {
-    "plugins": [ "__coverage__" ]
+  "env": {
+    "travis": {
+      "plugins": [ "__coverage__" ]
+    }
+  }
 }

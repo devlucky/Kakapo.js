@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+npm-run-all --parallel test:browser:watch test:browser:server
