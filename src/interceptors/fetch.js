@@ -1,9 +1,12 @@
 import queryString from 'query-string';
 import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
+
+import { interceptor } from './interceptor';
 import {Response as KakapoResponse} from '../kakapo';
 
-const nativeFetch = window.fetch;
+export const name = 'fetch';
+export const reference = window.fetch;
 
 const fakeResponse = function(response = {}, headers = {}) {
   const responseStr = JSON.stringify(response);
@@ -11,39 +14,26 @@ const fakeResponse = function(response = {}, headers = {}) {
   return new window.Response(responseStr, {headers});
 };
 
-export const fakeFetch = (serverRoutes) => {
-  return (url, options = {}) => {
+export const fakeService = serverRoutes =>
+  interceptor(serverRoutes, (helpers, url, options = {}) => {
     const body = options.body || '';
     const method = options.method || 'GET';
     const headers = options.headers || {};
-    const handlers = serverRoutes[method];
 
-    const pathname = parseUrl(url).pathname;
-    const matchesPathname = path => pathMatch()(path)(pathname);
-    const route = Object.keys(handlers).find(matchesPathname);
+    const handler = helpers.getHandler(url, method);
+    const params = helpers.getParams(url, method);
 
-    if (!route) {
-      return nativeFetch(url, options);
+    if (!handler) {
+      return reference(url, options);
     }
 
-    const handler = handlers[route];
     const query = queryString.parse(parseUrl(url).search);
-    const params = matchesPathname(route);
-    const handlerResponse = handler({params, query, body, headers});
+    const response = handler({params, query, body, headers});
 
-    if (handlerResponse instanceof KakapoResponse) {
-      const result = fakeResponse(handlerResponse.body, handlerResponse.headers);
-      if (handlerResponse.error) {
-        return Promise.reject(result);
-      }
-
-      return Promise.resolve(result);
+    if (!(response instanceof KakapoResponse)) {
+      return Promise.resolve(fakeResponse(response));
     }
 
-    return Promise.resolve(fakeResponse(handlerResponse));
-  };
-};
-
-export const reset = () => {
-  window.fetch = nativeFetch;
-};
+    const result = fakeResponse(response.body, response.headers);
+    return response.error ? Promise.reject(result) : Promise.resolve(result);
+  });

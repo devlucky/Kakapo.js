@@ -1,8 +1,9 @@
 import _ from 'lodash';
-import {fakeXMLHttpRequest, reset as resetXMLHttpRequest} from './interceptors/xmlhttprequest';
-import {fakeFetch, reset as resetFetch} from './interceptors/fetch';
+import { interceptors } from './interceptors';
 
-const defaultConfig = {strategies: ['fetch', 'XMLHttpRequest']};
+const defaultConfig = {
+  strategies: ['fetch', 'XMLHttpRequest']
+};
 
 export class Router {
   //TODO: Support 'config.host'
@@ -33,17 +34,10 @@ export class Router {
   }
 
   intercept(strategies) {
-    if (_.includes(strategies, 'fetch')) {
-      window.fetch = fakeFetch(this.routes);
-    }
-
-    if (_.includes(strategies, 'XMLHttpRequest')) {
-      window.XMLHttpRequest = fakeXMLHttpRequest(this.routes);
-    }
+    _.forEach(strategies, name => interceptors[name].enable(this.routes));
   }
 
   reset() {
-    resetFetch();
-    resetXMLHttpRequest();
+    _.forEach(interceptors, interceptor => interceptor.disable());
   }
 }

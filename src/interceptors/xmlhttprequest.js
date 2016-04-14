@@ -1,13 +1,18 @@
-import pathToRegexp from 'path-to-regexp';
-let routes;
-const nativeXMLHttpRequest = window.XMLHttpRequest;
+import queryString from 'query-string';
+import pathMatch from 'path-match';
+import parseUrl from 'parse-url';
 
-export const fakeXMLHttpRequest = (serverRoutes) => {
-  routes = serverRoutes;
+import { interceptor } from './interceptor';
 
-  return class fakeXMLHttpRequest {
-    constructor() {
-      this.xhr = new nativeXMLHttpRequest(); 
+export const name = 'XMLHttpRequest';
+export const reference = window.XMLHttpRequest;
+
+export const fakeService = serverRoutes =>
+  interceptor(serverRoutes, class fakeXMLHttpRequest {
+    constructor(helpers) {
+      this.xhr = new reference();
+      this.getHandler = helpers.getHandler;
+      this.getParams = helpers.getParams;
     }
 
     open(method, url) {
@@ -17,42 +22,24 @@ export const fakeXMLHttpRequest = (serverRoutes) => {
     }
 
     send() {
-      let self = this;
-      const url = self.url;
-      const onreadystatechange = self.onreadystatechange;
-      const method = self.method;
-      const methodRoutes = routes[method];
-      let routeHandler;
-      let params;
+      const handler = this.getHandler(this.url, this.method);
+      const params = this.getParams(this.url, this.method);
 
-      Object.keys(methodRoutes).forEach((path) => {
-        let routeRegex = pathToRegexp(path);
-
-        if (!routeHandler && routeRegex.exec(url)) {
-          routeHandler = methodRoutes[path];
-          params = routeRegex.exec(url);
-        }
-      });
-
-      if (routeHandler && onreadystatechange) {
-        self.readyState = 4;
-        self.status = 200; //TODO: Support custom status codes
-        self.responseText = routeHandler({params});
-        onreadystatechange();
+      if (handler && this.onreadystatechange) {
+        this.readyState = 4;
+        this.status = 200; //TODO: Support custom status codes
+        this.responseText = handler({params});
+        this.onreadystatechange();
         return;
       }
-      
-      this.xhr.onreadystatechange = function() {
-        self.readyState = this.readyState;
-        self.status = this.status;
-        self.responseText = this.responseText;
-        onreadystatechange.call(this);
+
+      this.xhr.onreadystatechange = () => {
+        this.readyState = this.xhr.readyState;
+        this.status = this.xhr.status;
+        this.responseText = this.xhr.responseText;
+        this.onreadystatechange.call(this.xhr);
       };
+
       this.xhr.send();
     }
-  }
-}
-
-export const reset = () => {
-  window.XMLHttpRequest = nativeXMLHttpRequest;
-}
+  });
