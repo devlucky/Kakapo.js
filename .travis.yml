@@ -1,6 +1,9 @@
 language: node_js
 node_js:
   - "4.0"
+env:
+  global:
+    - NODE_ENV=travis
 addons:
   apt:
     packages:
