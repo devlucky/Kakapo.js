@@ -226,52 +226,6 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('recordFactory # _update', assert => {
-    const db = new Database();
-
-    db.register('user', userFactory);
-    db.create('user', 2);
-
-    const user1 = db.store.user[0];
-    const user2 = db.store.user[1];
-
-    const oldFirstname1 = user1.firstName;
-    const oldFirstname2 = user2.firstName;
-
-    user1.firstName = 'NEW NAME';
-
-    const newUser1 = db._update('user', user1);
-    const newUser2 = db._update('user', user2);
-
-    assert.notEqual(db.store.user[0].firstName, oldFirstname1,
-      'Properly assigns new values to the record');
-    assert.equal(db.store.user[1].firstName, oldFirstname2,
-      'Leaves field exactly the same when no changes made.');
-
-    assert.notEqual(newUser1.firstName, oldFirstname1,
-      'Returns changed record.');
-    assert.equal(newUser2.firstName, oldFirstname2,
-      'Returns the same record when no changes made.');
-
-    assert.end();
-  });
-
-  test('recordFactory', assert => {
-    const fakeObject = {
-      firstName: 'Spongebob',
-      lastName: 'Squarepants'
-    };
-
-    const fakeRecord = recordFactory(fakeObject);
-
-    assert.ok(_.has(fakeRecord, 'save'),
-      'Properly assigns new properties to new object.');
-    assert.ok(_.isFunction(fakeRecord.save),
-      'Assigns properties of valid type to new object.');
-
-    assert.end();
-  });
-
   test('recordFactory # save', assert => {
     const db = new Database();
 
