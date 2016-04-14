@@ -85,11 +85,6 @@ export class Database {
     return id;
   }
 
-  _update(collectionName, record) {
-    const originalRecord = this.find(collectionName, {id: record.id});
-    return Object.assign(originalRecord, record);
-  }
-
   _pushToStore(collectionName, records) {
     this.store[collectionName] = records.map(record =>
       recordFactory(record, collectionName, this));
