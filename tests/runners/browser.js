@@ -4,7 +4,7 @@ import {
   routerSpec,
   responseSpec,
   requestSpec
-} from './specs';
+} from '../specs';
 
 document.addEventListener('DOMContentLoaded', init);
 

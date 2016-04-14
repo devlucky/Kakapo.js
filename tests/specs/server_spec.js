@@ -1,5 +1,5 @@
 import tapeTest from 'tape';
-import {DB, Router, Server} from '../../src/kakapo';
+import {Database, Router, Server} from '../../src/kakapo';
 
 function before() {
 
@@ -20,7 +20,7 @@ export const serverSpec = () => {
     assert.end();
   });
   test('Server#use', assert => {
-    const db = new DB();
+    const db = new Database();
     const router = new Router();
     const server = new Server();
 

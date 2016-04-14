@@ -3,7 +3,7 @@ module.exports = function(config) {
     browsers: ['Firefox'],
     frameworks: ['browserify', 'tap'],
     files: [
-      'tests/runners/karma.js'
+      'tests/runners/travis.js'
     ],
     preprocessors: {
       'tests/**/*.js': ['browserify']
