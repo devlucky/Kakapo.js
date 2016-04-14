@@ -9,10 +9,10 @@
     "test": "scripts/test",
     "test:browser": "scripts/test.browser",
     "test:browser:watch": "scripts/test.browser.watch",
-    "test:browser:server": "scripts/test.browser.server"
+    "test:browser:server": "scripts/test.browser.server",
     "test:karma": "scripts/test.karma",
     "test:karma:watch": "scripts/test.karma.watch",
-    "test:travis": "scripts/test.travis",
+    "test:travis": "scripts/test.travis"
   },
   "repository": {
     "type": "git",
