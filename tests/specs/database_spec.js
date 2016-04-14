@@ -176,6 +176,7 @@ export const databaseSpec = () => {
 
     db.store.user.forEach((user, index) => {
       user.firstName = (index % 2) ? 'Hector' : 'Oskar';
+      user.save();
     });
 
     assert.equal(_.filter(db.store.user, {firstName: 'Hector'}).length, 10,
