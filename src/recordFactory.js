@@ -1,10 +1,14 @@
-const updateRecord = (collectionName, record, database) => {
-  const originalRecord = database.find(collectionName, {id: record.id});
+import _ from 'lodash';
+
+const updateRecord = (record, collectionName, store) => {
+  const originalRecord = _.find(store[collectionName], {id: record.id});
   return Object.assign(originalRecord, record);
 };
 
-export const recordFactory = (record, collectionName, database) => {
-  record.save = () => updateRecord(collectionName, record, database);
+export const recordFactory = (record, collectionName, store) => {
+  record.save = function() {
+    return updateRecord(this, collectionName, store);
+  };
 
   return record;
 };

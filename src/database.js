@@ -2,9 +2,9 @@ import faker from 'faker';
 import _ from 'lodash';
 import { recordFactory } from './recordFactory';
 
-const pushToStore = (collectionName, records, database) => {
-  database.store[collectionName] = records.map(record =>
-    recordFactory(record, collectionName, database));
+const pushToStore = (collectionName, records, store) => {
+  store[collectionName] = records.map(record =>
+    recordFactory(record, collectionName, store));
 };
 
 export class Database {
@@ -14,7 +14,7 @@ export class Database {
 
   all(collectionName) {
     this.checkFactoryPresence(collectionName);
-    return this.store[collectionName];
+    return _.cloneDeep(this.store[collectionName]);
   }
 
   checkFactoryPresence(name) {
@@ -35,7 +35,7 @@ export class Database {
       records.push(this.decorateRecord(collectionName, record));
     }
 
-    pushToStore(collectionName, records, this);
+    pushToStore(collectionName, records, this.store);
   }
 
   decorateRecord(collectionName, record) {
@@ -66,7 +66,7 @@ export class Database {
 
     records.push(...content);
 
-    pushToStore(collectionName, records, this);
+    pushToStore(collectionName, records, this.store);
   }
 
   register(collectionName, factory) {
@@ -93,3 +93,4 @@ export class Database {
     return id;
   }
 }
+
