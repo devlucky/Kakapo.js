@@ -5,7 +5,7 @@ import parseUrl from 'parse-url';
 export const interceptor = (serverRoutes, fakeService) => {
   const getRoute = (handlers, pathname) => {
     const matchesPathname = path => pathMatch()(path)(pathname);
-    const route = Object.keys(handlers).find(matchesPathname);
+    const route = _.keys(handlers).find(matchesPathname);
 
     return route || undefined;
   };

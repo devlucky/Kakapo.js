@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 const updateRecord = (record, collectionName, store) => {
   const originalRecord = _.find(store[collectionName], {id: record.id});
-  return Object.assign(originalRecord, record);
+  return _.assign(originalRecord, record);
 };
 
 export const recordFactory = (record, collectionName, store) => {

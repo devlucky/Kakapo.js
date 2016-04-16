@@ -40,7 +40,7 @@ export class Database {
 
   decorateRecord(collectionName, record) {
     this.checkFactoryPresence(collectionName);
-    return Object.assign({}, record, {id: this.uuid(collectionName)});
+    return _.assign({}, record, {id: this.uuid(collectionName)});
   }
 
   factoryFor(collectionName) {
