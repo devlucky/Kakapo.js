@@ -14,8 +14,8 @@ const fakeResponse = function(response = {}, headers = {}) {
   return new window.Response(responseStr, {headers});
 };
 
-export const fakeService = serverRoutes =>
-  interceptor(serverRoutes, (helpers, url, options = {}) => {
+export const fakeService = (routes, host) =>
+  interceptor({routes, host}, (helpers, url, options = {}) => {
     const body = options.body || '';
     const method = options.method || 'GET';
     const headers = options.headers || {};
