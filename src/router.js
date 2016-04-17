@@ -8,7 +8,7 @@ const defaultConfig = {
 export class Router {
   //TODO: Support 'config.host'
   constructor(config) {
-    this.config = _.assign(defaultConfig, config);
+    this.config = _.assign({}, defaultConfig, config);
     this.routes = {GET: {}, POST: {}, PUT: {}, DELETE: {}};
     this.intercept(this.config.strategies);
   }
