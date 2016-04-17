@@ -22,5 +22,5 @@ script:
 after_success:
   - npm run codecov
 notifications:
-  slack: ghemoji:xtNp4azoF37EKUTqDHKHJpbR
+  slack: devlucky:ZlrFWfC8hwIF2U4HXDAKqdwr
   email: false
