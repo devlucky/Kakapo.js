@@ -14,8 +14,8 @@ function init() {
   tapeDom.installCSS();
   tapeDom.stream(tape);
 
-  databaseSpec();
-  // routerSpec();
+  // databaseSpec();
+  routerSpec();
   // responseSpec();
   // requestSpec();
 }

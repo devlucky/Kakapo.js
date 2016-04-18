@@ -3,11 +3,30 @@ import {Router} from '../../src/kakapo';
 
 export const routerSpec = () => {
   test('Router#config', assert => {
+    assert.plan(7);
+
     const router = new Router({
-      host: 'custom'
+      host: 'https://api.github.com'
     });
 
-    assert.end();
+    router.get('/comments', request => {
+      assert.comment('router GET /comments');
+      assert.equal(typeof request, 'object', 'Request is present.');
+    });
+
+    fetch('https://api.github.com/comments').then(response => {
+      assert.comment('fetch GET custom/comments');
+      assert.ok(true, 'Handler is fired by fake function.');
+      assert.ok(response instanceof Response, 'Response instance is returned');
+      assert.ok(response.ok, 'Route found, since it exists.');
+    });
+
+    fetch('/comments').then(response => {
+      assert.comment('fetch GET /comments');
+      assert.ok(true, 'Handler is fired by native function.');
+      assert.ok(response instanceof Response, 'Response instance is returned');
+      assert.notOk(response.ok, 'Route not found, since it doesn\'t exist.');
+    });
   });
 
   test('Router#get', assert => {
