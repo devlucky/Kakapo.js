@@ -26,18 +26,12 @@ export class Database {
     this.checkFactoryPresence(collectionName);
 
     const factory = this.factoryFor(collectionName);
-    const serializer = this.serializerFor(collectionName);
     const records = this.store[collectionName] || [];
 
     while (size--) {
       const record = _.mapValues(factory(faker), field =>
         _.isFunction(field) ? field() : field);
-      //TODO: Apply Serializer if is present after the decoration
-      records.push(
-        serializer(
-          this.decorateRecord(collectionName, record)
-        )
-      );
+      records.push(this.decorateRecord(collectionName, record));
     }
 
     pushToStore(collectionName, records, this);
@@ -61,12 +55,18 @@ export class Database {
 
   filter(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-    return _.filter(this.all(collectionName), conditions);
+    return this.serialize(
+      _.filter(this.all(collectionName), conditions),
+      collectionName
+    );
   }
 
   find(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-    return _.find(this.all(collectionName), conditions);
+    return this.serialize(
+      _.find(this.all(collectionName), conditions),
+      collectionName
+    )[0];
   }
 
   push(collectionName, record) {
@@ -84,6 +84,14 @@ export class Database {
   register(collectionName, factory, serializer) {
     this.factories[collectionName] = {factory, serializer};
     this.store[collectionName] = [];
+  }
+
+  serialize(record, collectionName) {
+    const serializer = this.serializerFor(collectionName);
+    const records = Array.isArray(record) ? record : [record];
+    if (!serializer) return records;
+    
+    return records.map(r => serializer(r, collectionName));
   }
 
   reset() {

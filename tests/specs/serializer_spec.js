@@ -24,20 +24,27 @@ export const serializerSpec = () => {
         age: 24
       };
     }, JSONApiSerializer);
-    db.create('user', 1);
+    db.create('user', 2);
 
     db.register('comment', (faker) => {
       return {
-        firstName: faker.name.firstName,
-        lastName: 'Zarco',
-        age: 24
+        text: 'comment text',
+        date: '01.01.2016'
       };
     });
     db.create('comment', 1);
 
     const comment = db.find('comment', {id: 0});
+    const user = db.find('user', {id: 0});
+    const users = db.filter('user', {firstName: 'Hector'});
+    const allUsers = db.all('user');
 
-    // debugger
+    assert.equal(comment.text, 'comment text', 'Finds a record without serializer');
+    assert.equal(user.data.attributes.firstName, 'Hector', 'Find JSONApi attributes');
+    assert.equal(user.data.id, 0, 'Find JSONApi attributes');
+    assert.equal(users[1].data.attributes.lastName, 'Zarco', 'Find JSONApi id');
+    assert.equal(users[1].data.id, 1, 'Find JSONApi id');
+    assert.equal(allUsers[0].data.id, 0, 'Serializer works fine with "all" method');
 
     assert.end();
   });

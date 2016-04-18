@@ -1,17 +1,22 @@
-//TODO: Makes sense to suport 'included'? If yes it must happen after relationships
-export const JSONApiSerializer = (record = {}) => {
+//TODO: Implement 'included' support after relationships
+export const JSONApiSerializer = (record = {}, type = null) => {
+  const id = record.id;
   const relationships = {};
+  const included = [];
 
-  Object.keys(record).forEach({
+  delete record.id;
+
+  Object.keys(record).forEach(() => {
 
   });
 
   return {
     data: {
-      id: null,
+      id,
       attributes: record,
-      relationships: relationships,
-      type: 'user'
-    }
+      relationships,
+      type
+    },
+    included
   };
 };
