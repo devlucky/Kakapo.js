@@ -9,7 +9,7 @@ export const interceptor = ({routes, host}, fakeService) => {
     const route = _.keys(handlers).find(matchesPathname);
     const hasHost = _.includes(fullpath, host);
 
-    return route && hasHost ? route : undefined;
+    return route && hasHost ? route : null;
   };
 
   const extractUrl = (url, method) => ({
@@ -22,7 +22,7 @@ export const interceptor = ({routes, host}, fakeService) => {
     const extractedUrl = extractUrl(url, method);
     const route = getRoute(extractedUrl);
 
-    return route ? extractedUrl.handlers[route] : undefined;
+    return route ? extractedUrl.handlers[route] : null;
   };
 
   const getParams = (url, method) => {
@@ -30,7 +30,7 @@ export const interceptor = ({routes, host}, fakeService) => {
     const matchesPathname = path => pathMatch()(path)(extractedUrl.pathname);
     const route = getRoute(extractedUrl);
 
-    return route ? matchesPathname(route) : undefined;
+    return route ? matchesPathname(route) : null;
   };
 
   return fakeService.bind(null, {getHandler, getParams});

@@ -6,7 +6,7 @@ export const routerSpec = () => {
     assert.plan(7);
 
     const router = new Router({
-      host: 'custom'
+      host: 'https://api.github.com'
     });
 
     router.get('/comments', request => {
@@ -14,7 +14,7 @@ export const routerSpec = () => {
       assert.equal(typeof request, 'object', 'Request is present.');
     });
 
-    fetch('custom/comments').then(response => {
+    fetch('https://api.github.com/comments').then(response => {
       assert.comment('fetch GET custom/comments');
       assert.ok(true, 'Handler is fired by fake function.');
       assert.ok(response instanceof Response, 'Response instance is returned');
