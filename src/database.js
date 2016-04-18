@@ -2,9 +2,9 @@ import faker from 'faker';
 import _ from 'lodash';
 import { recordFactory } from './recordFactory';
 
-const pushToStore = (collectionName, records, database) => {
-  database.store[collectionName] = records.map(record =>
-    recordFactory(record, collectionName, database));
+const pushToStore = (collectionName, records, store) => {
+  store[collectionName] = records.map(record =>
+    recordFactory(record, collectionName, store));
 };
 
 export class Database {
@@ -12,8 +12,12 @@ export class Database {
     this.setInitialState();
   }
 
-  all(collectionName) {
-    return this.store[collectionName];
+  all(collectionName, raw = false) {
+    this.checkFactoryPresence(collectionName);
+    const records = _.cloneDeep(this.store[collectionName]);
+    if (raw) return records;
+
+    return this.serialize(records, collectionName)
   }
 
   checkFactoryPresence(name) {
@@ -34,11 +38,12 @@ export class Database {
       records.push(this.decorateRecord(collectionName, record));
     }
 
-    pushToStore(collectionName, records, this);
+    pushToStore(collectionName, records, this.store);
   }
 
   decorateRecord(collectionName, record) {
-    return Object.assign({}, record, {id: this.uuid(collectionName)});
+    this.checkFactoryPresence(collectionName);
+    return _.assign({}, record, {id: this.uuid(collectionName)});
   }
 
   factoryFor(collectionName) {
@@ -56,7 +61,7 @@ export class Database {
   filter(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
     return this.serialize(
-      _.filter(this.all(collectionName), conditions),
+      _.filter(this.all(collectionName, true), conditions),
       collectionName
     );
   }
@@ -64,7 +69,7 @@ export class Database {
   find(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
     return this.serialize(
-      _.find(this.all(collectionName), conditions),
+      _.find(this.all(collectionName, true), conditions),
       collectionName
     )[0];
   }
@@ -78,7 +83,7 @@ export class Database {
 
     records.push(...content);
 
-    pushToStore(collectionName, records, this);
+    pushToStore(collectionName, records, this.store);
   }
 
   register(collectionName, factory, serializer) {
@@ -90,7 +95,7 @@ export class Database {
     const serializer = this.serializerFor(collectionName);
     const records = Array.isArray(record) ? record : [record];
     if (!serializer) return records;
-    
+
     return records.map(r => serializer(r, collectionName));
   }
 
@@ -105,10 +110,12 @@ export class Database {
   }
 
   uuid(collectionName) {
-    const id = this._uuids[collectionName] || 0;
+    this.checkFactoryPresence(collectionName);
 
+    const id = this._uuids[collectionName] || 0;
     this._uuids[collectionName] = id + 1;
 
     return id;
   }
 }
+

@@ -1,4 +1,8 @@
-# Kakapo.js ![](http://a.deviantart.net/avatars/k/a/kakapoplz.gif?1) [![Build Status](https://travis-ci.org/devlucky/Kakapo.js.svg?branch=master)](https://travis-ci.org/devlucky/Kakapo.js) [![codecov.io](https://codecov.io/github/devlucky/Kakapo.js/coverage.svg?branch=master)](https://codecov.io/github/devlucky/Kakapo.js?branch=master) [![](https://david-dm.org/devlucky/Kakapo.js.svg)](https://david-dm.org/devlucky/Kakapo.js) ![npm license](https://img.shields.io/npm/l/awesome-badges.svg)
+# Kakapo.js ![partyparrot](http://cultofthepartyparrot.com/sirocco.gif)
+[![Build Status](https://travis-ci.org/devlucky/Kakapo.js.svg?branch=master)](https://travis-ci.org/devlucky/Kakapo.js)
+[![codecov.io](https://codecov.io/github/devlucky/Kakapo.js/coverage.svg?branch=master)](https://codecov.io/github/devlucky/Kakapo.js?branch=master)
+[![dependencies](https://david-dm.org/devlucky/Kakapo.js.svg)](https://david-dm.org/devlucky/Kakapo.js)
+[![npm license](https://img.shields.io/npm/l/awesome-badges.svg)](https://tldrlegal.com/license/mit-license)
 
 > Next generation mocking library in Javascript
 

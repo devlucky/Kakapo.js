@@ -1,33 +1,36 @@
+import _ from 'lodash';
 import queryString from 'query-string';
 import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
 
-export const interceptor = (serverRoutes, fakeService) => {
-  const getRoute = (handlers, pathname) => {
+export const interceptor = ({routes, host}, fakeService) => {
+  const getRoute = ({handlers, pathname, fullpath}) => {
     const matchesPathname = path => pathMatch()(path)(pathname);
-    const route = Object.keys(handlers).find(matchesPathname);
+    const route = _.keys(handlers).find(matchesPathname);
+    const hasHost = _.includes(fullpath, host);
 
-    return route || undefined;
+    return route && hasHost ? route : null;
   };
 
   const extractUrl = (url, method) => ({
-    handlers: serverRoutes[method],
-    pathname: parseUrl(url).pathname
+    handlers: routes[method],
+    pathname: parseUrl(url).pathname,
+    fullpath: parseUrl(url).href
   });
 
   const getHandler = (url, method) => {
-    const { handlers, pathname } = extractUrl(url, method);
-    const route = getRoute(handlers, pathname);
+    const extractedUrl = extractUrl(url, method);
+    const route = getRoute(extractedUrl);
 
-    return route ? handlers[route] : undefined;
+    return route ? extractedUrl.handlers[route] : null;
   };
 
   const getParams = (url, method) => {
-    const {handlers, pathname} = extractUrl(url, method);
-    const matchesPathname = path => pathMatch()(path)(pathname);
-    const route = getRoute(handlers, pathname);
+    const extractedUrl = extractUrl(url, method);
+    const matchesPathname = path => pathMatch()(path)(extractedUrl.pathname);
+    const route = getRoute(extractedUrl);
 
-    return route ? matchesPathname(route) : undefined;
+    return route ? matchesPathname(route) : null;
   };
 
   return fakeService.bind(null, {getHandler, getParams});
