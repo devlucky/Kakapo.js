@@ -7,8 +7,8 @@ import { interceptor } from './interceptor';
 export const name = 'XMLHttpRequest';
 export const reference = window.XMLHttpRequest;
 
-export const fakeService = (routes, host) =>
-  interceptor({routes, host}, class fakeXMLHttpRequest {
+export const fakeService = config =>
+  interceptor(config, class fakeXMLHttpRequest {
     constructor(helpers) {
       this.xhr = new reference();
       this.getHandler = helpers.getHandler;

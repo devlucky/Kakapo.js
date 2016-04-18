@@ -14,8 +14,8 @@ const fakeResponse = function(response = {}, headers = {}) {
   return new window.Response(responseStr, {headers});
 };
 
-export const fakeService = (routes, host) =>
-  interceptor({routes, host}, (helpers, url, options = {}) => {
+export const fakeService = config =>
+  interceptor(config, (helpers, url, options = {}) => {
     const body = options.body || '';
     const method = options.method || 'GET';
     const headers = options.headers || {};
@@ -31,9 +31,11 @@ export const fakeService = (routes, host) =>
     const response = handler({params, query, body, headers});
 
     if (!(response instanceof KakapoResponse)) {
-      return Promise.resolve(fakeResponse(response));
+      return new Promise((resolve, reject) => setTimeout(() =>
+        resolve(fakeResponse(response)), config.requestDelay));
     }
 
     const result = fakeResponse(response.body, response.headers);
-    return response.error ? Promise.reject(result) : Promise.resolve(result);
+    return new Promise((resolve, reject) => setTimeout(() =>
+        response.error ? reject(result) : resolve(result), config.requestDelay));
   });

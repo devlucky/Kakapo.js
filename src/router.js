@@ -1,16 +1,22 @@
 import _ from 'lodash';
 import { interceptors } from './interceptors';
 
-const defaultConfig = {
-  host: '',
+const routerDefaultConfig = {
   strategies: ['fetch', 'XMLHttpRequest']
 };
 
+const interceptorDefaultConfig = {
+  host: '',
+  requestDelay: 0,
+  routes: {GET: {}, POST: {}, PUT: {}, DELETE: {}}
+};
+
 export class Router {
-  constructor(config) {
-    this.config = _.assign({}, defaultConfig, config);
-    this.routes = {GET: {}, POST: {}, PUT: {}, DELETE: {}};
-    this.intercept(this.config.strategies);
+  constructor(interceptorConfig, routerConfig) {
+    this.interceptorConfig = _.assign({}, interceptorDefaultConfig, interceptorConfig);
+    this.routerConfig = _.assign({}, routerDefaultConfig, routerConfig);
+
+    this.intercept();
   }
 
   get(...args) {
@@ -30,14 +36,12 @@ export class Router {
   }
 
   register(method, path, handler) {
-    this.routes[method][path] = handler;
+    this.interceptorConfig.routes[method][path] = handler;
   }
 
-  intercept(strategies) {
-    const routes = this.routes;
-    const host = this.config.host;
-
-    _.forEach(strategies, name => interceptors[name].enable(routes, host));
+  intercept() {
+    const strategies = this.routerConfig.strategies;
+    _.forEach(strategies, name => interceptors[name].enable(this.interceptorConfig));
   }
 
   reset() {
