@@ -49,7 +49,7 @@ export class Database {
   factoryFor(collectionName) {
     const factory = this.factories[collectionName];
 
-    return factory ? factory.factory : null;
+    return factory ? factory.factory : undefined;
   }
 
   serializerFor(collectionName) {
