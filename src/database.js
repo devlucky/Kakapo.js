@@ -12,9 +12,12 @@ export class Database {
     this.setInitialState();
   }
 
-  all(collectionName) {
+  all(collectionName, raw = false) {
     this.checkFactoryPresence(collectionName);
-    return _.cloneDeep(this.store[collectionName]);
+    const records = _.cloneDeep(this.store[collectionName]);
+    if (raw) {return records;}
+
+    return this.serialize(records, collectionName)
   }
 
   checkFactoryPresence(name) {
@@ -26,7 +29,7 @@ export class Database {
   create(collectionName, size) {
     this.checkFactoryPresence(collectionName);
 
-    const factory = this.factories[collectionName];
+    const factory = this.factoryFor(collectionName);
     const records = this.store[collectionName] || [];
 
     while (size--) {
@@ -44,17 +47,25 @@ export class Database {
   }
 
   factoryFor(collectionName) {
-    return this.factories[collectionName];
+    const factory = this.factories[collectionName];
+
+    return factory ? factory.factory : undefined;
   }
 
   filter(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-    return _.filter(this.all(collectionName), conditions);
+    return this.serialize(
+      _.filter(this.all(collectionName, true), conditions),
+      collectionName
+    );
   }
 
   find(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-    return _.find(this.all(collectionName), conditions);
+    return this.serialize(
+      _.find(this.all(collectionName, true), conditions),
+      collectionName
+    )[0];
   }
 
   push(collectionName, record) {
@@ -69,9 +80,23 @@ export class Database {
     pushToStore(collectionName, records, this.store);
   }
 
-  register(collectionName, factory) {
-    this.factories[collectionName] = factory;
+  register(collectionName, factory, serializer) {
+    this.factories[collectionName] = {factory, serializer};
     this.store[collectionName] = [];
+  }
+
+  serialize(record, collectionName) {
+    const serializer = this.serializerFor(collectionName);
+    const records = _.castArray(record);
+    if (!serializer) {return records;}
+
+    return records.map(r => serializer(r, collectionName));
+  }
+
+  serializerFor(collectionName) {
+    const factory = this.factories[collectionName];
+
+    return factory ? factory.serializer : undefined; 
   }
 
   reset() {
