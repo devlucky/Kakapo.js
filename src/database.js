@@ -15,7 +15,7 @@ export class Database {
   all(collectionName, raw = false) {
     this.checkFactoryPresence(collectionName);
     const records = _.cloneDeep(this.store[collectionName]);
-    if (raw) return records;
+    if (raw) {return records;}
 
     return this.serialize(records, collectionName)
   }
@@ -50,12 +50,6 @@ export class Database {
     const factory = this.factories[collectionName];
 
     return factory ? factory.factory : undefined;
-  }
-
-  serializerFor(collectionName) {
-    const factory = this.factories[collectionName];
-
-    return factory ? factory.serializer : () => {}; 
   }
 
   filter(collectionName, conditions) {
@@ -93,10 +87,16 @@ export class Database {
 
   serialize(record, collectionName) {
     const serializer = this.serializerFor(collectionName);
-    const records = Array.isArray(record) ? record : [record];
-    if (!serializer) return records;
+    const records = _.castArray(record);
+    if (!serializer) {return records;}
 
     return records.map(r => serializer(r, collectionName));
+  }
+
+  serializerFor(collectionName) {
+    const factory = this.factories[collectionName];
+
+    return factory ? factory.serializer : undefined; 
   }
 
   reset() {

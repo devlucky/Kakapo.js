@@ -6,10 +6,6 @@ export const JSONApiSerializer = (record = {}, type = null) => {
 
   delete record.id;
 
-  Object.keys(record).forEach(() => {
-
-  });
-
   return {
     data: {
       id,
