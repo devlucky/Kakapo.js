@@ -242,7 +242,7 @@ export const routerSpec = () => {
 
   test('Router#strategies', assert => {
     const strategies = ['fetch'];
-    const router = new Router({strategies});
+    const router = new Router({}, { strategies });
 
     assert.end();
   });

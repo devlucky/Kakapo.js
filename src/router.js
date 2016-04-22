@@ -13,8 +13,8 @@ const interceptorDefaultConfig = {
 
 export class Router {
   constructor(interceptorConfig, routerConfig) {
-    this.interceptorConfig = _.assign({}, interceptorDefaultConfig, interceptorConfig);
-    this.routerConfig = _.assign({}, routerDefaultConfig, routerConfig);
+    this.interceptorConfig = _.merge({}, interceptorDefaultConfig, interceptorConfig);
+    this.routerConfig = _.merge({}, routerDefaultConfig, routerConfig);
 
     this.intercept();
   }
@@ -41,7 +41,8 @@ export class Router {
 
   intercept() {
     const strategies = this.routerConfig.strategies;
-    _.forEach(strategies, name => interceptors[name].enable(this.interceptorConfig));
+    _.forEach(strategies, name =>
+      interceptors[name].enable(this.interceptorConfig));
   }
 
   reset() {

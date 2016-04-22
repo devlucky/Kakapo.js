@@ -37,5 +37,5 @@ export const fakeService = config =>
 
     const result = fakeResponse(response.body, response.headers);
     return new Promise((resolve, reject) => setTimeout(() =>
-        response.error ? reject(result) : resolve(result), config.requestDelay));
+      response.error ? reject(result) : resolve(result), config.requestDelay));
   });

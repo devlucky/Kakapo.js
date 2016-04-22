@@ -16,6 +16,6 @@ function init() {
 
   // databaseSpec();
   routerSpec();
-  // responseSpec();
+  responseSpec();
   // requestSpec();
 }
