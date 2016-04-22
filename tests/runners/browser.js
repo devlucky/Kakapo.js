@@ -3,7 +3,8 @@ import {
   databaseSpec,
   routerSpec,
   responseSpec,
-  requestSpec
+  requestSpec,
+  serializerSpec
 } from '../specs';
 
 document.addEventListener('DOMContentLoaded', init);
@@ -14,8 +15,8 @@ function init() {
   tapeDom.installCSS();
   tapeDom.stream(tape);
 
+  serializerSpec();
   // databaseSpec();
   routerSpec();
   responseSpec();
-  // requestSpec();
 }
