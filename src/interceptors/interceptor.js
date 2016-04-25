@@ -3,8 +3,8 @@ import queryString from 'query-string';
 import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
 
-export const interceptor = ({routes, host}, fakeService) => {
-  const getRoute = ({handlers, pathname, fullpath}) => {
+export const interceptor = ({ routes, host }, fakeService) => {
+  const getRoute = ({ handlers, pathname, fullpath }) => {
     const matchesPathname = path => pathMatch()(path)(pathname);
     const route = _.keys(handlers).find(matchesPathname);
     const hasHost = _.includes(fullpath, host);

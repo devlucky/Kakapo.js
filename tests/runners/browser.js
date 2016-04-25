@@ -17,7 +17,6 @@ function init() {
 
   serializerSpec();
   // databaseSpec();
-  // routerSpec();
-  // responseSpec();
-  // requestSpec();
+  routerSpec();
+  responseSpec();
 }
