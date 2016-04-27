@@ -15,8 +15,8 @@ function init() {
   tapeDom.installCSS();
   tapeDom.stream(tape);
 
-  serializerSpec();
-  // databaseSpec();
-  routerSpec();
-  responseSpec();
+  // serializerSpec();
+  databaseSpec();
+  // routerSpec();
+  // responseSpec();
 }
