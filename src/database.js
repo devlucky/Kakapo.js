@@ -1,6 +1,7 @@
 import faker from 'faker';
 import _ from 'lodash';
 import { recordFactory } from './recordFactory';
+import { lastItem, randomIndex, randomItem } from './util';
 
 const pushToStore = (collectionName, records, store) => {
   store[collectionName] = records.map(record =>
@@ -25,6 +26,24 @@ export class Database {
     if (raw) {return records;}
 
     return this.serialize(records, collectionName)
+  }
+
+  belongsTo(collectionName, predicate) {
+    return () => {
+      if (predicate) {
+        return this.find(collectionName, predicate);
+      }
+
+      return this.randomRecord(collectionName);
+    };
+  }
+
+  hasMany(collectionName, limit) {
+    return () => {
+      limit = limit || randomIndex(this.all(collectionName));
+
+      return this.randomRecords(collectionName, limit);
+    };
   }
 
   checkFactoryPresence(name) {
@@ -76,6 +95,14 @@ export class Database {
     )[0];
   }
 
+  first(collectionName) {
+    return this.all(collectionName)[0];
+  }
+
+  last(collectionName) {
+    return lastItem(this.all(collectionName));
+  }
+
   push(collectionName, record) {
     this.checkFactoryPresence(collectionName);
 
@@ -107,6 +134,22 @@ export class Database {
     return factory ? factory.serializer : undefined;
   }
 
+  randomRecord(collectionName) {
+    return this.randomRecords(collectionName)[0];
+  }
+
+  randomRecords(collectionName, limit = 1) {
+    const all = this.all(collectionName);
+    const records = [];
+
+    while (limit) {
+      records.push(randomItem(all));
+      limit--;
+    }
+
+    return records;
+  }
+
   reset() {
     this.setInitialState();
   }
@@ -126,4 +169,3 @@ export class Database {
     return id;
   }
 }
-
