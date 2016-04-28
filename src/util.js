@@ -6,6 +6,6 @@ export const randomItem = (arr) => {
   return arr[randomIndex(arr)];
 }
 
-export const last = (arr) => {
+export const lastItem = (arr) => {
   return arr[arr.length - 1];
 }

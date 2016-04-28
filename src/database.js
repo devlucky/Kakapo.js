@@ -1,7 +1,7 @@
 import faker from 'faker';
 import _ from 'lodash';
 import { recordFactory } from './recordFactory';
-import { last, randomIndex, randomItem } from './util';
+import { lastItem, randomIndex, randomItem } from './util';
 
 const pushToStore = (collectionName, records, store) => {
   store[collectionName] = records.map(record =>
@@ -92,7 +92,7 @@ export class Database {
   }
 
   last(collectionName) {
-    return last(this.all(collectionName));
+    return lastItem(this.all(collectionName));
   }
 
   push(collectionName, record) {
