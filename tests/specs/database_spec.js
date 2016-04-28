@@ -5,12 +5,18 @@ import { Database } from '../../src/kakapo';
 const userFactory = faker => ({
   firstName: faker.name.firstName,
   lastName: faker.name.lastName,
+  address: {
+    streetName: faker.address.streetName,
+  },
   avatar: faker.internet.avatar
 });
 
 const commentFactory = faker => ({
   title: 'He-yo',
-  content: faker.lorem.paragraph
+  content: faker.lorem.paragraph,
+  author: {
+    'name': 'Morty'
+  }
 });
 
 export const databaseSpec = () => {
@@ -85,8 +91,12 @@ export const databaseSpec = () => {
 
     assert.ok(_.every(users, user => _.isString(user.firstName)),
       'Assigns valid, generated data for entities.');
+    assert.ok(_.every(users, user => _.isString(user.address.streetName)),
+      'Assigns valid, generated data for nested entities.');
     assert.ok(_.every(comments, comment => _.isString(comment.title)),
       'Assigns valid, static data for entities.');
+    assert.ok(_.every(comments, comment => _.isString(comment.author.name)),
+      'Assigns valid, static data for nested entities.');
 
     assert.end();
   });

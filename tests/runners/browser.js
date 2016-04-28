@@ -19,7 +19,8 @@ function init() {
   relationshipsSpec();
   // serializerSpec();
   // databaseSpec();
+  // serializerSpec();
+  // databaseSpec();
   // routerSpec();
   // responseSpec();
-  // requestSpec();
 }

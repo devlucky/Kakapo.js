@@ -2,11 +2,11 @@ import test from 'tape';
 import {Router} from '../../src/kakapo';
 
 export const routerSpec = () => {
-  test('Router#config', assert => {
+  test('Router # config # host', assert => {
     assert.plan(7);
 
     const router = new Router({
-      host: 'https://api.github.com'
+      host: 'https://api.github.com',
     });
 
     router.get('/comments', request => {
@@ -15,7 +15,7 @@ export const routerSpec = () => {
     });
 
     fetch('https://api.github.com/comments').then(response => {
-      assert.comment('fetch GET custom/comments');
+      assert.comment('fetch GET https://api.github.com/comments');
       assert.ok(true, 'Handler is fired by fake function.');
       assert.ok(response instanceof Response, 'Response instance is returned');
       assert.ok(response.ok, 'Route found, since it exists.');
@@ -26,6 +26,26 @@ export const routerSpec = () => {
       assert.ok(true, 'Handler is fired by native function.');
       assert.ok(response instanceof Response, 'Response instance is returned');
       assert.notOk(response.ok, 'Route not found, since it doesn\'t exist.');
+    });
+  });
+
+  test('Router # config # requestDelay', assert => {
+    assert.plan(4);
+
+    const router = new Router({
+      requestDelay: 3000
+    });
+
+    router.get('/comments', request => {
+      assert.comment('router GET /comments');
+      assert.equal(typeof request, 'object', 'Request is present.');
+    });
+
+    fetch('/comments').then(response => {
+      assert.comment('fetch GET /comments');
+      assert.ok(true, 'Handler is fired by delayed fake function.');
+      assert.ok(response instanceof Response, 'Response instance is returned');
+      assert.ok(response.ok, 'Route found, since it exists.');
     });
   });
 
@@ -222,7 +242,7 @@ export const routerSpec = () => {
 
   test('Router#strategies', assert => {
     const strategies = ['fetch'];
-    const router = new Router({strategies});
+    const router = new Router({}, { strategies });
 
     assert.end();
   });

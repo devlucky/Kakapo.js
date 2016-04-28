@@ -8,6 +8,13 @@ const pushToStore = (collectionName, records, store) => {
     recordFactory(record, collectionName, store));
 };
 
+const deepMap = (obj, fn) => {
+  return _.mapValues(obj, (value, key) => {
+    if (_.isPlainObject(value)) return deepMap(value, fn);
+    return fn(value);
+  });
+}
+
 export class Database {
   constructor() {
     this.setInitialState();
@@ -52,8 +59,9 @@ export class Database {
     const records = this.store[collectionName] || [];
 
     while (size--) {
-      const record = _.mapValues(factory(faker), field =>
+      const record = deepMap(factory(faker), field =>
         _.isFunction(field) ? field() : field);
+
       records.push(this.decorateRecord(collectionName, record));
     }
 
@@ -123,7 +131,7 @@ export class Database {
   serializerFor(collectionName) {
     const factory = this.factories[collectionName];
 
-    return factory ? factory.serializer : undefined; 
+    return factory ? factory.serializer : undefined;
   }
 
   randomRecord(collectionName) {
