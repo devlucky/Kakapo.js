@@ -33,7 +33,7 @@ export const routerSpec = () => {
     assert.plan(4);
 
     const router = new Router({
-      requestDelay: 3000
+      requestDelay: 1000
     });
 
     router.get('/comments', request => {

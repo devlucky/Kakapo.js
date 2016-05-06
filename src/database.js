@@ -29,21 +29,13 @@ export class Database {
   }
 
   belongsTo(collectionName, predicate) {
-    return () => {
-      if (predicate) {
-        return this.find(collectionName, predicate);
-      }
-
-      return this.randomRecord(collectionName);
-    };
+    return () => predicate ?
+      this.find(collectionName, predicate) :
+      this.randomRecord(collectionName);
   }
 
-  hasMany(collectionName, limit) {
-    return () => {
-      limit = limit || randomIndex(this.all(collectionName));
-
-      return this.randomRecords(collectionName, limit);
-    };
+  hasMany(collectionName, limit = randomIndex(this.all(collectionName)) + 1) {
+    return () => this.randomRecords(collectionName, limit);
   }
 
   checkFactoryPresence(name) {
