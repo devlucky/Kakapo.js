@@ -35,11 +35,7 @@ export class Database {
   }
 
   hasMany(collectionName, limit) {
-    return () => {
-      limit = limit || randomIndex(this.all(collectionName));
-
-      return this.randomRecords(collectionName, limit);
-    };
+    return () => this.randomRecords(collectionName, limit);
   }
 
   checkFactoryPresence(name) {
