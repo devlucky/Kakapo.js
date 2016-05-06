@@ -23,7 +23,7 @@ export class Database {
   all(collectionName, raw = false) {
     this.checkFactoryPresence(collectionName);
     const records = _.cloneDeep(this.store[collectionName]);
-    if (raw) { return records; }
+    if (raw) {return records;}
 
     return this.serialize(records, collectionName)
   }
@@ -34,7 +34,7 @@ export class Database {
       this.randomRecord(collectionName);
   }
 
-  hasMany(collectionName, limit) {
+  hasMany(collectionName, limit = randomIndex(this.all(collectionName))) {
     return () => this.randomRecords(collectionName, limit);
   }
 
