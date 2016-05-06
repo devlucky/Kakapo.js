@@ -23,7 +23,7 @@ export class Database {
   all(collectionName, raw = false) {
     this.checkFactoryPresence(collectionName);
     const records = _.cloneDeep(this.store[collectionName]);
-    if (raw) {return records;}
+    if (raw) { return records; }
 
     return this.serialize(records, collectionName)
   }
