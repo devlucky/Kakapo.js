@@ -2,7 +2,7 @@ import queryString from 'query-string';
 import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
 
-import { interceptor } from './interceptor';
+import { baseInterceptor } from './baseInterceptor';
 import {Response as KakapoResponse} from '../kakapo';
 
 export const name = 'fetch';
@@ -15,7 +15,7 @@ const fakeResponse = function(response = {}, headers = {}) {
 };
 
 export const fakeService = config =>
-  interceptor(config, (helpers, url, options = {}) => {
+  baseInterceptor(config, (helpers, url, options = {}) => {
     const body = options.body || '';
     const method = options.method || 'GET';
     const headers = options.headers || {};
