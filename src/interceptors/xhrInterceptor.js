@@ -2,13 +2,13 @@ import queryString from 'query-string';
 import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
 
-import { interceptor } from './interceptor';
+import { baseInterceptor } from './baseInterceptor';
 
 export const name = 'XMLHttpRequest';
 export const reference = window.XMLHttpRequest;
 
 export const fakeService = config =>
-  interceptor(config, class fakeXMLHttpRequest {
+  baseInterceptor(config, class fakeXMLHttpRequest {
     constructor(helpers) {
       this.xhr = new reference();
       this.getHandler = helpers.getHandler;
