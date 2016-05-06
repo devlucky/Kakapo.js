@@ -34,7 +34,7 @@ export class Database {
       this.randomRecord(collectionName);
   }
 
-  hasMany(collectionName, limit = randomIndex(this.all(collectionName))) {
+  hasMany(collectionName, limit = randomIndex(this.all(collectionName)) + 1) {
     return () => this.randomRecords(collectionName, limit);
   }
 
