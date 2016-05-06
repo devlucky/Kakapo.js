@@ -157,12 +157,21 @@ export const databaseSpec = () => {
     db.register('user', userFactory);
     db.create('user', 5);
 
+    db.register('comment', commentFactory);
+    db.create('comment', 10);
+
     const name = db.all('user')[0].firstName;
     const user1 = db.find('user', user => user.id === 2);
     const user2 = db.find('user', {firstName: name});
 
+    const comment = db.find('comment', { author: { name: 'Morty' } });
+    const comments = db.filter('comment', { author: { name: 'Morty' } });
+
     assert.equal(user1.id, 2, 'Finds user with function as condition.');
     assert.equal(user2.firstName, name, 'Finds user with object as condition.');
+
+    assert.equal(comment.author.name, 'Morty', 'Finds with nested conditions.');
+    assert.equal(comments.length, 10, 'Filters with nested conditions.');
 
     assert.doesNotThrow(() => db.find('user'),
       'Doesn\'t throw error when collection is present.');
