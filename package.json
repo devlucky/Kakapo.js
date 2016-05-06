@@ -51,7 +51,10 @@
     "webpack-dev-server": "~1.6.5"
   },
   "dependencies": {
+    "babelify": "7.3.0",
+    "browserify": "13.0.0",
     "faker": "^3.1.0",
+    "ghooks": "1.2.1",
     "lodash": "4.10.0",
     "parse-url": "1.3.0",
     "path-match": "1.2.4",
