@@ -1,5 +1,5 @@
 import test from 'tape';
-import { Database } from '../../src/kakapo';
+import { Database } from '../../src';
 
 export const relationshipsSpec = () => {
   test('Relationships # belongsTo', assert => {

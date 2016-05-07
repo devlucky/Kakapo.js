@@ -7,14 +7,14 @@
  *   ...
  * });
  *
- * It's an important part of Kakapo since contains useful information for 
+ * It's an important part of Kakapo since contains useful information for
  * the user in the moment of returning the fake data from the handler.
- * 
+ *
  * So, even if the behaviour is implicity/explicity tested in other specs,
  * this one must cover all the cases.
  */
 import tapeTest from 'tape';
-import {Router} from '../../src/kakapo';
+import {Router} from '../../src';
 
 let router;
 
@@ -35,7 +35,7 @@ export const requestSpec = () => {
   test('Request#headers', assert => {
     assert.plan(2);
     router = new Router();
-  
+
     router.post('/users', (request) => {
       assert.ok(request.headers.get('custom-request-header-1') === 'one', 'Receive the first header');
       assert.ok(request.headers.get('custom-request-header-2') === 'two', 'Receive the second header');

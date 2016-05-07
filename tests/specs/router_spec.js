@@ -1,5 +1,5 @@
 import test from 'tape';
-import {Router} from '../../src/kakapo';
+import {Router} from '../../src';
 
 export const routerSpec = () => {
   test('Router # config # host', assert => {

@@ -1,7 +1,7 @@
 import faker from 'faker';
 import _ from 'lodash';
 import { recordFactory } from './recordFactory';
-import { lastItem, randomIndex, randomItem } from './util';
+import { lastItem, randomIndex, randomItem } from '../helpers/util';
 
 const pushToStore = (collectionName, records, store) => {
   store[collectionName] = records.map(record =>
