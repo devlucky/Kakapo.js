@@ -1,5 +1,5 @@
 import test from 'tape';
-import {Router, Response} from '../../src/kakapo';
+import {Router, Response} from '../../src';
 
 export const responseSpec = () => {
   test('Response#body', assert => {

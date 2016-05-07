@@ -1,9 +1,9 @@
 import tapeTest from 'tape';
-import {Database} from '../../src/database';
+import {Database} from '../../src';
 import {JSONApiSerializer} from '../../src/serializers';
 
 function before() {
-  
+
 };
 
 function test(title, cb) {

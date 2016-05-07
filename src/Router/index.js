@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { interceptors } from './interceptors';
+import { interceptors } from '../interceptors';
 
 const routerDefaultConfig = {
   strategies: ['fetch', 'XMLHttpRequest']

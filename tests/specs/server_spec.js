@@ -1,5 +1,5 @@
 import tapeTest from 'tape';
-import {Database, Router, Server} from '../../src/kakapo';
+import {Database, Router, Server} from '../../src';
 
 function before() {
 
