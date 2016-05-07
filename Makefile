@@ -31,7 +31,7 @@ test-travis:
 	$(KARMA) start $(KARMA_CONF_TRAVIS) --single-run
 
 semantic-release:
-	$(SEMANTIC_RELEASE) pre && $(SEMANTIC_RELEASE) post
+	$(SEMANTIC_RELEASE) pre && npm publish && $(SEMANTIC_RELEASE) post
 
 #=== Targets to be used only internally. ===#
 _test-browser--serve:
