@@ -1,20 +1,18 @@
 module.exports = {
-  entry: './src/kakapo.js',
+  entry: './src',
   output: {
-    publicPath: 'http://localhost:8090/assets',
-    path: './dist',
+    path: './lib',
     filename: 'kakapo.js',
-    libraryTarget: 'umd',
-    library: 'Kakapo'
+    publicPath: '/'
   },
   module: {
-    loaders: [{
-      test: /\.js$/,
-      exclude: /(node_modules|bower_components)/,
-      loader: 'babel'
-    }]
-  },
-  resolve: {
-    extensions: ['', '.js']
+    loaders: [
+      {
+        test: /\.js$/,
+        loader: 'babel',
+        include: __dirname,
+        exclude: /node_modules/
+      }
+    ]
   }
 };
