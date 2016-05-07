@@ -73,6 +73,7 @@ export class Database {
 
   find(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
+
     return this.serialize(
       _.filter(this.all(collectionName, true), conditions),
       collectionName
