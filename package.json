@@ -8,6 +8,7 @@
     "test": "make test",
     "test:browser": "make test-browser",
     "test:karma": "make test-karma",
+    "test:karma:watch": "make test-karma-watch",
     "test:travis": "make test-travis"
   },
   "repository": {
