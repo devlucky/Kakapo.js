@@ -129,26 +129,6 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # filter', (assert) => {
-    const db = new Database();
-
-    db.register('user', userFactory);
-    db.create('user', 5);
-
-    const users1 = db.filter('user', user => user.id > 2);
-    const users2 = db.filter('user', { id: 2 });
-
-    assert.equal(users1.length, 2, 'Filters users with function as condition.');
-    assert.equal(users2.length, 1, 'Filters users with object as condition.');
-
-    assert.doesNotThrow(() => db.filter('user'),
-      'Doesn\'t throw error when collection is present.');
-    assert.throws(() => db.filter('game'),
-      'Throws error when collection is not present.');
-
-    assert.end();
-  });
-
   test('DB # find', (assert) => {
     const db = new Database();
 
@@ -158,22 +138,45 @@ export const databaseSpec = () => {
     db.register('comment', commentFactory);
     db.create('comment', 10);
 
-    const name = db.all('user')[0].firstName;
-    const user1 = db.find('user', user => user.id === 2);
-    const user2 = db.find('user', { firstName: name });
+    const users1 = db.find('user', user => user.id > 2);
+    const users2 = db.find('user', { id: 2 });
+    const comments = db.find('comment', { author: { name: 'Morty' } });
 
-    const comment = db.find('comment', { author: { name: 'Morty' } });
-    const comments = db.filter('comment', { author: { name: 'Morty' } });
+    assert.equal(users1.length, 2, 'Finds users with function as condition.');
+    assert.equal(users2.length, 1, 'Finds users with object as condition.');
+    assert.equal(comments.length, 10, 'Finds with nested conditions.');
+
+    assert.doesNotThrow(() => db.find('user'),
+      'Doesn\'t throw error when collection is present.');
+    assert.throws(() => db.find('game'),
+      'Throws error when collection is not present.');
+
+    assert.end();
+  });
+
+  test('DB # findOne', (assert) => {
+    const db = new Database();
+
+    db.register('user', userFactory);
+    db.create('user', 5);
+
+    db.register('comment', commentFactory);
+    db.create('comment', 10);
+
+    const name = db.all('user')[0].firstName;
+    const user1 = db.findOne('user', user => user.id === 2);
+    const user2 = db.findOne('user', { firstName: name });
+
+    const comment = db.findOne('comment', { author: { name: 'Morty' } });
 
     assert.equal(user1.id, 2, 'Finds user with function as condition.');
     assert.equal(user2.firstName, name, 'Finds user with object as condition.');
 
     assert.equal(comment.author.name, 'Morty', 'Finds with nested conditions.');
-    assert.equal(comments.length, 10, 'Filters with nested conditions.');
 
-    assert.doesNotThrow(() => db.find('user'),
+    assert.doesNotThrow(() => db.findOne('user'),
       'Doesn\'t throw error when collection is present.');
-    assert.throws(() => db.find('game'),
+    assert.throws(() => db.findOne('game'),
       'Throws error when collection is not present.');
 
     assert.end();

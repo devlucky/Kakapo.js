@@ -20,9 +20,9 @@ export const serializerSpec = () => {
     db.create('user', 2);
     db.create('comment', 1);
 
-    const user = db.find('user', { id: 0 });
-    const users = db.filter('user', { firstName: 'Hector' });
-    const comment = db.find('comment', { id: 0 });
+    const user = db.findOne('user', { id: 0 });
+    const users = db.find('user', { firstName: 'Hector' });
+    const comment = db.findOne('comment', { id: 0 });
     const allUsers = db.all('user');
 
     assert.equal(comment.text, 'comment text',

@@ -26,15 +26,15 @@ export const relationshipsSpec = () => {
     db.create('avatar', 5);
     db.create('user', 2);
 
-    const user = db.find('user', { id: 1 });
+    const user = db.findOne('user', { id: 1 });
 
     assert.equal(user.avatar.type, 'avatar',
       'Finds the type of the relationship');
     assert.equal(typeof user.avatar.url, 'string',
       'Finds the url of the relationship');
-    assert.equal(user.city.name, 'Valencia',
+    assert.equal(user.city[0].name, 'Valencia',
       'The city relationship has the expected name');
-    assert.equal(user.city.country, 'Spain',
+    assert.equal(user.city[0].country, 'Spain',
       'The city relationship has the expected country');
 
     assert.end();

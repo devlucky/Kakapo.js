@@ -13,7 +13,7 @@ export const responseSpec = () => {
     fetch('/users/1')
       .then(r => r.json())
       .then(result => {
-        assert.equal(result.id, 1, 'Response body id is valid');
+        assert.equal(result.id, '1', 'Response body id is valid');
         assert.equal(result.type, 'user', 'Response body type is valid');
       });
   });
