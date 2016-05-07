@@ -2,6 +2,7 @@ SERVE="node_modules/serve/bin/serve"
 KARMA="node_modules/karma/bin/karma"
 WATCHIFY="node_modules/watchify/bin/cmd.js"
 CODECOV="node_modules/codecov.io/bin/codecov.io.js"
+SEMANTIC_RELEASE="node_modules/semantic-release/bin/semantic-release.js"
 
 KARMA_CONF=".karma.conf.js"
 KARMA_CONF_TRAVIS=".karma.travis.conf.js"
@@ -28,6 +29,9 @@ test-karma-watch:
 
 test-travis:
 	$(KARMA) start $(KARMA_CONF_TRAVIS) --single-run
+
+semantic-release:
+	$(SEMANTIC_RELEASE) pre && $(SEMANTIC_RELEASE) post
 
 #=== Targets to be used only internally. ===#
 _test-browser--serve:
