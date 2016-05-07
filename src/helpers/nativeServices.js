@@ -1,2 +1,2 @@
 export const nativeFetch = window.fetch;
-export const NativeXMLHttpRequest = window.XMLHttpRequest;
+export const nativeXHR = window.XMLHttpRequest;

@@ -3,9 +3,10 @@ import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
 
 import { baseInterceptor } from './baseInterceptor';
+import { nativeXHR } from '../helpers/nativeServices';
 
 export const name = 'XMLHttpRequest';
-export const reference = window.XMLHttpRequest;
+export const reference = nativeXHR;
 
 export const fakeService = config =>
   baseInterceptor(config, class fakeXMLHttpRequest {
