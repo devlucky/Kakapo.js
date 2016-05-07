@@ -1,12 +1,16 @@
 SERVE="node_modules/serve/bin/serve"
 KARMA="node_modules/karma/bin/karma"
 WATCHIFY="node_modules/watchify/bin/cmd.js"
+CODECOV="node_modules/codecov.io/bin/codecov.io.js"
 
 KARMA_CONF=".karma.conf.js"
 KARMA_CONF_TRAVIS=".karma.travis.conf.js"
 
 build:
 	webpack
+
+codecov:
+	cat test/coverage/*/lcov.info | $(CODECOV)
 
 test: test-browser
 
