@@ -1,26 +1,10 @@
 import tape from 'tape';
-import {
-  databaseSpec,
-  routerSpec,
-  responseSpec,
-  requestSpec,
-  serializerSpec,
-  relationshipsSpec
-} from '../specs';
+import tapeDOM from 'tape-dom';
+import * as specs from '../specs';
 
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+  tapeDOM.installCSS();
+  tapeDOM.stream(tape);
 
-function init() {
-  var tapeDom = require('tape-dom');
-
-  tapeDom.installCSS();
-  tapeDom.stream(tape);
-
-  relationshipsSpec();
-  // serializerSpec();
-  // databaseSpec();
-  // serializerSpec();
-  // databaseSpec();
-  // routerSpec();
-  // responseSpec();
-}
+  specs.relationshipsSpec();
+});
