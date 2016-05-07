@@ -71,7 +71,7 @@ export class Database {
     return factory ? factory.factory : undefined;
   }
 
-  filter(collectionName, conditions) {
+  find(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
     return this.serialize(
       _.filter(this.all(collectionName, true), conditions),
