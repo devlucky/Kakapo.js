@@ -11,10 +11,10 @@ module.exports = function(config) {
     },
     frameworks: ['browserify', 'tap'],
     files: [
-      'tests/runners/travis.js'
+      'test/runners/travis.js'
     ],
     preprocessors: {
-      'tests/**/*.js': ['browserify']
+      'test/**/*.js': ['browserify']
     },
     reporters: ['progress', 'coverage']
   });
