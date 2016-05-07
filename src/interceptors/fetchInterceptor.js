@@ -3,7 +3,7 @@ import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
 
 import { baseInterceptor } from './baseInterceptor';
-import { Response as KakapoResponse } from '../response';
+import { Response as KakapoResponse } from '../Response';
 
 export const name = 'fetch';
 export const reference = window.fetch;
