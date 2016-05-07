@@ -1,5 +1,3 @@
-import tape from 'tape';
-import { databaseSpec, routerSpec } from '../specs';
+import * as specs from '../specs';
 
-//databaseSpec();
-routerSpec();
+specs.routerSpec();
