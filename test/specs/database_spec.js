@@ -8,19 +8,17 @@ const userFactory = faker => ({
   address: {
     streetName: faker.address.streetName,
   },
-  avatar: faker.internet.avatar
+  avatar: faker.internet.avatar,
 });
 
 const commentFactory = faker => ({
   title: 'He-yo',
   content: faker.lorem.paragraph,
-  author: {
-    'name': 'Morty'
-  }
+  author: { name: 'Morty' },
 });
 
 export const databaseSpec = () => {
-  test('DB # constructor', assert => {
+  test('DB # constructor', (assert) => {
     const db = new Database();
 
     assert.ok(_.isObject(db.store), 'Sets up initial store object.');
@@ -30,7 +28,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # all', assert => {
+  test('DB # all', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
@@ -49,7 +47,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # checkFactoryPresence', assert => {
+  test('DB # checkFactoryPresence', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
@@ -62,7 +60,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # create', assert => {
+  test('DB # create', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
@@ -77,7 +75,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # create # fake values', assert => {
+  test('DB # create # fake values', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
@@ -101,12 +99,12 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # decorateRecord', assert => {
+  test('DB # decorateRecord', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
 
-    const user = db.decorateRecord('user', {name: 'Morty'});
+    const user = db.decorateRecord('user', { name: 'Morty' });
 
     assert.ok(_.has(user, 'id'), 'Decorates record by adding id field to it.');
 
@@ -118,7 +116,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # factoryFor', assert => {
+  test('DB # factoryFor', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
@@ -131,14 +129,14 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # filter', assert => {
+  test('DB # filter', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
     db.create('user', 5);
 
     const users1 = db.filter('user', user => user.id > 2);
-    const users2 = db.filter('user', {id: 2});
+    const users2 = db.filter('user', { id: 2 });
 
     assert.equal(users1.length, 2, 'Filters users with function as condition.');
     assert.equal(users2.length, 1, 'Filters users with object as condition.');
@@ -151,7 +149,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # find', assert => {
+  test('DB # find', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
@@ -162,7 +160,7 @@ export const databaseSpec = () => {
 
     const name = db.all('user')[0].firstName;
     const user1 = db.find('user', user => user.id === 2);
-    const user2 = db.find('user', {firstName: name});
+    const user2 = db.find('user', { firstName: name });
 
     const comment = db.find('comment', { author: { name: 'Morty' } });
     const comments = db.filter('comment', { author: { name: 'Morty' } });
@@ -181,13 +179,13 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # push', assert => {
+  test('DB # push', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
-    db.push('user', {id: 1, name: 'Rick'});
-    db.push('user', {id: 2, name: 'Morty'});
-    db.push('user', {id: 3, name: 'ICE-T'});
+    db.push('user', { id: 1, name: 'Rick' });
+    db.push('user', { id: 2, name: 'Morty' });
+    db.push('user', { id: 3, name: 'ICE-T' });
 
     const users = db.all('user');
 
@@ -202,7 +200,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # record # save', assert => {
+  test('DB # record # save', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
@@ -213,15 +211,15 @@ export const databaseSpec = () => {
       user.save();
     });
 
-    assert.equal(_.filter(db.all('user'), {firstName: 'Hector'}).length, 10,
+    assert.equal(_.filter(db.all('user'), { firstName: 'Hector' }).length, 10,
       'Properly saves changes on objects to store.');
-    assert.equal(_.filter(db.all('user'), {firstName: 'Oskar'}).length, 10,
+    assert.equal(_.filter(db.all('user'), { firstName: 'Oskar' }).length, 10,
       'Properly saves changes on objects to store.');
 
     assert.end();
   });
 
-  test('DB # register', assert => {
+  test('DB # register', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
@@ -232,7 +230,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # reset', assert => {
+  test('DB # reset', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
@@ -249,7 +247,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # uuid', assert => {
+  test('DB # uuid', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
@@ -268,7 +266,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('recordFactory # save', assert => {
+  test('recordFactory # save', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
