@@ -4,9 +4,10 @@ import parseUrl from 'parse-url';
 
 import { baseInterceptor } from './baseInterceptor';
 import { Response as KakapoResponse } from '../Response';
+import { nativeFetch } from '../helpers/nativeServices';
 
 export const name = 'fetch';
-export const reference = window.fetch;
+export const reference = nativeFetch;
 
 const fakeResponse = function(response = {}, headers = {}) {
   const responseStr = JSON.stringify(response);
