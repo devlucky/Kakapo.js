@@ -2,6 +2,9 @@ SERVE="node_modules/serve/bin/serve"
 KARMA="node_modules/karma/bin/karma"
 WATCHIFY="node_modules/watchify/bin/cmd.js"
 
+KARMA_CONF=".karma.conf.js"
+KARMA_CONF_TRAVIS=".karma.travis.conf.js"
+
 build:
 	webpack
 
@@ -14,17 +17,17 @@ test-browser:
 		_test-browser--open
 
 test-karma:
-	$(KARMA) start .karma.conf.js --single-run
+	$(KARMA) start $(KARMA_CONF) --single-run
 
 test-karma-watch:
-	$(KARMA) start .karma.conf.js
+	$(KARMA) start $(KARMA_CONF)
 
 test-travis:
-	$(KARMA) start .karma.travis.conf.js --single-run
+	$(KARMA) start $(KARMA_CONF_TRAVIS) --single-run
 
 #=== Targets to be used only internally. ===#
 _test-browser--serve:
-	$(SERVE) ./test/browser
+	$(SERVE) test/browser
 
 _test-browser--watchify:
 	$(WATCHIFY) test/runners/browser.js -o test/browser/test_bundle.js
