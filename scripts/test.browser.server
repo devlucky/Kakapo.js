@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-serve ./test/browser & open http://localhost:3000/
