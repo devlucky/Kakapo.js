@@ -79,7 +79,7 @@ export class Database {
     );
   }
 
-  find(collectionName, conditions) {
+  findOne(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
     return this.serialize(
       _.find(this.all(collectionName, true), conditions),

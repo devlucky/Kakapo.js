@@ -149,7 +149,7 @@ export const databaseSpec = () => {
     assert.end();
   });
 
-  test('DB # find', (assert) => {
+  test('DB # findOne', (assert) => {
     const db = new Database();
 
     db.register('user', userFactory);
@@ -159,10 +159,10 @@ export const databaseSpec = () => {
     db.create('comment', 10);
 
     const name = db.all('user')[0].firstName;
-    const user1 = db.find('user', user => user.id === 2);
-    const user2 = db.find('user', { firstName: name });
+    const user1 = db.findOne('user', user => user.id === 2);
+    const user2 = db.findOne('user', { firstName: name });
 
-    const comment = db.find('comment', { author: { name: 'Morty' } });
+    const comment = db.findOne('comment', { author: { name: 'Morty' } });
     const comments = db.filter('comment', { author: { name: 'Morty' } });
 
     assert.equal(user1.id, 2, 'Finds user with function as condition.');
@@ -171,9 +171,9 @@ export const databaseSpec = () => {
     assert.equal(comment.author.name, 'Morty', 'Finds with nested conditions.');
     assert.equal(comments.length, 10, 'Filters with nested conditions.');
 
-    assert.doesNotThrow(() => db.find('user'),
+    assert.doesNotThrow(() => db.findOne('user'),
       'Doesn\'t throw error when collection is present.');
-    assert.throws(() => db.find('game'),
+    assert.throws(() => db.findOne('game'),
       'Throws error when collection is not present.');
 
     assert.end();
