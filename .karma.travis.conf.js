@@ -5,7 +5,7 @@ module.exports = function(config) {
       reporters: [
         {
           type: 'lcov',
-          dir: 'tests/coverage/'
+          dir: 'test/coverage/'
         }
       ]
     },
