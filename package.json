@@ -4,15 +4,11 @@
   "description": "Next generation mocking library in Javascript",
   "main": "src/kakapo.js",
   "scripts": {
-    "build": "scripts/build",
-    "start": "scripts/start",
-    "test": "scripts/test",
-    "test:browser": "scripts/test.browser",
-    "test:browser:watch": "scripts/test.browser.watch",
-    "test:browser:server": "scripts/test.browser.server",
-    "test:karma": "scripts/test.karma",
-    "test:karma:watch": "scripts/test.karma.watch",
-    "test:travis": "scripts/test.travis"
+    "build": "make build",
+    "test": "make test",
+    "test:browser": "make test-browser",
+    "test:karma": "make test-karma",
+    "test:travis": "make test-travis"
   },
   "repository": {
     "type": "git",
@@ -50,7 +46,7 @@
     "tape": "^4.5.1",
     "tape-dom": "0.0.10",
     "tape-run": "^2.1.3",
-    "watchify": "^3.7.0",
+    "watchify": "3.7.0",
     "webpack": "~1.4.4",
     "webpack-dev-server": "~1.6.5"
   },
