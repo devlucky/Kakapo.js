@@ -182,6 +182,44 @@ export const databaseSpec = () => {
     assert.end();
   });
 
+  test('DB # first', (assert) => {
+    const db = new Database();
+
+    db.register('user', userFactory);
+    db.create('user', 5);
+
+    const user = db.first('user');
+
+    assert.ok(_.isObject(user), 'returns first entity of collection.');
+    assert.equal(user.id, 0, 'returns correct first entity of collection.');
+
+    assert.doesNotThrow(() => db.first('user'),
+      'Doesn\'t throw error when collection is present.');
+    assert.throws(() => db.first('game'),
+      'Throws error when collection is not present.');
+
+    assert.end();
+  });
+
+  test('DB # last', (assert) => {
+    const db = new Database();
+
+    db.register('user', userFactory);
+    db.create('user', 5);
+
+    const user = db.last('user');
+
+    assert.ok(_.isObject(user), 'returns last entity of collection.');
+    assert.equal(user.id, 4, 'returns correct last entity of collection.');
+
+    assert.doesNotThrow(() => db.last('user'),
+      'Doesn\'t throw error when collection is present.');
+    assert.throws(() => db.last('game'),
+      'Throws error when collection is not present.');
+
+    assert.end();
+  });
+
   test('DB # push', (assert) => {
     const db = new Database();
 
