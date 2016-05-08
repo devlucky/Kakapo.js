@@ -89,10 +89,12 @@ export class Database {
   }
 
   first(collectionName) {
+    this.checkFactoryPresence(collectionName);
     return this.all(collectionName)[0];
   }
 
   last(collectionName) {
+    this.checkFactoryPresence(collectionName);
     return lastItem(this.all(collectionName));
   }
 
