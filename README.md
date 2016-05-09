@@ -4,6 +4,8 @@
 [![dependencies](https://david-dm.org/devlucky/Kakapo.js.svg)](https://david-dm.org/devlucky/Kakapo.js)
 [![npm license](https://img.shields.io/npm/l/awesome-badges.svg)](https://tldrlegal.com/license/mit-license)
 
+[![forthebadge](http://forthebadge.com/images/badges/certified-snoop-lion.svg)](http://forthebadge.com)
+
 > Next generation mocking library in Javascript
 
 **DISCLAIMER** This software is under pre-alpha status, use it under your own risk **DISCLAIMER**
