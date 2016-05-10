@@ -28,7 +28,7 @@ export class Database {
 
   belongsTo(collectionName, predicate) {
     return () => {
-      if (predicate) { this.find(collectionName, predicate); }
+      if (predicate) { return this.find(collectionName, predicate); }
       return this.randomRecord(collectionName);
     };
   }
