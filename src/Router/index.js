@@ -2,13 +2,13 @@ import _ from 'lodash';
 import { interceptors } from '../interceptors';
 
 const routerDefaultConfig = {
-  strategies: ['fetch', 'XMLHttpRequest']
+  strategies: ['fetch', 'XMLHttpRequest'],
 };
 
 const interceptorDefaultConfig = {
   host: '',
   requestDelay: 0,
-  routes: {GET: {}, POST: {}, PUT: {}, DELETE: {}}
+  routes: { GET: {}, POST: {}, PUT: {}, DELETE: {} },
 };
 
 export class Router {
