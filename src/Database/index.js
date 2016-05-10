@@ -49,7 +49,7 @@ export class Database {
     const factory = this.factoryFor(collectionName);
     const records = this.store[collectionName] || [];
 
-    while (size--) {
+    for (let idx = 0; idx < size; ++idx) {
       const record = deepMap(factory(faker), (field) => {
         if (_.isFunction(field)) { return field(); }
         return field;
@@ -137,7 +137,7 @@ export class Database {
     const all = this.all(collectionName);
     const records = [];
 
-    while (limit--) {
+    for (let idx = 0; idx < limit; ++idx) {
       records.push(randomItem(all));
     }
 
