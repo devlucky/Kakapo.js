@@ -1,18 +1,19 @@
-//TODO: Implement 'included' support after relationships
+import _ from 'lodash';
+
+// @TODO (zzarcon): Implement 'included' support after relationships
 export const JSONApiSerializer = (record = {}, type = null) => {
   const id = record.id;
-  const relationships = {};
   const included = [];
-
-  delete record.id;
+  const relationships = {};
+  const serializedRecord = _.pickBy(record, (value, key) => key !== 'id');
 
   return {
     data: {
       id,
-      attributes: record,
+      attributes: serializedRecord,
       relationships,
-      type
+      type,
     },
-    included
+    included,
   };
 };
