@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import queryString from 'query-string';
 import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
 
@@ -15,7 +14,7 @@ export const baseInterceptor = ({ routes, host }, fakeService) => {
   const extractUrl = (url, method) => ({
     handlers: routes[method],
     pathname: parseUrl(url).pathname,
-    fullpath: parseUrl(url).href
+    fullpath: parseUrl(url).href,
   });
 
   const getHandler = (url, method) => {
@@ -33,5 +32,5 @@ export const baseInterceptor = ({ routes, host }, fakeService) => {
     return route ? matchesPathname(route) : null;
   };
 
-  return fakeService.bind(null, {getHandler, getParams});
+  return fakeService.bind(null, { getHandler, getParams });
 };

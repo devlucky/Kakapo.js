@@ -8,12 +8,10 @@ const pushToStore = (collectionName, records, store) => {
     recordFactory(record, collectionName, store));
 };
 
-const deepMap = (obj, fn) => {
-  return _.mapValues(obj, (value, key) => {
-    if (_.isPlainObject(value)) return deepMap(value, fn);
-    return fn(value);
-  });
-}
+const deepMap = (obj, fn) => _.mapValues(obj, (value) => {
+  if (_.isPlainObject(value)) return deepMap(value, fn);
+  return fn(value);
+});
 
 export class Database {
   constructor() {
@@ -23,15 +21,16 @@ export class Database {
   all(collectionName, raw = false) {
     this.checkFactoryPresence(collectionName);
     const records = _.cloneDeep(this.store[collectionName]);
-    if (raw) {return records;}
+    if (raw) { return records; }
 
-    return this.serialize(records, collectionName)
+    return this.serialize(records, collectionName);
   }
 
   belongsTo(collectionName, predicate) {
-    return () => predicate ?
-      this.find(collectionName, predicate) :
-      this.randomRecord(collectionName);
+    return () => {
+      if (predicate) { return this.find(collectionName, predicate); }
+      return this.randomRecord(collectionName);
+    };
   }
 
   hasMany(collectionName, limit = randomIndex(this.all(collectionName)) + 1) {
@@ -48,11 +47,13 @@ export class Database {
     this.checkFactoryPresence(collectionName);
 
     const factory = this.factoryFor(collectionName);
-    const records = this.store[collectionName] || [];
+    const records = this.store[collectionName] || [];
 
-    while (size--) {
-      const record = deepMap(factory(faker), field =>
-        _.isFunction(field) ? field() : field);
+    for (let idx = 0; idx < size; ++idx) {
+      const record = deepMap(factory(faker), (field) => {
+        if (_.isFunction(field)) { return field(); }
+        return field;
+      });
 
       records.push(this.decorateRecord(collectionName, record));
     }
@@ -62,7 +63,7 @@ export class Database {
 
   decorateRecord(collectionName, record) {
     this.checkFactoryPresence(collectionName);
-    return _.assign({}, record, {id: this.uuid(collectionName)});
+    return _.assign({}, record, { id: this.uuid(collectionName) });
   }
 
   factoryFor(collectionName) {
@@ -101,8 +102,7 @@ export class Database {
   push(collectionName, record) {
     this.checkFactoryPresence(collectionName);
 
-    const factory = this.factoryFor(collectionName);
-    const records = this.store[collectionName] || [];
+    const records = this.store[collectionName] || [];
     const content = _.castArray(record);
 
     records.push(...content);
@@ -111,14 +111,14 @@ export class Database {
   }
 
   register(collectionName, factory, serializer) {
-    this.factories[collectionName] = {factory, serializer};
+    this.factories[collectionName] = { factory, serializer };
     this.store[collectionName] = [];
   }
 
   serialize(record, collectionName) {
     const serializer = this.serializerFor(collectionName);
     const records = _.castArray(record);
-    if (!serializer) {return records;}
+    if (!serializer) { return records; }
 
     return records.map(r => serializer(r, collectionName));
   }
@@ -137,9 +137,8 @@ export class Database {
     const all = this.all(collectionName);
     const records = [];
 
-    while (limit) {
+    for (let idx = 0; idx < limit; ++idx) {
       records.push(randomItem(all));
-      limit--;
     }
 
     return records;
@@ -152,14 +151,14 @@ export class Database {
   setInitialState() {
     this.factories = {};
     this.store = {};
-    this._uuids = {};
+    this.uuids = {};
   }
 
   uuid(collectionName) {
     this.checkFactoryPresence(collectionName);
 
-    const id = this._uuids[collectionName] || 0;
-    this._uuids[collectionName] = id + 1;
+    const id = this.uuids[collectionName] || 0;
+    this.uuids[collectionName] = id + 1;
 
     return id;
   }
