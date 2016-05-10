@@ -6,5 +6,5 @@ document.addEventListener('DOMContentLoaded', () => {
   tapeDOM.installCSS();
   tapeDOM.stream(tape);
 
-  specs.relationshipsSpec();
+  Object.keys(specs).forEach(specName => specs[specName]());
 });

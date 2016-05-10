@@ -1,3 +1,3 @@
 import * as specs from '../specs';
 
-specs.routerSpec();
+Object.keys(specs).forEach(specName => specs[specName]());
