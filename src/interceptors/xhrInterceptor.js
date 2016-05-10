@@ -1,17 +1,13 @@
-import queryString from 'query-string';
-import pathMatch from 'path-match';
-import parseUrl from 'parse-url';
-
 import { baseInterceptor } from './baseInterceptor';
 import { nativeXHR } from '../helpers/nativeServices';
 
 export const name = 'XMLHttpRequest';
-export const reference = nativeXHR;
+export const Reference = nativeXHR;
 
 export const fakeService = config =>
   baseInterceptor(config, class fakeXMLHttpRequest {
     constructor(helpers) {
-      this.xhr = new reference();
+      this.xhr = new Reference();
       this.getHandler = helpers.getHandler;
       this.getParams = helpers.getParams;
     }
@@ -28,10 +24,9 @@ export const fakeService = config =>
 
       if (handler && this.onreadystatechange) {
         this.readyState = 4;
-        this.status = 200; //TODO: Support custom status codes
-        this.responseText = handler({params});
-        this.onreadystatechange();
-        return;
+        this.status = 200; // @TODO (zzarcon): Support custom status codes
+        this.responseText = handler({ params });
+        return this.onreadystatechange();
       }
 
       this.xhr.onreadystatechange = () => {
@@ -41,6 +36,6 @@ export const fakeService = config =>
         this.onreadystatechange.call(this.xhr);
       };
 
-      this.xhr.send();
+      return this.xhr.send();
     }
   });
