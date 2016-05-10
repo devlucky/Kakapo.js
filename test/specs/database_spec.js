@@ -23,7 +23,7 @@ export const databaseSpec = () => {
 
     assert.ok(_.isObject(db.store), 'Sets up initial store object.');
     assert.ok(_.isObject(db.factories), 'Sets up initial factorie object.');
-    assert.ok(_.isObject(db._uuids), 'Sets up initial identifier object.');
+    assert.ok(_.isObject(db.uuids), 'Sets up initial identifier object.');
 
     assert.end();
   });
