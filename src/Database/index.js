@@ -11,6 +11,7 @@ import {
 const factoryStore = new WeakMap();
 const recordStore = new WeakMap();
 const serializerStore = new WeakMap();
+const uuidStore = new WeakMap();
 
 export class Database {
   constructor() {
@@ -28,13 +29,13 @@ export class Database {
   belongsTo(collectionName, predicate) {
     return () => {
       if (predicate) { return this.find(collectionName, predicate); }
-      return this.randomRecords(collectionName, 1)[0];
+      return _.sample(this.all(collectionName));
     };
   }
 
   hasMany(collectionName, limit) {
     const randomLimit = randomIndex(this.all(collectionName)) + 1;
-    return () => this.randomRecords(collectionName, limit || randomLimit);
+    return () => _.sampleSize(this.all(collectionName), limit || randomLimit);
   }
 
   checkFactoryPresence(name) {
@@ -130,17 +131,6 @@ export class Database {
     return serializerStore.get(this).get(collectionName);
   }
 
-  randomRecords(collectionName, limit = 1) {
-    const all = this.all(collectionName);
-    const records = [];
-
-    for (let idx = 0; idx < limit; ++idx) {
-      records.push(randomItem(all));
-    }
-
-    return records;
-  }
-
   reset() {
     this.factories = {};
     this.uuids = {};
@@ -148,13 +138,14 @@ export class Database {
     factoryStore.set(this, new Map());
     recordStore.set(this, new Map());
     serializerStore.set(this, new Map());
+    uuidStore.set(this, new Map());
   }
 
   uuid(collectionName) {
     this.checkFactoryPresence(collectionName);
 
-    const id = this.uuids[collectionName] || 0;
-    this.uuids[collectionName] = id + 1;
+    const id = uuidStore.get(this).get(collectionName) || 0;
+    uuidStore.get(this).set(collectionName, id + 1);
 
     return id;
   }
