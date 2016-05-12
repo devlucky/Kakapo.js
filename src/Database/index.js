@@ -84,7 +84,7 @@ export class Database {
   }
 
   hasMany(collectionName, limit) {
-    const randomLimit = _.random(this.all(collectionName).length);
+    const randomLimit = _.random(1, this.all(collectionName).length);
     return () => _.sampleSize(this.all(collectionName), limit || randomLimit);
   }
 
