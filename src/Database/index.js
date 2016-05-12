@@ -18,7 +18,7 @@ export class Database {
     const records = _.cloneDeep(recordStore.get(this).get(collectionName));
 
     if (raw) { return records; }
-    return this.serialize(records, collectionName);
+    return records.map(r => this.serialize(r, collectionName));
   }
 
   belongsTo(collectionName, predicate) {
@@ -70,19 +70,13 @@ export class Database {
 
   find(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-
-    return this.serialize(
-      _.filter(this.all(collectionName, true), conditions),
-      collectionName
-    );
+    return _.filter(this.all(collectionName, true), conditions)
+      .map(r => this.serialize(r));
   }
 
   findOne(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-    return this.serialize(
-      _.find(this.all(collectionName, true), conditions),
-      collectionName
-    )[0];
+    return _.first(this.find(collectionName, conditions));
   }
 
   first(collectionName) {
@@ -115,9 +109,8 @@ export class Database {
 
   serialize(record, collectionName) {
     const serializer = this.serializerFor(collectionName);
-    const records = _.castArray(record);
 
-    if (!serializer) { return records; }
+    if (!serializer) { return record; }
     return records.map(r => serializer(r, collectionName));
   }
 
