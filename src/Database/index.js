@@ -104,6 +104,7 @@ export class Database {
     factoryStore.get(this).set(collectionName, factory);
     recordStore.get(this).set(collectionName, []);
     serializerStore.get(this).set(collectionName, serializer);
+    uuidStore.get(this).set(collectionName, 0);
   }
 
   reset() {
@@ -120,7 +121,7 @@ export class Database {
 
   uuid(collectionName) {
     this.checkFactoryPresence(collectionName);
-    const id = uuidStore.get(this).get(collectionName) || 0;
+    const id = uuidStore.get(this).get(collectionName);
 
     uuidStore.get(this).set(collectionName, id + 1);
     return id;
