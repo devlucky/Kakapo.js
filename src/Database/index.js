@@ -58,7 +58,7 @@ export class Database {
   find(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
     return _.filter(this.all(collectionName, true), conditions)
-      .map(r => this.serialize(r));
+      .map(r => this.serialize(r, collectionName));
   }
 
   findOne(collectionName, conditions) {
