@@ -29,7 +29,7 @@ export class Database {
   }
 
   checkFactoryPresence(name) {
-    if (!this.factoryFor(name)) {
+    if (!this.getFactory(name)) {
       throw Error(`Factory ${name} not found`);
     }
   }
@@ -38,7 +38,7 @@ export class Database {
     this.checkFactoryPresence(collectionName);
 
     const currentRecordStore = recordStore.get(this);
-    const factory = this.factoryFor(collectionName);
+    const factory = this.getFactory(collectionName);
     const records = currentRecordStore.get(collectionName);
 
     for (let idx = 0; idx < size; ++idx) {
@@ -59,10 +59,6 @@ export class Database {
     return _.assign({}, record, { id: this.uuid(collectionName) });
   }
 
-  factoryFor(collectionName) {
-    return factoryStore.get(this).get(collectionName);
-  }
-
   find(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
     return _.filter(this.all(collectionName, true), conditions)
@@ -77,6 +73,14 @@ export class Database {
   first(collectionName) {
     this.checkFactoryPresence(collectionName);
     return _.first(this.all(collectionName));
+  }
+
+  getFactory(collectionName) {
+    return factoryStore.get(this).get(collectionName);
+  }
+
+  getSerializer(collectionName) {
+    return serializerStore.get(this).get(collectionName);
   }
 
   hasMany(collectionName, limit) {
@@ -115,14 +119,10 @@ export class Database {
   }
 
   serialize(record, collectionName) {
-    const serializer = this.serializerFor(collectionName);
+    const serializer = this.getSerializer(collectionName);
 
     if (!serializer) { return record; }
     return serializer(record);
-  }
-
-  serializerFor(collectionName) {
-    return serializerStore.get(this).get(collectionName);
   }
 
   uuid(collectionName) {
