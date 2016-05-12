@@ -111,7 +111,7 @@ export class Database {
     const serializer = this.serializerFor(collectionName);
 
     if (!serializer) { return record; }
-    return records.map(r => serializer(r, collectionName));
+    return serializer(record);
   }
 
   serializerFor(collectionName) {
