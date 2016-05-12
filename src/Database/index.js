@@ -8,14 +8,9 @@ import {
   randomItem,
 } from '../helpers/util';
 
-const pushToStore = (collectionName, records, store) => {
-  Object.assign(
-    store[collectionName],
-    records.map(r => recordFactory(r, collectionName, store))
-  );
-};
-
-const storeRecords = new WeakMap();
+const factoryStore = new WeakMap();
+const recordStore = new WeakMap();
+const serializerStore = new WeakMap();
 
 export class Database {
   constructor() {
@@ -24,16 +19,16 @@ export class Database {
 
   all(collectionName, raw = false) {
     this.checkFactoryPresence(collectionName);
-    const records = _.cloneDeep(storeRecords.get(this).get(collectionName));
-    if (raw) { return records; }
+    const records = _.cloneDeep(recordStore.get(this).get(collectionName));
 
+    if (raw) { return records; }
     return this.serialize(records, collectionName);
   }
 
   belongsTo(collectionName, predicate) {
     return () => {
       if (predicate) { return this.find(collectionName, predicate); }
-      return this.randomRecords(collectionName, 1);
+      return this.randomRecords(collectionName, 1)[0];
     };
   }
 
@@ -51,9 +46,9 @@ export class Database {
   create(collectionName, size) {
     this.checkFactoryPresence(collectionName);
 
-    const currentStoreRecords = storeRecords.get(this);
+    const currentRecordStore = recordStore.get(this);
     const factory = this.factoryFor(collectionName);
-    const records = currentStoreRecords.get(collectionName);
+    const records = currentRecordStore.get(collectionName);
 
     for (let idx = 0; idx < size; ++idx) {
       const record = deepMapValues(factory(faker), (field) => {
@@ -64,8 +59,8 @@ export class Database {
       records.push(this.decorateRecord(collectionName, record));
     }
 
-    currentStoreRecords.set(collectionName, records.map(r =>
-      recordFactory(r, collectionName, currentStoreRecords)));
+    currentRecordStore.set(collectionName, records.map(r =>
+      recordFactory(r, collectionName, currentRecordStore)));
   }
 
   decorateRecord(collectionName, record) {
@@ -74,9 +69,7 @@ export class Database {
   }
 
   factoryFor(collectionName) {
-    const factory = this.factories[collectionName];
-
-    return factory ? factory.factory : undefined;
+    return factoryStore.get(this).get(collectionName);
   }
 
   find(collectionName, conditions) {
@@ -109,35 +102,32 @@ export class Database {
   push(collectionName, record) {
     this.checkFactoryPresence(collectionName);
 
-    const currentStoreRecords = storeRecords.get(this);
-    const records = currentStoreRecords.get(collectionName);
+    const currentRecordStore = recordStore.get(this);
+    const records = currentRecordStore.get(collectionName);
     const content = _.castArray(record);
 
     records.push(...content);
 
-    currentStoreRecords.set(collectionName, records.map(r =>
-      recordFactory(r, collectionName, currentStoreRecords)));
+    currentRecordStore.set(collectionName, records.map(r =>
+      recordFactory(r, collectionName, currentRecordStore)));
   }
 
   register(collectionName, factory, serializer) {
-    this.factories[collectionName] = { factory, serializer };
-    this.store[collectionName] = [];
-
-    storeRecords.get(this).set(collectionName, []);
+    factoryStore.get(this).set(collectionName, factory);
+    recordStore.get(this).set(collectionName, []);
+    serializerStore.get(this).set(collectionName, serializer);
   }
 
   serialize(record, collectionName) {
     const serializer = this.serializerFor(collectionName);
     const records = _.castArray(record);
-    if (!serializer) { return records; }
 
+    if (!serializer) { return records; }
     return records.map(r => serializer(r, collectionName));
   }
 
   serializerFor(collectionName) {
-    const factory = this.factories[collectionName];
-
-    return factory ? factory.serializer : undefined;
+    return serializerStore.get(this).get(collectionName);
   }
 
   randomRecords(collectionName, limit = 1) {
@@ -153,9 +143,11 @@ export class Database {
 
   reset() {
     this.factories = {};
-    this.store = {};
     this.uuids = {};
-    storeRecords.set(this, new Map());
+
+    factoryStore.set(this, new Map());
+    recordStore.set(this, new Map());
+    serializerStore.set(this, new Map());
   }
 
   uuid(collectionName) {
