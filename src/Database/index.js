@@ -17,8 +17,7 @@ export class Database {
     this.checkFactoryPresence(collectionName);
     const records = _.cloneDeep(recordStore.get(this).get(collectionName));
 
-    if (raw) { return records; }
-    return records.map(r => this.serialize(r, collectionName));
+    return raw ? records : records.map(r => this.serialize(r, collectionName));
   }
 
   belongsTo(collectionName, predicate) {
@@ -29,9 +28,7 @@ export class Database {
   }
 
   checkFactoryPresence(name) {
-    if (!this.getFactory(name)) {
-      throw Error(`Factory ${name} not found`);
-    }
+    if (!this.getFactory(name)) { throw Error(`Factory ${name} not found`); }
   }
 
   create(collectionName, size) {
