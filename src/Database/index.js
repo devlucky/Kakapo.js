@@ -16,7 +16,6 @@ export class Database {
   all(collectionName, raw = false) {
     this.checkFactoryPresence(collectionName);
     const records = _.cloneDeep(recordStore.get(this).get(collectionName));
-
     return raw ? records : records.map(r => this.serialize(r, collectionName));
   }
 
@@ -92,7 +91,6 @@ export class Database {
 
   push(collectionName, record) {
     this.checkFactoryPresence(collectionName);
-
     const currentRecordStore = recordStore.get(this);
     const records = currentRecordStore.get(collectionName);
 
@@ -117,17 +115,14 @@ export class Database {
 
   serialize(record, collectionName) {
     const serializer = this.getSerializer(collectionName);
-
-    if (!serializer) { return record; }
-    return serializer(record);
+    return serializer ? serializer(record) : record;
   }
 
   uuid(collectionName) {
     this.checkFactoryPresence(collectionName);
-
     const id = uuidStore.get(this).get(collectionName) || 0;
-    uuidStore.get(this).set(collectionName, id + 1);
 
+    uuidStore.get(this).set(collectionName, id + 1);
     return id;
   }
 }
