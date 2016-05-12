@@ -18,16 +18,6 @@ const commentFactory = faker => ({
 });
 
 export const databaseSpec = () => {
-  test('DB # constructor', (assert) => {
-    const db = new Database();
-
-    // assert.ok(_.isObject(db.store), 'Sets up initial store object.');
-    // assert.ok(_.isObject(db.factories), 'Sets up initial factorie object.');
-    // assert.ok(_.isObject(db.uuids), 'Sets up initial identifier object.');
-
-    assert.end();
-  });
-
   test('DB # all', (assert) => {
     const db = new Database();
 
