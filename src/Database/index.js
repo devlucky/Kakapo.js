@@ -1,12 +1,7 @@
 import faker from 'faker';
 import _ from 'lodash';
 import { recordFactory } from './recordFactory';
-import {
-  deepMapValues,
-  lastItem,
-  randomIndex,
-  randomItem,
-} from '../helpers/util';
+import { deepMapValues } from '../helpers/util';
 
 const factoryStore = new WeakMap();
 const recordStore = new WeakMap();
@@ -34,7 +29,7 @@ export class Database {
   }
 
   hasMany(collectionName, limit) {
-    const randomLimit = randomIndex(this.all(collectionName)) + 1;
+    const randomLimit = _.random(this.all(collectionName).length);
     return () => _.sampleSize(this.all(collectionName), limit || randomLimit);
   }
 
@@ -92,12 +87,12 @@ export class Database {
 
   first(collectionName) {
     this.checkFactoryPresence(collectionName);
-    return this.all(collectionName)[0];
+    return _.first(this.all(collectionName));
   }
 
   last(collectionName) {
     this.checkFactoryPresence(collectionName);
-    return lastItem(this.all(collectionName));
+    return _.last(this.all(collectionName));
   }
 
   push(collectionName, record) {
@@ -105,9 +100,8 @@ export class Database {
 
     const currentRecordStore = recordStore.get(this);
     const records = currentRecordStore.get(collectionName);
-    const content = _.castArray(record);
 
-    records.push(...content);
+    records.push(record);
 
     currentRecordStore.set(collectionName, records.map(r =>
       recordFactory(r, collectionName, currentRecordStore)));
@@ -132,9 +126,6 @@ export class Database {
   }
 
   reset() {
-    this.factories = {};
-    this.uuids = {};
-
     factoryStore.set(this, new Map());
     recordStore.set(this, new Map());
     serializerStore.set(this, new Map());
