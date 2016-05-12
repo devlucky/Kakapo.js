@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 const updateRecord = (record, collectionName, store) => {
-  const originalRecord = _.find(store[collectionName], { id: record.id });
+  const originalRecord = _.find(store.get(collectionName), { id: record.id });
   return _.assign(originalRecord, record);
 };
 

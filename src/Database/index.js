@@ -1,26 +1,30 @@
 import faker from 'faker';
 import _ from 'lodash';
 import { recordFactory } from './recordFactory';
-import { lastItem, randomIndex, randomItem } from '../helpers/util';
+import {
+  deepMapValues,
+  lastItem,
+  randomIndex,
+  randomItem,
+} from '../helpers/util';
 
 const pushToStore = (collectionName, records, store) => {
-  store[collectionName] = records.map(record =>
-    recordFactory(record, collectionName, store));
+  Object.assign(
+    store[collectionName],
+    records.map(r => recordFactory(r, collectionName, store))
+  );
 };
 
-const deepMap = (obj, fn) => _.mapValues(obj, (value) => {
-  if (_.isPlainObject(value)) return deepMap(value, fn);
-  return fn(value);
-});
+const storeRecords = new WeakMap();
 
 export class Database {
   constructor() {
-    this.setInitialState();
+    this.reset();
   }
 
   all(collectionName, raw = false) {
     this.checkFactoryPresence(collectionName);
-    const records = _.cloneDeep(this.store[collectionName]);
+    const records = _.cloneDeep(storeRecords.get(this).get(collectionName));
     if (raw) { return records; }
 
     return this.serialize(records, collectionName);
@@ -29,12 +33,13 @@ export class Database {
   belongsTo(collectionName, predicate) {
     return () => {
       if (predicate) { return this.find(collectionName, predicate); }
-      return this.randomRecord(collectionName);
+      return this.randomRecords(collectionName, 1);
     };
   }
 
-  hasMany(collectionName, limit = randomIndex(this.all(collectionName)) + 1) {
-    return () => this.randomRecords(collectionName, limit);
+  hasMany(collectionName, limit) {
+    const randomLimit = randomIndex(this.all(collectionName)) + 1;
+    return () => this.randomRecords(collectionName, limit || randomLimit);
   }
 
   checkFactoryPresence(name) {
@@ -46,11 +51,12 @@ export class Database {
   create(collectionName, size) {
     this.checkFactoryPresence(collectionName);
 
+    const currentStoreRecords = storeRecords.get(this);
     const factory = this.factoryFor(collectionName);
-    const records = this.store[collectionName] || [];
+    const records = currentStoreRecords.get(collectionName);
 
     for (let idx = 0; idx < size; ++idx) {
-      const record = deepMap(factory(faker), (field) => {
+      const record = deepMapValues(factory(faker), (field) => {
         if (_.isFunction(field)) { return field(); }
         return field;
       });
@@ -58,7 +64,8 @@ export class Database {
       records.push(this.decorateRecord(collectionName, record));
     }
 
-    pushToStore(collectionName, records, this.store);
+    currentStoreRecords.set(collectionName, records.map(r =>
+      recordFactory(r, collectionName, currentStoreRecords)));
   }
 
   decorateRecord(collectionName, record) {
@@ -102,17 +109,21 @@ export class Database {
   push(collectionName, record) {
     this.checkFactoryPresence(collectionName);
 
-    const records = this.store[collectionName] || [];
+    const currentStoreRecords = storeRecords.get(this);
+    const records = currentStoreRecords.get(collectionName);
     const content = _.castArray(record);
 
     records.push(...content);
 
-    pushToStore(collectionName, records, this.store);
+    currentStoreRecords.set(collectionName, records.map(r =>
+      recordFactory(r, collectionName, currentStoreRecords)));
   }
 
   register(collectionName, factory, serializer) {
     this.factories[collectionName] = { factory, serializer };
     this.store[collectionName] = [];
+
+    storeRecords.get(this).set(collectionName, []);
   }
 
   serialize(record, collectionName) {
@@ -129,10 +140,6 @@ export class Database {
     return factory ? factory.serializer : undefined;
   }
 
-  randomRecord(collectionName) {
-    return this.randomRecords(collectionName)[0];
-  }
-
   randomRecords(collectionName, limit = 1) {
     const all = this.all(collectionName);
     const records = [];
@@ -145,13 +152,10 @@ export class Database {
   }
 
   reset() {
-    this.setInitialState();
-  }
-
-  setInitialState() {
     this.factories = {};
     this.store = {};
     this.uuids = {};
+    storeRecords.set(this, new Map());
   }
 
   uuid(collectionName) {
