@@ -28,11 +28,6 @@ export class Database {
     };
   }
 
-  hasMany(collectionName, limit) {
-    const randomLimit = _.random(this.all(collectionName).length);
-    return () => _.sampleSize(this.all(collectionName), limit || randomLimit);
-  }
-
   checkFactoryPresence(name) {
     if (!this.factoryFor(name)) {
       throw Error(`Factory ${name} not found`);
@@ -84,6 +79,11 @@ export class Database {
     return _.first(this.all(collectionName));
   }
 
+  hasMany(collectionName, limit) {
+    const randomLimit = _.random(this.all(collectionName).length);
+    return () => _.sampleSize(this.all(collectionName), limit || randomLimit);
+  }
+
   last(collectionName) {
     this.checkFactoryPresence(collectionName);
     return _.last(this.all(collectionName));
@@ -107,6 +107,13 @@ export class Database {
     serializerStore.get(this).set(collectionName, serializer);
   }
 
+  reset() {
+    factoryStore.set(this, new Map());
+    recordStore.set(this, new Map());
+    serializerStore.set(this, new Map());
+    uuidStore.set(this, new Map());
+  }
+
   serialize(record, collectionName) {
     const serializer = this.serializerFor(collectionName);
 
@@ -116,13 +123,6 @@ export class Database {
 
   serializerFor(collectionName) {
     return serializerStore.get(this).get(collectionName);
-  }
-
-  reset() {
-    factoryStore.set(this, new Map());
-    recordStore.set(this, new Map());
-    serializerStore.set(this, new Map());
-    uuidStore.set(this, new Map());
   }
 
   uuid(collectionName) {
