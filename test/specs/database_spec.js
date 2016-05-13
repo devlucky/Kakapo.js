@@ -18,16 +18,6 @@ const commentFactory = faker => ({
 });
 
 export const databaseSpec = () => {
-  test('DB # constructor', (assert) => {
-    const db = new Database();
-
-    assert.ok(_.isObject(db.store), 'Sets up initial store object.');
-    assert.ok(_.isObject(db.factories), 'Sets up initial factorie object.');
-    assert.ok(_.isObject(db.uuids), 'Sets up initial identifier object.');
-
-    assert.end();
-  });
-
   test('DB # all', (assert) => {
     const db = new Database();
 
@@ -112,19 +102,6 @@ export const databaseSpec = () => {
       'Doesn\'t throw error when collection is present.');
     assert.throws(() => db.decorateRecord('game'),
       'Throws error when collection is not present.');
-
-    assert.end();
-  });
-
-  test('DB # factoryFor', (assert) => {
-    const db = new Database();
-
-    db.register('user', userFactory);
-
-    assert.ok(_.isFunction(db.factoryFor('user')),
-      'Returns callback if factory exists.');
-    assert.ok(_.isUndefined(db.factoryFor('game')),
-      'Returns undefined if factory doesn\'t exist.');
 
     assert.end();
   });

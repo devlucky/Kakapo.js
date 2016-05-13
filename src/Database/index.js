@@ -1,56 +1,44 @@
 import faker from 'faker';
 import _ from 'lodash';
 import { recordFactory } from './recordFactory';
-import { lastItem, randomIndex, randomItem } from '../helpers/util';
+import { deepMapValues } from '../helpers/util';
 
-const pushToStore = (collectionName, records, store) => {
-  store[collectionName] = records.map(record =>
-    recordFactory(record, collectionName, store));
-};
-
-const deepMap = (obj, fn) => _.mapValues(obj, (value) => {
-  if (_.isPlainObject(value)) return deepMap(value, fn);
-  return fn(value);
-});
+const factoryStore = new WeakMap();
+const recordStore = new WeakMap();
+const serializerStore = new WeakMap();
+const uuidStore = new WeakMap();
 
 export class Database {
   constructor() {
-    this.setInitialState();
+    this.reset();
   }
 
   all(collectionName, raw = false) {
     this.checkFactoryPresence(collectionName);
-    const records = _.cloneDeep(this.store[collectionName]);
-    if (raw) { return records; }
-
-    return this.serialize(records, collectionName);
+    const records = _.cloneDeep(recordStore.get(this).get(collectionName));
+    return raw ? records : records.map(r => this.serialize(r, collectionName));
   }
 
   belongsTo(collectionName, predicate) {
     return () => {
       if (predicate) { return this.find(collectionName, predicate); }
-      return this.randomRecord(collectionName);
+      return _.sample(this.all(collectionName));
     };
   }
 
-  hasMany(collectionName, limit = randomIndex(this.all(collectionName)) + 1) {
-    return () => this.randomRecords(collectionName, limit);
-  }
-
   checkFactoryPresence(name) {
-    if (!this.factoryFor(name)) {
-      throw Error(`Factory ${name} not found`);
-    }
+    if (!this.getFactory(name)) { throw Error(`Factory ${name} not found`); }
   }
 
   create(collectionName, size) {
     this.checkFactoryPresence(collectionName);
 
-    const factory = this.factoryFor(collectionName);
-    const records = this.store[collectionName] || [];
+    const currentRecordStore = recordStore.get(this);
+    const factory = this.getFactory(collectionName);
+    const records = currentRecordStore.get(collectionName);
 
     for (let idx = 0; idx < size; ++idx) {
-      const record = deepMap(factory(faker), (field) => {
+      const record = deepMapValues(factory(faker), (field) => {
         if (_.isFunction(field)) { return field(); }
         return field;
       });
@@ -58,7 +46,8 @@ export class Database {
       records.push(this.decorateRecord(collectionName, record));
     }
 
-    pushToStore(collectionName, records, this.store);
+    currentRecordStore.set(collectionName, records.map(r =>
+      recordFactory(r, collectionName, currentRecordStore)));
   }
 
   decorateRecord(collectionName, record) {
@@ -66,100 +55,75 @@ export class Database {
     return _.assign({}, record, { id: this.uuid(collectionName) });
   }
 
-  factoryFor(collectionName) {
-    const factory = this.factories[collectionName];
-
-    return factory ? factory.factory : undefined;
-  }
-
   find(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-
-    return this.serialize(
-      _.filter(this.all(collectionName, true), conditions),
-      collectionName
-    );
+    return _.filter(this.all(collectionName, true), conditions)
+      .map(r => this.serialize(r, collectionName));
   }
 
   findOne(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-    return this.serialize(
-      _.find(this.all(collectionName, true), conditions),
-      collectionName
-    )[0];
+    return _.first(this.find(collectionName, conditions));
   }
 
   first(collectionName) {
     this.checkFactoryPresence(collectionName);
-    return this.all(collectionName)[0];
+    return _.first(this.all(collectionName));
+  }
+
+  getFactory(collectionName) {
+    return factoryStore.get(this).get(collectionName);
+  }
+
+  getSerializer(collectionName) {
+    return serializerStore.get(this).get(collectionName);
+  }
+
+  hasMany(collectionName, limit) {
+    const randomLimit = _.random(1, this.all(collectionName).length);
+    return () => _.sampleSize(this.all(collectionName), limit || randomLimit);
   }
 
   last(collectionName) {
     this.checkFactoryPresence(collectionName);
-    return lastItem(this.all(collectionName));
+    return _.last(this.all(collectionName));
   }
 
   push(collectionName, record) {
     this.checkFactoryPresence(collectionName);
+    const currentRecordStore = recordStore.get(this);
+    const records = currentRecordStore.get(collectionName);
 
-    const records = this.store[collectionName] || [];
-    const content = _.castArray(record);
+    records.push(record);
 
-    records.push(...content);
-
-    pushToStore(collectionName, records, this.store);
+    currentRecordStore.set(collectionName, records.map(r =>
+      recordFactory(r, collectionName, currentRecordStore)));
   }
 
   register(collectionName, factory, serializer) {
-    this.factories[collectionName] = { factory, serializer };
-    this.store[collectionName] = [];
-  }
-
-  serialize(record, collectionName) {
-    const serializer = this.serializerFor(collectionName);
-    const records = _.castArray(record);
-    if (!serializer) { return records; }
-
-    return records.map(r => serializer(r, collectionName));
-  }
-
-  serializerFor(collectionName) {
-    const factory = this.factories[collectionName];
-
-    return factory ? factory.serializer : undefined;
-  }
-
-  randomRecord(collectionName) {
-    return this.randomRecords(collectionName)[0];
-  }
-
-  randomRecords(collectionName, limit = 1) {
-    const all = this.all(collectionName);
-    const records = [];
-
-    for (let idx = 0; idx < limit; ++idx) {
-      records.push(randomItem(all));
-    }
-
-    return records;
+    factoryStore.get(this).set(collectionName, factory);
+    recordStore.get(this).set(collectionName, []);
+    serializerStore.get(this).set(collectionName, serializer);
+    uuidStore.get(this).set(collectionName, 0);
   }
 
   reset() {
-    this.setInitialState();
+    factoryStore.set(this, new Map());
+    recordStore.set(this, new Map());
+    serializerStore.set(this, new Map());
+    uuidStore.set(this, new Map());
   }
 
-  setInitialState() {
-    this.factories = {};
-    this.store = {};
-    this.uuids = {};
+  serialize(record, collectionName) {
+    const serializer = this.getSerializer(collectionName);
+    return serializer ? serializer(record) : record;
   }
 
   uuid(collectionName) {
     this.checkFactoryPresence(collectionName);
+    const id = uuidStore.get(this).get(collectionName);
 
-    const id = this.uuids[collectionName] || 0;
-    this.uuids[collectionName] = id + 1;
-
+    uuidStore.get(this).set(collectionName, id + 1);
     return id;
   }
 }
