@@ -22,8 +22,8 @@ export class Database {
    * Returns all records from specified collection, either as an array
    * or as a serialized object.
    *
-   * @param {string} collectionName name of collection
-   * @param {boolean} [raw = true] flag to specify if records should be serialized
+   * @param {string} collectionName - name of collection
+   * @param {boolean} [raw=false] - flag to specify if records should be serialized
    *
    * @returns {Array<Object>|Object}
    * @public
@@ -38,8 +38,8 @@ export class Database {
    * Returns thunk returning record from specified collection, based on conditions or
    * random record if no conditions were specified.
    *
-   * @param {string} collectionName name of collection
-   * @param {Array|Function|Object|string} [conditions] search conditions for the record
+   * @param {string} collectionName - name of collection
+   * @param {Array|Function|Object|string} [conditions] - search conditions for the record
    *
    * @returns {Function}
    * @private
@@ -54,7 +54,7 @@ export class Database {
   /**
    * Throws error if collection with specified name doesn't exist.
    *
-   * @param {string} collectionName name of collection
+   * @param {string} collectionName - name of collection
    *
    * @throws {ReferenceError}.
    * @private
@@ -69,8 +69,8 @@ export class Database {
    * Creates collection of records in Database instance of specified size, based
    * on record's factory registered before.
    *
-   * @param {string} collectionName name of collection
-   * @param {number} [size = 1] size of collection to create
+   * @param {string} collectionName - name of collection
+   * @param {number} [size=1] - size of collection to create
    *
    * @public
    */
@@ -97,8 +97,8 @@ export class Database {
   /**
    * Returns record with generated uuid field added on it.
    *
-   * @param {string} collectionName name of collection
-   * @param {Object} record record to decorate
+   * @param {string} collectionName - name of collection
+   * @param {Object} record - record to decorate
    *
    * @returns {Object}
    * @private
@@ -111,8 +111,8 @@ export class Database {
   /**
    * Returns records from specified collection, matching specified requirements.
    *
-   * @param {string} collectionName name of collection
-   * @param {Array|Function|Object|string} [conditions] search conditions for the record
+   * @param {string} collectionName - name of collection
+   * @param {Array|Function|Object|string} [conditions] - search conditions for the record
    *
    * @returns {Array<Object>}
    * @public
@@ -126,8 +126,8 @@ export class Database {
   /**
    * Returns one record from specified collection, matching specified requirements.
    *
-   * @param {string} collectionName name of collection
-   * @param {Array|Function|Object|string} [conditions] search conditions for the record
+   * @param {string} collectionName - name of collection
+   * @param {Array|Function|Object|string} [conditions] - search conditions for the record
    *
    * @returns {Object}
    * @public
@@ -140,7 +140,7 @@ export class Database {
   /**
    * Returns first record from specified collection.
    *
-   * @param {string} collectionName name of collection
+   * @param {string} collectionName - name of collection
    *
    * @returns {Object}
    * @public
@@ -153,7 +153,7 @@ export class Database {
   /**
    * Returns factory for specified collection from Database's store.
    *
-   * @param {string} collectionName name of collection
+   * @param {string} collectionName - name of collection
    *
    * @returns {Map}
    * @private
@@ -165,7 +165,7 @@ export class Database {
   /**
    * Returns serializer for specified collection from Database's store.
    *
-   * @param {string} collectionName name of collection
+   * @param {string} collectionName - name of collection
    *
    * @returns {Map}
    * @private
@@ -178,8 +178,8 @@ export class Database {
    * Returns thunk returning collection of records from specified collection of
    * specified limit.
    *
-   * @param {string} collectionName name of collection
-   * @param {number} [limit = 1] limit of records in collection to return
+   * @param {string} collectionName - name of collection
+   * @param {number} [limit = 1] - limit of records in collection to return
    *
    * @returns {Function}
    * @private
@@ -192,7 +192,7 @@ export class Database {
   /**
    * Returns last record from specified collection.
    *
-   * @param {string} collectionName name of collection
+   * @param {string} collectionName - name of collection
    *
    * @returns {Object}
    * @public
@@ -205,8 +205,8 @@ export class Database {
   /**
    * Pushes record manually to the end of specified collection.
    *
-   * @param {string} collectionName name of collection
-   * @param {Object} record record to push
+   * @param {string} collectionName - name of collection
+   * @param {Object} record - record to push
    *
    * @returns {Object}
    * @public
@@ -227,8 +227,8 @@ export class Database {
    * Registers serializer for use in returning of records in specified collection.
    *
    * @param {string} collectionName name of collection
-   * @param {Object} [factory] factory to create records with
-   * @param {Object} [serializer] serializer to serialize records with
+   * @param {Object} [factory] - factory to create records with
+   * @param {Object} [serializer] - serializer to serialize records with
    *
    * @public
    */
@@ -254,8 +254,8 @@ export class Database {
   /**
    * Returns record serialized with serializer specified in register method.
    *
-   * @param {string} collectionName name of collection
-   * @param {Object} record record to decorate
+   * @param {string} collectionName - name of collection
+   * @param {Object} record - record to decorate
    *
    * @returns {Object}
    * @private
@@ -268,7 +268,7 @@ export class Database {
   /**
    * Returns next generated uuid for specified collection.
    *
-   * @param {string} collectionName name of collection
+   * @param {string} collectionName - name of collection
    *
    * @returns {number}
    * @private
