@@ -69884,6 +69884,7 @@ module.exports = function (str) {
       key: 'push',
       value: function push(collectionName, record) {
         this.checkFactoryPresence(collectionName);
+        record = this.decorateRecord(collectionName, record);
         var currentRecordStore = recordStore.get(this);
         var records = currentRecordStore.get(collectionName);
 
@@ -69892,6 +69893,8 @@ module.exports = function (str) {
         currentRecordStore.set(collectionName, records.map(function (r) {
           return (0, _recordFactory.recordFactory)(r, collectionName, currentRecordStore);
         }));
+
+        return record;
       }
     }, {
       key: 'register',
@@ -70467,6 +70470,7 @@ module.exports = function (str) {
       var body = options.body || '';
       var method = options.method || 'GET';
       var headers = options.headers || {};
+
       var handler = helpers.getHandler(url, method);
       var params = helpers.getParams(url, method);
 

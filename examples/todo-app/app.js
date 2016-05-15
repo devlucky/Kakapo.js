@@ -3,8 +3,10 @@
   const $ = (selector) => {
     return document.querySelector(selector);
   };
-  const request = () => {
+  const request = (url, options) => {
+    const request = new Request(url);
 
+    return fetch(request, options).then(r => r.json());
   };
 
   const render = () => {
@@ -48,11 +50,11 @@
 
   function onCreateTodo(e) {
     const code = e.keyCode;
-    const val = this.value.trim();
+    const title = this.value.trim();
 
-    if (code !== 13 || !val) return;
+    if (code !== 13 || !title) return;
 
-    createTodo(val);
+    createTodo(title);
   }
 
   function onTodoClick(e) {
@@ -67,14 +69,18 @@
     }
   }
 
-  const createTodo = (value) => {
-    const options = {
-      method: 'POST'
+  const createTodo = (title) => {
+    const todo = {
+      title: title,
+      done: false
     };
-    const request = new Request('/todos');
+    const options = {
+      method: 'POST',
+      body: JSON.stringify(todo)
+    };
 
-    fetch(request, options).then(response => {
-
+    request('/todos', options).then(response => {
+      debugger
     });
   };
 
@@ -84,7 +90,7 @@
     };
     const request = new Request('/todos');
 
-    fetch(request, options).then(response => {
+    fetch(request, options).then(r => r.json()).then(r => {
 
     });
   };

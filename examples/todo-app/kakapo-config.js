@@ -1,19 +1,24 @@
 (function() {
   'use strict';
-  let lastId = 1;
   const router = new Kakapo.Router();
   const db = new Kakapo.Database();
-  const TODOS = [{
-    id: lastId,
-    title: 'Use Kakapo.js',
-    done: false
-  }];
+
+  db.register('todo', () => {
+    return {
+      title: 'Use Kakapo.js',
+      done: false
+    };
+  });
+    
+  db.create('todo', 1);
 
   router.get('/todos', () => {
-    return TODOS;
+    return db.all('todo');
   });
 
-  router.post('/todos', () => {
-    debugger;
+  router.post('/todos', (request) => {
+    const todo = JSON.parse(request.body);
+
+    return db.push('todo', todo);
   });
 })();
