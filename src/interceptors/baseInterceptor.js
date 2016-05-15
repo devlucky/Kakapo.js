@@ -32,5 +32,10 @@ export const baseInterceptor = ({ routes, host }, fakeService) => {
     return route ? matchesPathname(route) : null;
   };
 
-  return fakeService.bind(null, { getHandler, getParams });
+  return function(args) {
+    // const defaultArgs = ;
+    if (fakeService.prototype) return new fakeService({getHandler, getParams});
+    
+    return fakeService({getHandler, getParams});
+  };
 };
