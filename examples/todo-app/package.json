@@ -4,7 +4,7 @@
   "description": "Todo app built with Kakapo.js",
   "main": "index.js",
   "scripts": {},
-  "author": "kakapo-team",
+  "author": "devlucky",
   "license": "MIT",
   "dependencies": {
     "kakapo": "0.0.1",

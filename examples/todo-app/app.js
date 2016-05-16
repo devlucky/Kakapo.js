@@ -1,35 +1,16 @@
-(function() {
+(() => {
   let todos = [];
-  const $ = (selector) => {
-    return document.querySelector(selector);
-  };
-  const request = (url, options) => {
-    const request = new Request(url);
-
-    return fetch(request, options).then(r => r.json());
-  };
+  const select = (selector) => document.querySelector(selector);
   const hasClass = (el, name) => el.classList.contains(name);
 
-  const render = () => {
-    const len = todos.length;
-    let todosLeft = 0;
-    const todosHtml = todos.map(t => {
-      if (!t.done) todosLeft++;
-
-      return todoTemplate(t);
-    }).join('');
-
-    $('.todo-list').innerHTML = todosHtml;
-    $('.todo-count strong').innerText = todosLeft;
-    $('.footer').hidden = !len;
-    $('.clear-completed').hidden = len === todosLeft;
+  const fetchRequest = (url, options) => {
+    const request = new Request(url);
+    return fetch(request, options).then(r => r.json());
   };
 
-  const loadTodos = () => {
-    return fetch('/todos').then(r => r.json()).then(response => {
-      todos = response;
-    });
-  }
+  const loadTodos = () => fetch('/todos')
+    .then(r => r.json())
+    .then(response => { todos = response; });
 
   const todoTemplate = (todo, editing) => {
     const classNames = todo.done ? 'completed' : (editing ? 'editing' : '');
@@ -47,57 +28,53 @@
     `;
   };
 
-  const addEvents = () => {
-    $('.todo-list').addEventListener('click', onTodoClick);
-    $('.todo-list').addEventListener('dblclick', onDblClick);
-    $('.todo-list').addEventListener('keyup', onFinishEditing);
-    $('.toggle-all').addEventListener('click', onToggleAll);
-    $('.new-todo').addEventListener('keyup', onCreateTodo);
-    $('.clear-completed').addEventListener('click', onClearCompleted);
+  const createTodo = (title) => {
+    const todo = {
+      title,
+      done: false,
+    };
+    const options = {
+      method: 'POST',
+      body: JSON.stringify(todo),
+    };
+
+    return fetchRequest('/todos', options)
+      .then(t => todos.push(t));
   };
 
-  function onToggleAll() {
-    const allChecked = !todos.find(t => !t.done);
-    const newStatus = allChecked ? false : true;
-    const promises = todos.map(t => {
-      if (t.done === newStatus) return;
+  const updateTodo = (todo) => {
+    const options = {
+      method: 'PUT',
+      body: JSON.stringify(todo),
+    };
 
-      t.done = newStatus;
+    return fetchRequest(`/todos/${todo.id}`, options)
+      .then(() => {});
+  };
 
-      return updateTodo(t);
-    });
+  const destroyTodo = (todoId) => {
+    const options = {
+      method: 'DELETE',
+    };
 
-    Promise.all(promises).then(render);
-  }
+    return fetchRequest(`/todos/${todoId}`, options)
+      .then(response => { todos = response; });
+  };
 
-  function onFinishEditing(e) {
-    const code = e.keyCode;
-    const target = e.target;
-                        
-    if (code !== 13 || !hasClass(target, 'edit')) return;
+  const render = () => {
+    const len = todos.length;
+    let todosLeft = 0;
+    const todosHtml = todos.map(t => {
+      if (!t.done) todosLeft++;
 
-    const title = target.value;
+      return todoTemplate(t);
+    }).join('');
 
-    if (!title) {
-      return destroyTodo();
-    }
-    
-    const todoId = target.parentElement.getAttribute('data-todo-id');
-    const todo = todos.find(t => t.id == todoId);
-
-    todo.title = title;
-
-    updateTodo(todo).then(render);
-  }
-
-  function onDblClick(e) {
-    const target = e.target;
-    if (!hasClass(target, 'label')) return;
-
-    const parent = target.parentElement.parentElement;
-
-    parent.classList.add('editing');
-  }
+    select('.todo-list').innerHTML = todosHtml;
+    select('.todo-count strong').innerText = todosLeft;
+    select('.footer').hidden = !len;
+    select('.clear-completed').hidden = len === todosLeft;
+  };
 
   function onClearCompleted() {
     const completed = todos.filter(t => t.done);
@@ -106,8 +83,46 @@
     Promise.all(promises).then(render);
   }
 
-  function onCreateTodo(e) {
-    const code = e.keyCode;
+  const onToggleAll = () => {
+    const newStatus = todos.find(t => !t.done);
+
+    const promises = todos.map(t => {
+      if (t.done === newStatus) { return; }
+      t.done = newStatus;
+
+      return updateTodo(t);
+    });
+
+    Promise.all(promises).then(render);
+  };
+
+  const onFinishEditing = (event) => {
+    const code = event.keyCode;
+    const target = event.target;
+
+    if (code !== 13 || !hasClass(target, 'edit')) { return; }
+
+    const title = target.value;
+    if (!title) { return destroyTodo(); }
+
+    const todoId = target.parentElement.getAttribute('data-todo-id');
+    const todo = todos.find(t => t.id === parseInt(todoId, 10));
+
+    todo.title = title;
+
+    updateTodo(todo).then(render);
+  };
+
+  const onDblClick = (event) => {
+    const target = event.target;
+    if (!hasClass(target, 'label')) { return; }
+
+    const parent = target.parentElement.parentElement;
+    parent.classList.add('editing');
+  };
+
+  function onCreateTodo(event) {
+    const code = event.keyCode;
     const title = this.value.trim();
 
     if (code !== 13 || !title) return;
@@ -116,60 +131,32 @@
     createTodo(title).then(render);
   }
 
-  function onTodoClick(e) {
-    const target = e.target;
+  const onTodoClick = (event) => {
+    const target = event.target;
     const todoId = target.parentElement.parentElement.getAttribute('data-todo-id');
-    
-    if (hasClass(target, 'toggle'))  {
-      const todo = todos.find(t => t.id == todoId);
-      todo.done = !todo.done;
 
+    if (hasClass(target, 'toggle')) {
+      const todo = todos.find(t => t.id === parseInt(todoId, 10));
+      todo.done = !todo.done;
       updateTodo(todo).then(render);
-    } else if (hasClass(target, 'destroy')) {
+    }
+
+    if (hasClass(target, 'destroy')) {
       destroyTodo(todoId).then(render);
     }
-  }
-
-  const createTodo = (title) => {
-    const todo = {
-      title: title,
-      done: false
-    };
-    const options = {
-      method: 'POST',
-      body: JSON.stringify(todo)
-    };
-
-    return request('/todos', options).then(todo => {
-      todos.push(todo);
-    });
   };
 
-  const updateTodo = (todo) => {
-    const options = {
-      method: 'PUT',
-      body: JSON.stringify(todo)
-    };
-
-    return request(`/todos/${todo.id}`, options).then(todo => {
-
-    });
+  const addEvents = () => {
+    select('.todo-list').addEventListener('click', onTodoClick);
+    select('.todo-list').addEventListener('dblclick', onDblClick);
+    select('.todo-list').addEventListener('keyup', onFinishEditing);
+    select('.toggle-all').addEventListener('click', onToggleAll);
+    select('.new-todo').addEventListener('keyup', onCreateTodo);
+    select('.clear-completed').addEventListener('click', onClearCompleted);
   };
 
-  const destroyTodo = (todoId) => {
-    const options = {
-      method: 'DELETE'
-    };
-
-    return request(`/todos/${todoId}`, options).then(response => {
-      todos = response;
-    });
-  };
-
-  const init = () => {
+  document.addEventListener('DOMContentLoaded', () => {
     loadTodos().then(render);
     addEvents();
-  };
-
-  document.addEventListener("DOMContentLoaded", init);
+  });
 })();
