@@ -3,13 +3,13 @@
   const router = new Kakapo.Router();
   const db = new Kakapo.Database();
 
-  db.register('todo', () => {
+  db.register('todo', (faker) => {
     return {
-      title: 'Use Kakapo.js',
-      done: false
+      title: faker.company.companyName,
+      done: faker.random.boolean,
     };
   });
-    
+
   db.create('todo', 1);
 
   router.get('/todos', () => {
@@ -32,7 +32,7 @@
     });
 
     todo.save();
-    
+
     return todo;
   });
 
