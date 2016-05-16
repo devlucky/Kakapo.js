@@ -69991,6 +69991,13 @@ module.exports = function (str) {
     var recordExtension = {
       save: function save() {
         return updateRecord(this, collectionName, recordStore);
+      },
+      delete: function _delete() {
+        var collection = recordStore.get(collectionName);
+        var record = _lodash2.default.find(collection, { id: this.id });
+        var index = collection.indexOf(record);
+
+        collection.splice(index, 1);
       }
     };
 

@@ -37,7 +37,10 @@
   });
 
   router.delete('/todos/:todo_id', (request) => {
-    const id = request.params.todo_id;
+    const id = parseInt(request.params.todo_id);
+    const todo = db.findOne('todo', {id});
+
+    todo.delete();
 
     return db.all('todo');
   });
