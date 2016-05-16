@@ -21,4 +21,23 @@
 
     return db.push('todo', todo);
   });
+
+  router.put('/todos/:todo_id', (request) => {
+    const updatedTodo = JSON.parse(request.body);
+    const id = parseInt(request.params.todo_id);
+    const todo = db.findOne('todo', {id});
+
+    Object.keys(updatedTodo).forEach(k => {
+      todo[k] = updatedTodo[k];
+    });
+
+    todo.save();
+    
+    return todo;
+  });
+
+  router.delete('/todos/:todo_id', (request) => {
+    const id = request.params.todo_id;
+
+  });
 })();

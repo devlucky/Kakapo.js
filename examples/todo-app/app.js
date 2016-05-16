@@ -15,7 +15,7 @@
       if (!t.done) todosLeft++;
 
       return todoTemplate(t);
-    });
+    }).join('');
 
     $('.todo-list').innerHTML = todosHtml;
     $('.todo-count strong').innerText = todosLeft;
@@ -30,11 +30,12 @@
 
   const todoTemplate = (todo, editing) => {
     const classNames = todo.done ? 'completed' : (editing ? 'editing' : '');
-
+    const checked = todo.done ? 'checked' : '';
+    
     return `
-    <li class="${classNames}">
+    <li class="${classNames}" data-todo-id="${todo.id}">
       <div class="view">
-        <input class="toggle" type="checkbox">
+        <input class="toggle" type="checkbox" ${checked}>
         <label>${todo.title}</label>
         <button class="destroy"></button>
       </div>
@@ -54,18 +55,22 @@
 
     if (code !== 13 || !title) return;
 
-    createTodo(title);
+    this.value = '';
+    createTodo(title).then(render);
   }
 
   function onTodoClick(e) {
     const target = e.target;
     const classList = target.classList;
-
+    const todoId = target.parentElement.parentElement.getAttribute('data-todo-id');
+    
     if (classList.contains('toggle'))  {
+      const todo = todos.find(t => t.id == todoId);
+      todo.done = !todo.done;
 
-      updateTodo(todo);
+      updateTodo(todo).then(render);
     } else if (classList.contains('destroy')) {
-      destroyTodo(todo);
+      destroyTodo(todoId);
     }
   }
 
@@ -79,24 +84,30 @@
       body: JSON.stringify(todo)
     };
 
-    request('/todos', options).then(response => {
-      debugger
+    return request('/todos', options).then(todo => {
+      todos.push(todo);
     });
   };
 
   const updateTodo = (todo) => {
     const options = {
-      method: 'PUT'
+      method: 'PUT',
+      body: JSON.stringify(todo)
     };
-    const request = new Request('/todos');
 
-    fetch(request, options).then(r => r.json()).then(r => {
+    return request(`/todos/${todo.id}`, options).then(todo => {
 
     });
   };
 
-  const destroyTodo = (todo) => {
+  const destroyTodo = (todoId) => {
+    const options = {
+      method: 'DELETE'
+    };
 
+    return request(`/todos/${todoId}`, options).then(todo => {
+      todos.push(todo);
+    });
   };
 
   const init = () => {
