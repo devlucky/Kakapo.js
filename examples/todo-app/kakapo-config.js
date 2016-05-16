@@ -39,5 +39,6 @@
   router.delete('/todos/:todo_id', (request) => {
     const id = request.params.todo_id;
 
+    return db.all('todo');
   });
 })();
