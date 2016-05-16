@@ -36,6 +36,14 @@ export const recordFactory = (record, collectionName, recordStore) => {
     save() {
       return updateRecord(this, collectionName, recordStore);
     },
+
+    delete() {
+      const collection = recordStore.get(collectionName);
+      const record = _.find(collection, {id: this.id});
+      const index = collection.indexOf(record);
+
+      collection.splice(index, 1);
+    }
   };
 
   return Object.assign({}, record, recordExtension);
