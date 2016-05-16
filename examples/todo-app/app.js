@@ -79,7 +79,7 @@
     const title = target.value;
 
     if (!title) {
-      return destroyTodo()
+      return destroyTodo();
     }
     
     const todoId = target.parentElement.getAttribute('data-todo-id');
@@ -126,7 +126,7 @@
 
       updateTodo(todo).then(render);
     } else if (hasClass(target, 'destroy')) {
-      destroyTodo(todoId);
+      destroyTodo(todoId).then(render);
     }
   }
 
