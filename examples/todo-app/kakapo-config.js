@@ -10,7 +10,7 @@
     };
   });
 
-  db.create('todo', 1);
+  db.create('todo', 10);
 
   router.get('/todos', () => {
     return db.all('todo');
