@@ -15,6 +15,8 @@ const fakeResponse = (response = {}, headers = {}) => {
 
 export const fakeService = config =>
   baseInterceptor(config, (helpers, url, options = {}) => {
+    url = url instanceof Request ? url.url : url;
+
     const body = options.body || '';
     const method = options.method || 'GET';
     const headers = options.headers || {};
