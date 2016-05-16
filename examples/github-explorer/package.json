@@ -1,0 +1,15 @@
+{
+  "name": "kakapo-github-explorer",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kakapo-team",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "^2.2.3",
+    "materialize-css": "^0.97.6"
+  }
+}
