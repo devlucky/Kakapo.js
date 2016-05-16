@@ -10,32 +10,47 @@ export const fakeService = config =>
       this.xhr = new Reference();
       this.getHandler = helpers.getHandler;
       this.getParams = helpers.getParams;
+
+      setXhrState(this, this.xhr);
     }
 
-    open(method, url) {
+    //TODO: Handle 'async', 'user', 'password'
+    open(method, url, async, user, password) {
       this.method = method;
       this.url = url;
       this.xhr.open(method, url);
     }
 
-    send() {
+    //TODO: Handle 'data' parameter
+    send(data) {
       const handler = this.getHandler(this.url, this.method);
       const params = this.getParams(this.url, this.method);
+      const onready = this.onreadystatechange;
 
-      if (handler && this.onreadystatechange) {
+      if (handler && onready) {
         this.readyState = 4;
         this.status = 200; // @TODO (zzarcon): Support custom status codes
         this.responseText = handler({ params });
-        return this.onreadystatechange();
+        return onready();
       }
 
       this.xhr.onreadystatechange = () => {
         this.readyState = this.xhr.readyState;
         this.status = this.xhr.status;
         this.responseText = this.xhr.responseText;
-        this.onreadystatechange.call(this.xhr);
+
+        onready && onready.call(this.xhr);
       };
 
       return this.xhr.send();
     }
   });
+
+const setXhrState = (fakeInstance, xhr) => {
+  for (let prop in xhr) {
+    const value = xhr[prop];
+    if (!fakeInstance[prop]) {
+      fakeInstance[prop] = typeof value === 'function' ? value.bind(xhr) : value;
+    }
+  }
+};
