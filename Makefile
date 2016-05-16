@@ -1,14 +1,19 @@
+BROWSERIFY="node_modules/browserify/bin/cmd.js"
 SERVE="node_modules/serve/bin/serve"
 KARMA="node_modules/karma/bin/karma"
 WATCHIFY="node_modules/watchify/bin/cmd.js"
 CODECOV="node_modules/codecov.io/bin/codecov.io.js"
 SEMANTIC_RELEASE="node_modules/semantic-release/bin/semantic-release.js"
 
+SRC_DIR="src"
+LIB_DIR="lib"
+
 KARMA_CONF=".karma.conf.js"
 KARMA_CONF_TRAVIS=".karma.travis.conf.js"
 
 build:
-	webpack
+	mkdir $(LIB_DIR) && \
+	$(BROWSERIFY) $(SRC_DIR) -o $(LIB_DIR)/kakapo.js -s Kakapo
 
 codecov:
 	cat test/coverage/*/lcov.info | $(CODECOV)
