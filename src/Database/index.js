@@ -213,6 +213,7 @@ export class Database {
    */
   push(collectionName, record) {
     this.checkFactoryPresence(collectionName);
+    record = this.decorateRecord(collectionName, record);
     const currentRecordStore = recordStore.get(this);
     const records = currentRecordStore.get(collectionName);
 
@@ -220,6 +221,8 @@ export class Database {
 
     currentRecordStore.set(collectionName, records.map(r =>
       recordFactory(r, collectionName, currentRecordStore)));
+
+    return record;
   }
 
   /**

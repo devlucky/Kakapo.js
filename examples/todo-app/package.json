@@ -1,0 +1,13 @@
+{
+  "name": "kakapo-todo-app",
+  "version": "0.1.0",
+  "description": "Todo app built with Kakapo.js",
+  "main": "index.js",
+  "scripts": {},
+  "author": "devlucky",
+  "license": "MIT",
+  "dependencies": {
+    "kakapo": "0.0.1",
+    "todomvc-app-css": "^2.0.5"
+  }
+}
