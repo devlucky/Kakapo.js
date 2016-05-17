@@ -25,13 +25,13 @@ export const fakeService = config =>
     send(data) {
       const handler = this.getHandler(this.url, this.method);
       const params = this.getParams(this.url, this.method);
-      const onready = this.onreadystatechange;
+      const successCallback = this.onreadystatechange || this.onload;
 
-      if (handler && onready) {
+      if (handler && successCallback) {
         this.readyState = 4;
         this.status = 200; // @TODO (zzarcon): Support custom status codes
-        this.responseText = handler({ params });
-        return onready();
+        this.responseText = this.response = handler({ params });
+        return successCallback();
       }
 
       this.xhr.onreadystatechange = () => {
@@ -39,7 +39,7 @@ export const fakeService = config =>
         this.status = this.xhr.status;
         this.responseText = this.xhr.responseText;
 
-        onready && onready.call(this.xhr);
+        successCallback && successCallback.call(this.xhr);
       };
 
       return this.xhr.send();

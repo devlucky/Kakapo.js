@@ -14,15 +14,15 @@
       <li class="collection-item">Alvin</li>
       <li class="collection-item">Alvin</li>
     </ul>
-    <script src="../../dist/kakapo.js"></script>
+    <script src="../../lib/kakapo.js"></script>
     <script>
-      // let fooRouter = new Kakapo.Router();
-      let fooRouter = new Kakapo.Router();
+      let fooRouter = new Kakapo.Router({host: 'https://api.github.com'});
 
-      fooRouter.get('users', () => {
-        debugger
+      fooRouter.get('/users', () => {
+        console.log('/users');
+
+        return {users: 1};
       });
-      // let fooRouter = new Kakapo.Router({host: 'https://api.github.com'});
     </script>
     <script src="node_modules/jquery/dist/jquery.js"></script>
     <script src="kakapo-config.js"></script>

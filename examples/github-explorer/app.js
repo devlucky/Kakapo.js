@@ -2,7 +2,7 @@
   const host = 'https://api.github.com';
 
   const loadUsers = () => {
-    const xhr = $.get(`users`);
+    const xhr = $.get(`${host}/users`);
     // window.XMLHttpRequest = null
     // $.get(`${host}/users`).then(r => {
     xhr.then(r => {
