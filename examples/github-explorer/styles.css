@@ -1,0 +1,12 @@
+nav{
+  padding: 0 10px;
+  margin-bottom: 20px;
+}
+
+nav #nav-mobile label{
+  color: #ccc;
+}
+
+.collection-item{
+  cursor: pointer;
+}

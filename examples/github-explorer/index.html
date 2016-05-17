@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="node_modules/materialize-css/bin/materialize.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="styles.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Kakapo - Github explorer</title>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-wrapper">
+        <a href="#" class="brand-logo">Github explorer</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <div class="row">
+            <div class="input-field col s6">
+              <i class="material-icons prefix">search</i>
+              <input id="icon_prefix" type="text" class="validate">
+              <label for="icon_prefix">Search...</label>
+            </div>
+          </div>
+        </ul>
+      </div>
+    </nav>
+    <ul id="user-list" class="collection">
+      
+    </ul>
+    <script src="../../lib/kakapo.js"></script>
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="kakapo-config.js"></script>
+    <script src="app.js"></script>
+    <script src="node_modules/materialize-css/js/materialize.js"></script>
+  </body>
+</html>
