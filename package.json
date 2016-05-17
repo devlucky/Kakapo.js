@@ -2,7 +2,7 @@
   "name": "kakapo",
   "version": "0.0.0-semantic-release",
   "description": "Next generation mocking library in Javascript",
-  "main": "src/",
+  "main": "lib/",
   "scripts": {
     "build": "make build",
     "codecov": "make codecov",
