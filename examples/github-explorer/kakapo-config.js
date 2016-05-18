@@ -61,7 +61,8 @@
     return db.findOne('user', {login});
   });
 
-  // router.get('/search/users', (request) => {
-  //   return {}
-  // });
+  router.get('/search/users', (request) => {
+    debugger
+    return {}
+  });
 })();

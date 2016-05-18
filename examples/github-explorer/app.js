@@ -71,8 +71,12 @@
     const xhr = $.get(uri);
 
     xhr.then(r => {
-      debugger;
+      console.log(r);
       loadingState(false);
+    });
+
+    xhr.error(err => {
+      console.log('error', err);
     });
   };
 
