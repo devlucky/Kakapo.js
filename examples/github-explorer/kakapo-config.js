@@ -2,23 +2,7 @@
   const host = 'https://api.github.com';
   const router = new Kakapo.Router({host});
   const db = new Kakapo.Database();
-  const userSerializer = (user) => {
-    return Object.assign({}, user, {
-      name: "Tom Preston-Werner",
-      company: null,
-      blog: "http://tom.preston-werner.com",
-      location: "San Francisco",
-      email: "tom@mojombo.com",
-      hireable: null,
-      bio: null,
-      public_repos: 60,
-      public_gists: 65,
-      followers: 19250,
-      following: 11,
-      created_at: "2007-10-20T05:24:19Z",
-      updated_at: "2016-05-10T19:31:30Z"
-    });
-  };
+  const stripedProperties = ['name', 'company', 'blog', 'location', 'email', 'hireable', 'bio', 'public_repos', 'public_gists', 'followers', 'following', 'created_at', 'updated_at'];
 
   db.register('user', (faker) => {
     const login = faker.internet.userName();
@@ -39,19 +23,45 @@
       events_url: `https://api.github.com/users/${login}/events{/privacy}`,
       received_events_url: `https://api.github.com/users/${login}/received_events`,
       type: "User",
-      site_admin: true
+      site_admin: true,
+      // The following values are not displayed in '/users'
+      name: faker.name.findName, 
+      company: faker.company.companyName, 
+      blog: faker.internet.url, 
+      location: faker.address.city,
+      email: faker.internet.email,
+      hireable: null,
+      bio: faker.hacker.phrase,
+      public_repos: faker.random.number.bind(null, {min: 0, max: 150}),
+      public_gists: faker.random.number.bind(null, {min: 0, max: 60}),
+      followers: faker.random.number.bind(null, {min: 0, max: 300}),
+      following: faker.random.number.bind(null, {min: 0, max: 100}),
+      created_at: faker.date.past, 
+      updated_at: faker.date.recent
     }
   });
 
   db.create('user', 30);
 
   router.get('/users', () => {
-    return db.all('user');
+    //Stripe don't needed properties
+    const users = db.all('user').map(u => {
+      const user = Object.assign({}, u);
+      stripedProperties.forEach(p => delete user[p]);
+
+      return user;
+    });
+
+    return users;
   });
 
   router.get('/users/:login', (request) => {
     const login = request.params.login;
     
-    return userSerializer(db.findOne('user', {login}));
+    return db.findOne('user', {login});
   });
+
+  // router.get('/search/users', (request) => {
+  //   return {}
+  // });
 })();

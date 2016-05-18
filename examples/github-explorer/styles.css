@@ -8,5 +8,17 @@ nav #nav-mobile label{
 }
 
 .collection-item{
+  transition: background-color 0.2s ease;
   cursor: pointer;
+}
+.collection-item:hover{
+  background-color: #2bbbad;
+}
+#users-loader{
+  height: 0;
+  transition: height .3s;
+}
+
+#users-loader.active{
+  height: 4px;
 }

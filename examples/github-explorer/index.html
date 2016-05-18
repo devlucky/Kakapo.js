@@ -16,13 +16,21 @@
           <div class="row">
             <div class="input-field col s6">
               <i class="material-icons prefix">search</i>
-              <input id="icon_prefix" type="text" class="validate">
-              <label for="icon_prefix">Search...</label>
+              <input id="search" type="text" class="validate">
+              <label for="search">Search...</label>
             </div>
           </div>
         </ul>
       </div>
     </nav>
+    <div id="userModal" class="modal">
+      <div class="modal-content">
+        
+      </div>
+    </div>
+    <div id="users-loader" class="progress">
+      <div class="indeterminate"></div>
+    </div>
     <ul id="user-list" class="collection">
       
     </ul>
@@ -30,6 +38,6 @@
     <script src="node_modules/jquery/dist/jquery.js"></script>
     <script src="kakapo-config.js"></script>
     <script src="app.js"></script>
-    <script src="node_modules/materialize-css/js/materialize.js"></script>
+    <script src="node_modules/materialize-css/bin/materialize.js"></script>
   </body>
 </html>
