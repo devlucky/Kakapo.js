@@ -22,27 +22,41 @@ export const fakeService = config =>
     }
 
     //TODO: Handle 'data' parameter
+    //TODO: Support all handlers 'progress', 'loadstart', 'abort', 'error'
     send(data) {
       const handler = this.getHandler(this.url, this.method);
       const params = this.getParams(this.url, this.method);
-      const successCallback = this.onreadystatechange || this.onload;
+      const xhr = this.xhr;
+      const onreadyCallback = this.onreadystatechange;
+      const onloadCallback = this.onload;
+      const successCallback = onreadyCallback || onloadCallback;
 
       if (handler && successCallback) {
         this.readyState = 4;
         this.status = 200; // @TODO (zzarcon): Support custom status codes
         this.responseText = this.response = handler({ params });
+
         return successCallback();
       }
 
-      this.xhr.onreadystatechange = () => {
-        this.readyState = this.xhr.readyState;
-        this.status = this.xhr.status;
-        this.responseText = this.xhr.responseText;
-
-        successCallback && successCallback.call(this.xhr);
+      //TODO: Automatically set all the properties
+      xhr.onreadystatechange = () => {
+        this.readyState = xhr.readyState;
+        this.response = xhr.response;
+        this.responseText = xhr.responseText;
+        this.responseType = xhr.responseType;
+        this.responseXML = xhr.responseXML;
+        this.status = xhr.status;
+        this.statusText = xhr.statusText;
+        
+        onreadyCallback && onreadyCallback.call(xhr);
       };
 
-      return this.xhr.send();
+      xhr.onload = () => {
+        onloadCallback && onloadCallback.call(xhr);
+      };
+
+      return xhr.send();
     }
   });
 
