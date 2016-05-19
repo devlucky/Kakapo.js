@@ -56,11 +56,10 @@
   };
 
   const loadUser = (login) => {
-    const xhr = $.get(`${host}/users/${login}`);
+    const url = `${host}/users/${login}`;
+    const xhr = $.get(url);
 
-    return xhr.then(user => {
-      renderUser(user);
-    });
+    return xhr.then(renderUser);
   };
 
   const searchUsers = (query = '', sort = 'followers', order = 'desc') => {

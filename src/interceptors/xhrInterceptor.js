@@ -1,3 +1,4 @@
+import {isFunction} from '../helpers/util';
 import { baseInterceptor, getQuery } from './baseInterceptor';
 import { nativeXHR } from '../helpers/nativeServices';
 
@@ -75,7 +76,7 @@ const setXhrState = (fakeInstance, xhr) => {
   for (let prop in xhr) {
     const value = xhr[prop];
     if (!fakeInstance[prop]) {
-      fakeInstance[prop] = typeof value === 'function' ? value.bind(xhr) : value;
+      fakeInstance[prop] = isFunction(value) ? value.bind(xhr) : value;
     }
   }
 };

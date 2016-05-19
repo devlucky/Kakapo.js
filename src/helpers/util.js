@@ -15,3 +15,5 @@ export const deepMapValues = (obj, fn) => _.mapValues(obj, (value) => {
   if (_.isPlainObject(value)) return deepMapValues(value, fn);
   return fn(value);
 });
+
+export const isFunction = (obj) => typeof obj === 'function';
