@@ -1,7 +1,4 @@
-import queryString from 'query-string';
-import parseUrl from 'parse-url';
-
-import { baseInterceptor } from './baseInterceptor';
+import { baseInterceptor, getQuery } from './baseInterceptor';
 import { Response as KakapoResponse } from '../Response';
 import { nativeFetch } from '../helpers/nativeServices';
 
@@ -28,7 +25,7 @@ export const fakeService = config =>
       return reference(url, options);
     }
 
-    const query = queryString.parse(parseUrl(url).search);
+    const query = getQuery(url);
     const response = handler({ params, query, body, headers });
 
     if (!(response instanceof KakapoResponse)) {

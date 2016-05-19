@@ -1,7 +1,5 @@
-import { baseInterceptor } from './baseInterceptor';
+import { baseInterceptor, getQuery } from './baseInterceptor';
 import { nativeXHR } from '../helpers/nativeServices';
-import queryString from 'query-string';
-import parseUrl from 'parse-url';
 
 export const name = 'XMLHttpRequest';
 export const Reference = nativeXHR;
@@ -12,6 +10,7 @@ export const fakeService = config =>
       this.xhr = new Reference();
       this.getHandler = helpers.getHandler;
       this.getParams = helpers.getParams;
+      this._requestHeaders = {};
 
       setXhrState(this, this.xhr);
     }
@@ -34,11 +33,13 @@ export const fakeService = config =>
 
       if (handler && successCallback) {
         const params = this.getParams(this.url, this.method);
-        const query = queryString.parse(parseUrl(this.url).search);
+        const query = getQuery(this.url);
+        const headers = this._requestHeaders;
 
         this.readyState = 4;
         this.status = 200; // @TODO (zzarcon): Support custom status codes
-        this.responseText = this.response = handler({ params, query });
+        //TODO: Pass 'body' to handler
+        this.responseText = this.response = handler({params, query, headers});
 
         return successCallback();
       }
@@ -61,6 +62,12 @@ export const fakeService = config =>
       };
 
       return xhr.send();
+    }
+
+    setRequestHeader(name, value) {
+      this._requestHeaders[name] = value;
+
+      this.xhr.setRequestHeader(name, value);
     }
   });
 
