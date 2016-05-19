@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
+import queryString from 'query-string';
 
 export const baseInterceptor = ({ routes, host }, fakeService) => {
   const getRoute = ({ handlers, pathname, fullpath }) => {
@@ -34,3 +35,5 @@ export const baseInterceptor = ({ routes, host }, fakeService) => {
 
   return fakeService.bind(null, { getHandler, getParams });
 };
+
+export const getQuery = (url) => queryString.parse(parseUrl(url).search);
