@@ -1,5 +1,7 @@
 import { baseInterceptor } from './baseInterceptor';
 import { nativeXHR } from '../helpers/nativeServices';
+import queryString from 'query-string';
+import parseUrl from 'parse-url';
 
 export const name = 'XMLHttpRequest';
 export const Reference = nativeXHR;
@@ -25,16 +27,18 @@ export const fakeService = config =>
     //TODO: Support all handlers 'progress', 'loadstart', 'abort', 'error'
     send(data) {
       const handler = this.getHandler(this.url, this.method);
-      const params = this.getParams(this.url, this.method);
       const xhr = this.xhr;
       const onreadyCallback = this.onreadystatechange;
       const onloadCallback = this.onload;
       const successCallback = onreadyCallback || onloadCallback;
 
       if (handler && successCallback) {
+        const params = this.getParams(this.url, this.method);
+        const query = queryString.parse(parseUrl(this.url).search);
+
         this.readyState = 4;
         this.status = 200; // @TODO (zzarcon): Support custom status codes
-        this.responseText = this.response = handler({ params });
+        this.responseText = this.response = handler({ params, query });
 
         return successCallback();
       }

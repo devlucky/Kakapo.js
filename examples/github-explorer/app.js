@@ -2,6 +2,7 @@
   const host = 'https://api.github.com';
   let users = [];
   let searchTimeout = null;
+  let lastSearchValue = '';
 
   const render = () => {
     const usersHtml = users.map(userTemplate).join('');
@@ -63,21 +64,18 @@
   };
 
   const searchUsers = (query = '', sort = 'followers', order = 'desc') => {
-    //TODO: Use queryParams in Kakapo handler to 'sort' and 'order' results
     //TODO: UI -> display sort options
     //TODO: UI -> display order toggling
     const uri = `${host}/search/users?q=${query}&sort=${sort}&order=${order}`;
-    console.log(uri)
     const xhr = $.get(uri);
 
     xhr.then(r => {
-      console.log(r);
+      users = r;
+
       loadingState(false);
     });
 
-    xhr.error(err => {
-      console.log('error', err);
-    });
+    return xhr;
   };
 
   const addEvents = () => {
@@ -94,11 +92,14 @@
 
   const onSearch = function() {
     const value = this.value;
+    if (lastSearchValue === value) return;
+
+    lastSearchValue = value;
 
     loadingState(true);
     clearTimeout(searchTimeout);
 
-    searchTimeout = setTimeout(_ => searchUsers(value), 500);
+    searchTimeout = setTimeout(_ => searchUsers(value).then(render), 500);
   };
 
   const onUserClick = function() {

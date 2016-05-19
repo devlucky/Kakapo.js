@@ -6,7 +6,13 @@ nav{
 nav #nav-mobile label{
   color: #ccc;
 }
-
+nav #nav-mobile label.active{
+  display: none;
+}   
+#search{
+  padding: 0;
+  margin-left: 35px;
+}
 .collection-item{
   transition: background-color 0.2s ease;
   cursor: pointer;

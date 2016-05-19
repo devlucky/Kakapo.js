@@ -62,7 +62,8 @@
   });
 
   router.get('/search/users', (request) => {
-    debugger
-    return {}
+    const q = request.query.q.toLowerCase();
+
+    return db.all('user').filter(u => u.login.toLowerCase().indexOf(q) >= 0);
   });
 })();
