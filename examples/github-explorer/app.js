@@ -13,17 +13,20 @@
   const renderUser = (user) => {
 
     const userHtml = `
-      <div class="card-image waves-effect waves-block waves-light">
-        <img class="activator" src="${user.avatar_url}">
-      </div>
-      <div class="card-content">
-        <span class="card-title activator grey-text text-darken-4">Card Title</span>
-        <p></p>
-      </div>
-      <div class="card-reveal">
-        <span class="card-title grey-text text-darken-4">Card Title</span>
-        <p>Here is some more information about this product that is only revealed once clicked on.</p>
-      </div>
+      <div class="media">
+        <img class="media-img" src="${user.avatar_url}">
+        <div class="media-body">
+          <h3 class="media-title">${user.name}</h3>
+          <ul>
+            <li><i class="material-icons">language</i> ${user.blog}</li>
+            <li><i class="material-icons">email</i> ${user.email}</li>
+            <li><i class="material-icons">my_location</i> ${user.location}</li>
+            <li><i class="material-icons">work</i> ${user.company}</li>
+            <li><i class="material-icons">alarm_on</i>${user.created_at}</li>
+          </ul>
+          <p>${user.bio}</p>
+        </div>
+      </div>      
     `;
 
     $('#userModal .modal-content').html(userHtml);

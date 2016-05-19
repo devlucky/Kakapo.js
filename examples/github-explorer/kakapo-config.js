@@ -62,8 +62,12 @@
   });
 
   router.get('/search/users', (request) => {
-    const q = request.query.q.toLowerCase();
+    const query = request.query;
+    const q = query.q.toLowerCase();
+    const sort = query.sort;
 
-    return db.all('user').filter(u => u.login.toLowerCase().indexOf(q) >= 0);
+    return db.all('user')
+      .filter(u => u.login.toLowerCase().indexOf(q) >= 0)
+      .sort((a, b) => a[sort] < b[sort] ? -1 : (a[sort] > b[sort] ? 1 : 0));
   });
 })();
