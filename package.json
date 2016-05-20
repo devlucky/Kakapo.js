@@ -1,6 +1,6 @@
 {
   "name": "kakapo",
-  "version": "0.0.0-semantic-release",
+  "version": "0.1.1",
   "description": "Next generation mocking library in Javascript",
   "main": "lib/",
   "scripts": {
