@@ -12,7 +12,6 @@ KARMA_CONF=".karma.conf.js"
 KARMA_CONF_TRAVIS=".karma.travis.conf.js"
 
 build:
-	mkdir -p $(LIB_DIR) && \
 	$(BROWSERIFY) $(SRC_DIR) -o $(LIB_DIR)/kakapo.js -s Kakapo -v
 
 codecov:

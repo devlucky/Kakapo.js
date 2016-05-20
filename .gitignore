@@ -18,9 +18,6 @@ pids
 *.pid
 *.seed
 
-# Directory for generated / compiled source code only for npm / bower
-lib
-
 # Generated test bundle
 test/browser/test_bundle.js
 
