@@ -33,14 +33,16 @@ export const fakeService = config =>
       const successCallback = onreadyCallback || onloadCallback;
 
       if (handler && successCallback) {
-        const params = this.getParams(this.url, this.method);
-        const query = getQuery(this.url);
-        const headers = this._requestHeaders;
+        const request = {
+          params: this.getParams(this.url, this.method),
+          query: getQuery(this.url),
+          headers: this._requestHeaders
+        }
 
         this.readyState = 4;
         this.status = 200; // @TODO (zzarcon): Support custom status codes
         //TODO: Pass 'body' to handler
-        this.responseText = this.response = handler({params, query, headers});
+        this.responseText = this.response = handler(request);
 
         return successCallback();
       }

@@ -10,23 +10,25 @@ const fakeResponse = (response = {}, headers = {}) => {
   return new window.Response(responseStr, { headers });
 };
 
-export const fakeService = config =>
-  baseInterceptor(config, (helpers, url, options = {}) => {
+export const fakeService = config => {
+  return baseInterceptor(config, (helpers, url, options = {}) => {
     url = url instanceof Request ? url.url : url;
-
-    const body = options.body || '';
+    const {getHandler, getParams} = helpers;
     const method = options.method || 'GET';
-    const headers = options.headers || {};
-
-    const handler = helpers.getHandler(url, method);
-    const params = helpers.getParams(url, method);
+    const handler = getHandler(url, method);
 
     if (!handler) {
       return reference(url, options);
     }
 
-    const query = getQuery(url);
-    const response = handler({ params, query, body, headers });
+    const request = {
+      params: getParams(url, method),
+      query: getQuery(url),
+      headers: options.headers || {},
+      body: options.body || ''
+    };
+    const {db} = config;
+    const response = handler(request, db);
 
     if (!(response instanceof KakapoResponse)) {
       return new Promise((resolve) => setTimeout(
@@ -43,4 +45,5 @@ export const fakeService = config =>
       },
       config.requestDelay
     ));
-  });
+  })
+};

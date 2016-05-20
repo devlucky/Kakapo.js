@@ -5,6 +5,8 @@ export const routerSpec = () => {
   test('Router # config # host', (assert) => {
     assert.plan(7);
 
+    // TODO: Create multiple servers at the same time with different
+    // 'host' and check that works properly
     const router = new Router({
       host: 'https://api.github.com',
     });
