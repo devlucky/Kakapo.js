@@ -12,11 +12,14 @@ KARMA_CONF=".karma.conf.js"
 KARMA_CONF_TRAVIS=".karma.travis.conf.js"
 
 build:
-	mkdir $(LIB_DIR) && \
-	$(BROWSERIFY) $(SRC_DIR) -o $(LIB_DIR)/kakapo.js -s Kakapo
+	$(BROWSERIFY) $(SRC_DIR) -o $(LIB_DIR)/kakapo.js -s Kakapo -v
 
 codecov:
 	cat test/coverage/*/lcov.info | $(CODECOV)
+
+develop:
+	mkdir -p $(LIB_DIR) && \
+	$(WATCHIFY) $(SRC_DIR) -o $(LIB_DIR)/kakapo.js -s Kakapo -v
 
 test: test-browser
 

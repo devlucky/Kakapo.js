@@ -6,7 +6,6 @@
   "scripts": {
     "build": "make build",
     "codecov": "make codecov",
-    "dist": "",
     "test": "make test",
     "test:browser": "make test-browser",
     "test:karma": "make test-karma",
