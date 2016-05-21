@@ -27,7 +27,6 @@ class XMLHttpRequestInterceptor {
   setRequestHeader(name, value) {
     this._requestHeaders[name] = value;
     this.xhr.setRequestHeader(name, value);
-    this.readyState = this.xhr.readyState;
   }
 
   // @TODO (zzarcon): Handle 'data' parameter
@@ -45,8 +44,9 @@ class XMLHttpRequestInterceptor {
 
       this.readyState = 4;
       this.status = 200; // @TODO (zzarcon): Support custom status codes
+
       // @TODO (zzarcon): Pass 'body' to handler
-      this.responseText = this.response = handler({params, query, headers});
+      this.responseText = this.response = handler({ params, query, headers });
 
       return successCallback();
     }
