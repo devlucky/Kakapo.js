@@ -1,21 +1,22 @@
 import test from 'tape';
 import _ from 'lodash';
 
+import { interceptorHelper } from '../../src/interceptors/interceptorHelper';
 import { fakeService } from '../../src/interceptors/xhrInterceptor';
 import { nativeXHR } from '../../src/helpers/nativeServices';
 
-const interceptorConfigFixture = {
+const helpers = interceptorHelper({
   host: '',
   requestDelay: 0,
   routes: { GET: {}, POST: {}, PUT: {}, DELETE: {} },
-};
+});
 
 export const xhrInterceptorSpec = () => {
   test('xhrInterceptor . constructor', (assert) => {
-    const XMLHttpRequestInterceptor = fakeService(interceptorConfigFixture);
+    const XMLHttpRequestInterceptor = fakeService(helpers);
     const xhr = new XMLHttpRequestInterceptor();
 
-    const xhrInterceptorOwnProps = ['xhr', 'getHandler', 'getParams'];
+    const xhrInterceptorOwnProps = ['xhr'];
 
     assert.ok(
       xhrInterceptorOwnProps.every(_.partial(_.has, xhr)),
@@ -33,7 +34,7 @@ export const xhrInterceptorSpec = () => {
   });
 
   test('xhrInterceptor . open', (assert) => {
-    const XMLHttpRequestInterceptor = fakeService(interceptorConfigFixture);
+    const XMLHttpRequestInterceptor = fakeService(helpers);
     const xhr = new XMLHttpRequestInterceptor();
 
     xhr.open('GET', '/does_not_exist', true);
@@ -44,7 +45,7 @@ export const xhrInterceptorSpec = () => {
   });
 
   test('xhrInterceptor . setRequestHeader', (assert) => {
-    const XMLHttpRequestInterceptor = fakeService(interceptorConfigFixture);
+    const XMLHttpRequestInterceptor = fakeService(helpers);
     const xhr = new XMLHttpRequestInterceptor();
 
     assert.throws(
@@ -61,7 +62,7 @@ export const xhrInterceptorSpec = () => {
   test('xhrInterceptor . send', (assert) => {
     assert.plan(3);
 
-    const XMLHttpRequestInterceptor = fakeService(interceptorConfigFixture);
+    const XMLHttpRequestInterceptor = fakeService(helpers);
     const xhr = new XMLHttpRequestInterceptor();
     const readyStateChanges = [];
 
