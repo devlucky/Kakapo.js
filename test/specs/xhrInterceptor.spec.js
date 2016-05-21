@@ -8,11 +8,17 @@ export const xhrInterceptorSpec = () => {
   test('xhrInterceptor . constructor', (assert) => {
     const XMLHttpRequestInterceptor = fakeService({});
     const xhrInterceptor = new XMLHttpRequestInterceptor();
+
     const xhrInterceptorOwnProps = ['xhr', 'getHandler', 'getParams'];
 
     assert.ok(
       xhrInterceptorOwnProps.every(_.partial(_.has, xhrInterceptor)),
-      'Interceptor has own properties defined in constructor'
+      'Defines own properties to xhrInterceptor.'
+    );
+
+    assert.ok(
+      _.keysIn(new nativeXHR()).every(_.partial(_.has, xhrInterceptor)),
+      'Inherits properties from native XHR object.'
     );
 
     assert.end();
