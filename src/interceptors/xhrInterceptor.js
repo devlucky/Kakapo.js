@@ -31,35 +31,36 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
 
   // @TODO (zzarcon): Handle 'data' parameter
   send() {
-    const handler = helpers.getHandler(this.url, this.method);
-    const xhr = this.xhr;
     const onreadyCallback = this.onreadystatechange;
     const onloadCallback = this.onload;
-    const successCallback = onreadyCallback || onloadCallback;
 
+    const handler = helpers.getHandler(this.url, this.method);
+    const successCallback = onreadyCallback || onloadCallback;
     if (handler && successCallback) {
-      const params = helpers.getParams(this.url, this.method);
-      const query = helpers.getQuery(this.url);
-      const headers = requestHeaders.get(this);
+      const handlerResponse = {
+        headers: requestHeaders.get(this),
+        params: helpers.getParams(this.url, this.method),
+        query: helpers.getQuery(this.url),
+      };
 
       this.readyState = 4;
       this.status = 200; // @TODO (zzarcon): Support custom status codes
 
       // @TODO (zzarcon): Pass 'body' to handler
-      this.responseText = this.response = handler({ params, query, headers });
+      this.responseText = this.response = handler(handlerResponse);
 
       return successCallback();
     }
 
-    xhr.onreadystatechange = () => {
-      _.extend(this, xhr);
-      if (onreadyCallback) { onreadyCallback.call(xhr); }
+    this.xhr.onreadystatechange = () => {
+      _.extend(this, this.xhr);
+      if (onreadyCallback) { onreadyCallback.call(this.xhr); }
     };
 
-    xhr.onload = () => {
-      if (onloadCallback) { onloadCallback.call(xhr); }
+    this.xhr.onload = () => {
+      if (onloadCallback) { onloadCallback.call(this.xhr); }
     };
 
-    return xhr.send();
+    return this.xhr.send();
   }
 };
