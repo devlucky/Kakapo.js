@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { baseInterceptor, getQuery } from './baseInterceptor';
 import { nativeXHR } from '../helpers/nativeServices';
 import { extendWithBind } from '../helpers/util';
@@ -49,16 +51,8 @@ class XMLHttpRequestInterceptor {
       return successCallback();
     }
 
-    // @TODO (oskar): Automatically set all the properties
     xhr.onreadystatechange = () => {
-      this.readyState = xhr.readyState;
-      this.response = xhr.response;
-      this.responseText = xhr.responseText;
-      this.responseType = xhr.responseType;
-      this.responseXML = xhr.responseXML;
-      this.status = xhr.status;
-      this.statusText = xhr.statusText;
-
+      _.assign(this, xhr);
       if (onreadyCallback) { onreadyCallback.call(xhr); }
     };
 
