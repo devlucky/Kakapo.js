@@ -1,18 +1,16 @@
 import _ from 'lodash';
 
-import { baseInterceptor, getQuery } from './baseInterceptor';
 import { nativeXHR } from '../helpers/nativeServices';
 import { extendWithBind } from '../helpers/util';
 
 const requestHeaders = new WeakMap();
 
 // @TODO (oskar): Support all handlers 'progress', 'loadstart', 'abort', 'error'
-class XMLHttpRequestInterceptor {
-  constructor(helpers) {
+export const name = 'XMLHttpRequest';
+export const Reference = nativeXHR;
+export const fakeService = helpers => class XMLHttpRequestInterceptor {
+  constructor() {
     this.xhr = new nativeXHR();
-    this.getHandler = helpers.getHandler;
-    this.getParams = helpers.getParams;
-
     requestHeaders.set(this, new Map());
     extendWithBind(this, this.xhr);
   }
@@ -33,15 +31,15 @@ class XMLHttpRequestInterceptor {
 
   // @TODO (zzarcon): Handle 'data' parameter
   send() {
-    const handler = this.getHandler(this.url, this.method);
+    const handler = helpers.getHandler(this.url, this.method);
     const xhr = this.xhr;
     const onreadyCallback = this.onreadystatechange;
     const onloadCallback = this.onload;
     const successCallback = onreadyCallback || onloadCallback;
 
     if (handler && successCallback) {
-      const params = this.getParams(this.url, this.method);
-      const query = getQuery(this.url);
+      const params = helpers.getParams(this.url, this.method);
+      const query = helpers.getQuery(this.url);
       const headers = requestHeaders.get(this);
 
       this.readyState = 4;
@@ -64,9 +62,4 @@ class XMLHttpRequestInterceptor {
 
     return xhr.send();
   }
-}
-
-export const name = 'XMLHttpRequest';
-export const Reference = nativeXHR;
-export const fakeService = config =>
-  baseInterceptor(config, XMLHttpRequestInterceptor);
+};
