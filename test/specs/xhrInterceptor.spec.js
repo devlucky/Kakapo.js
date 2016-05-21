@@ -53,8 +53,36 @@ export const xhrInterceptorSpec = () => {
     );
 
     assert.equal(xhr.readyState, 0,
-      'keeps readyState equal to 0 after failed call.');
+      'doesnt change readyState after failed call.');
 
     assert.end();
+  });
+
+  test('xhrInterceptor . send', (assert) => {
+    assert.plan(3);
+
+    const XMLHttpRequestInterceptor = fakeService(interceptorConfigFixture);
+    const xhr = new XMLHttpRequestInterceptor();
+    const readyStateChanges = [];
+
+    assert.throws(
+      () => xhr.send(),
+      'throws error when trying to send() when state is not OPENED.'
+    );
+
+    assert.equal(xhr.readyState, 0,
+      'doesnt change readyState after failed call.');
+
+    xhr.open('GET', '/does_not_exist', true);
+
+    xhr.onreadystatechange = () => {
+      readyStateChanges.push(xhr.readyState);
+      if (xhr.readyState !== 4) { return; }
+
+      assert.deepEqual(readyStateChanges, [2, 3, 4],
+        'invokes multiple changes to readyState.');
+    };
+
+    xhr.send();
   });
 };
