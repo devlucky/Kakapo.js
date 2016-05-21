@@ -52,7 +52,7 @@ class XMLHttpRequestInterceptor {
     }
 
     xhr.onreadystatechange = () => {
-      _.assign(this, xhr);
+      _.extend(this, xhr);
       if (onreadyCallback) { onreadyCallback.call(xhr); }
     };
 
