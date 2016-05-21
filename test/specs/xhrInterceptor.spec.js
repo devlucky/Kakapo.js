@@ -54,5 +54,7 @@ export const xhrInterceptorSpec = () => {
 
     assert.equal(xhr.readyState, 0,
       'keeps readyState equal to 0 after failed call.');
+
+    assert.end();
   });
 };
