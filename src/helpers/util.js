@@ -16,4 +16,9 @@ export const deepMapValues = (obj, fn) => _.mapValues(obj, (value) => {
   return fn(value);
 });
 
-export const isFunction = (obj) => typeof obj === 'function';
+export const extendWithBind = (...args) =>
+  _.extendWith(...args, (objectValue, sourceValue, key, object, source) => {
+    if (!_.isUndefined(objectValue)) { return objectValue; }
+    if (_.isFunction(sourceValue)) { return sourceValue.bind(source); }
+    return sourceValue;
+  });
