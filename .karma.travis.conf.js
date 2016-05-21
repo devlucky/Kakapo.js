@@ -19,6 +19,6 @@ module.exports = function(config) {
     preprocessors: {
       'test/**/*.js': ['browserify']
     },
-    reporters: ['story', 'nyan', 'coverage']
+    reporters: ['story', 'coverage']
   });
 };
