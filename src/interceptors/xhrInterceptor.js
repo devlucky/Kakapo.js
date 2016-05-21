@@ -2,6 +2,7 @@ import { baseInterceptor, getQuery } from './baseInterceptor';
 import { nativeXHR } from '../helpers/nativeServices';
 import { extendWithBind } from '../helpers/util';
 
+// @TODO (oskar): Support all handlers 'progress', 'loadstart', 'abort', 'error'
 class XMLHttpRequestInterceptor {
   constructor(helpers) {
     this.xhr = new nativeXHR();
@@ -12,8 +13,9 @@ class XMLHttpRequestInterceptor {
     extendWithBind(this, this.xhr);
   }
 
-  //TODO: Handle 'async', 'user', 'password'
-  open(method, url, async, user, password) {
+  // @TODO (zzarcon): Handle 'async', 'user', 'password'
+  //       (oskar): I think just passing them to this.xhr.open would be fine?
+  open(method, url) {
     this.method = method;
     this.url = url;
     this.xhr.open(method, url);
@@ -26,9 +28,8 @@ class XMLHttpRequestInterceptor {
     this.readyState = this.xhr.readyState;
   }
 
-  //TODO: Handle 'data' parameter
-  //TODO: Support all handlers 'progress', 'loadstart', 'abort', 'error'
-  send(data) {
+  // @TODO (zzarcon): Handle 'data' parameter
+  send() {
     const handler = this.getHandler(this.url, this.method);
     const xhr = this.xhr;
     const onreadyCallback = this.onreadystatechange;
@@ -42,13 +43,13 @@ class XMLHttpRequestInterceptor {
 
       this.readyState = 4;
       this.status = 200; // @TODO (zzarcon): Support custom status codes
-      //TODO: Pass 'body' to handler
+      // @TODO (zzarcon): Pass 'body' to handler
       this.responseText = this.response = handler({params, query, headers});
 
       return successCallback();
     }
 
-    //TODO: Automatically set all the properties
+    // @TODO (oskar): Automatically set all the properties
     xhr.onreadystatechange = () => {
       this.readyState = xhr.readyState;
       this.response = xhr.response;
@@ -58,11 +59,11 @@ class XMLHttpRequestInterceptor {
       this.status = xhr.status;
       this.statusText = xhr.statusText;
 
-      return onreadyCallback && onreadyCallback.call(xhr);
+      if (onreadyCallback) { onreadyCallback.call(xhr); }
     };
 
     xhr.onload = () => {
-      onloadCallback && onloadCallback.call(xhr);
+      if (onloadCallback) { onloadCallback.call(xhr); }
     };
 
     return xhr.send();
