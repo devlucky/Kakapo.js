@@ -1,9 +1,10 @@
-import { baseInterceptor, getQuery } from './baseInterceptor';
 import { nativeXHR } from '../helpers/nativeServices';
 import { extendWithBind } from '../helpers/util';
 
-class XMLHttpRequestInterceptor {
-  constructor(helpers) {
+export const name = 'XMLHttpRequest';
+export const Reference = nativeXHR;
+export const fakeService = helpers => class XMLHttpRequestInterceptor {
+  constructor() {
     this.xhr = new nativeXHR();
     this.getHandler = helpers.getHandler;
     this.getParams = helpers.getParams;
@@ -30,7 +31,7 @@ class XMLHttpRequestInterceptor {
 
     if (handler && successCallback) {
       const params = this.getParams(this.url, this.method);
-      const query = getQuery(this.url);
+      const query = helpers.getQuery(this.url);
       const headers = this._requestHeaders;
 
       this.readyState = 4;
@@ -66,9 +67,4 @@ class XMLHttpRequestInterceptor {
 
     this.xhr.setRequestHeader(name, value);
   }
-}
-
-export const name = 'XMLHttpRequest';
-export const Reference = nativeXHR;
-export const fakeService = config =>
-  baseInterceptor(config, XMLHttpRequestInterceptor);
+};
