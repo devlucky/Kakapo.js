@@ -4,9 +4,15 @@ import _ from 'lodash';
 import { fakeService } from '../../src/interceptors/xhrInterceptor';
 import { nativeXHR } from '../../src/helpers/nativeServices';
 
+const interceptorConfigFixture = {
+  host: '',
+  requestDelay: 0,
+  routes: { GET: {}, POST: {}, PUT: {}, DELETE: {} },
+};
+
 export const xhrInterceptorSpec = () => {
   test('xhrInterceptor . constructor', (assert) => {
-    const XMLHttpRequestInterceptor = fakeService({});
+    const XMLHttpRequestInterceptor = fakeService(interceptorConfigFixture);
     const xhr = new XMLHttpRequestInterceptor();
 
     const xhrInterceptorOwnProps = ['xhr', 'getHandler', 'getParams'];
@@ -27,7 +33,7 @@ export const xhrInterceptorSpec = () => {
   });
 
   test('xhrInterceptor . open', (assert) => {
-    const XMLHttpRequestInterceptor = fakeService({});
+    const XMLHttpRequestInterceptor = fakeService(interceptorConfigFixture);
     const xhr = new XMLHttpRequestInterceptor();
 
     xhr.open('GET', '/does_not_exist', true);
@@ -38,23 +44,15 @@ export const xhrInterceptorSpec = () => {
   });
 
   test('xhrInterceptor . setRequestHeader', (assert) => {
-    const XMLHttpRequestInterceptor = fakeService({});
+    const XMLHttpRequestInterceptor = fakeService(interceptorConfigFixture);
     const xhr = new XMLHttpRequestInterceptor();
 
     assert.throws(
       () => xhr.setRequestHeader('name', 'Morty'),
-      'throws error when trying to setRequestHeader() before calling open().'
+      'throws error when trying to setRequestHeader() when state is not OPENED.'
     );
 
     assert.equal(xhr.readyState, 0,
       'keeps readyState equal to 0 after failed call.');
-
-    xhr.open('GET', '/does_not_exist', true);
-    xhr.setRequestHeader('name', 'Morty');
-
-    assert.equal(xhr.readyState, 1,
-      'sets readyState to 1 after successful call.');
-
-    assert.end();
   });
 };
