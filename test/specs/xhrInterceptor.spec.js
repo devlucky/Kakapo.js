@@ -36,4 +36,25 @@ export const xhrInterceptorSpec = () => {
 
     assert.end();
   });
+
+  test('xhrInterceptor . setRequestHeader', (assert) => {
+    const XMLHttpRequestInterceptor = fakeService({});
+    const xhr = new XMLHttpRequestInterceptor();
+
+    assert.throws(
+      () => xhr.setRequestHeader('name', 'Morty'),
+      'throws error when trying to setRequestHeader() before calling open().'
+    );
+
+    assert.equal(xhr.readyState, 0,
+      'keeps readyState equal to 0 after failed call.');
+
+    xhr.open('GET', '/does_not_exist', true);
+    xhr.setRequestHeader('name', 'Morty');
+
+    assert.equal(xhr.readyState, 1,
+      'sets readyState to 1 after successful call.');
+
+    assert.end();
+  });
 };
