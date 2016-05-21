@@ -17,6 +17,13 @@ class XMLHttpRequestInterceptor {
     this.method = method;
     this.url = url;
     this.xhr.open(method, url);
+    this.readyState = this.xhr.readyState;
+  }
+
+  setRequestHeader(name, value) {
+    this._requestHeaders[name] = value;
+    this.xhr.setRequestHeader(name, value);
+    this.readyState = this.xhr.readyState;
   }
 
   //TODO: Handle 'data' parameter
@@ -59,12 +66,6 @@ class XMLHttpRequestInterceptor {
     };
 
     return xhr.send();
-  }
-
-  setRequestHeader(name, value) {
-    this._requestHeaders[name] = value;
-
-    this.xhr.setRequestHeader(name, value);
   }
 }
 
