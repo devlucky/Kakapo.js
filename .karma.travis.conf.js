@@ -1,6 +1,9 @@
 module.exports = function(config) {
   config.set({
     browsers: ['Firefox'],
+    client: {
+      captureConsole: false
+    },
     coverageReporter: {
       reporters: [
         {
@@ -16,6 +19,6 @@ module.exports = function(config) {
     preprocessors: {
       'test/**/*.js': ['browserify']
     },
-    reporters: ['progress', 'coverage']
+    reporters: ['story', 'coverage']
   });
 };

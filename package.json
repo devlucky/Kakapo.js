@@ -43,6 +43,8 @@
     "karma-browserify": "5.0.3",
     "karma-coverage": "0.5.5",
     "karma-firefox-launcher": "0.1.7",
+    "karma-nyan-reporter": "0.2.4",
+    "karma-story-reporter": "0.3.1",
     "karma-tap": "1.0.4",
     "mocha-phantomjs": "^4.0.1",
     "npm-run-all": "1.7.0",

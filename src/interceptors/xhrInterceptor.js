@@ -1,70 +1,66 @@
+import _ from 'lodash';
+
 import { nativeXHR } from '../helpers/nativeServices';
 import { extendWithBind } from '../helpers/util';
 
+const requestHeaders = new WeakMap();
+
+// @TODO (oskar): Support all handlers 'progress', 'loadstart', 'abort', 'error'
 export const name = 'XMLHttpRequest';
 export const Reference = nativeXHR;
 export const fakeService = helpers => class XMLHttpRequestInterceptor {
   constructor() {
     this.xhr = new nativeXHR();
-    this.getHandler = helpers.getHandler;
-    this.getParams = helpers.getParams;
-    this._requestHeaders = {};
-
+    requestHeaders.set(this, new Map());
     extendWithBind(this, this.xhr);
   }
 
-  //TODO: Handle 'async', 'user', 'password'
-  open(method, url, async, user, password) {
+  // @TODO (zzarcon): Handle 'async', 'user', 'password'
+  //       (oskar): I think just passing them to this.xhr.open would be fine?
+  open(method, url) {
     this.method = method;
     this.url = url;
     this.xhr.open(method, url);
+    this.readyState = this.xhr.readyState;
   }
 
-  //TODO: Handle 'data' parameter
-  //TODO: Support all handlers 'progress', 'loadstart', 'abort', 'error'
-  send(data) {
-    const handler = this.getHandler(this.url, this.method);
-    const xhr = this.xhr;
+  setRequestHeader(name, value) {
+    requestHeaders.get(this).set(name, value);
+    this.xhr.setRequestHeader(name, value);
+  }
+
+  // @TODO (zzarcon): Handle 'data' parameter
+  send() {
     const onreadyCallback = this.onreadystatechange;
     const onloadCallback = this.onload;
-    const successCallback = onreadyCallback || onloadCallback;
 
+    const handler = helpers.getHandler(this.url, this.method);
+    const successCallback = onreadyCallback || onloadCallback;
     if (handler && successCallback) {
-      const params = this.getParams(this.url, this.method);
-      const query = helpers.getQuery(this.url);
-      const headers = this._requestHeaders;
+      const handlerResponse = {
+        headers: requestHeaders.get(this),
+        params: helpers.getParams(this.url, this.method),
+        query: helpers.getQuery(this.url),
+      };
 
       this.readyState = 4;
       this.status = 200; // @TODO (zzarcon): Support custom status codes
-      //TODO: Pass 'body' to handler
-      this.responseText = this.response = handler({params, query, headers});
+
+      // @TODO (zzarcon): Pass 'body' to handler
+      this.responseText = this.response = handler(handlerResponse);
 
       return successCallback();
     }
 
-    //TODO: Automatically set all the properties
-    xhr.onreadystatechange = () => {
-      this.readyState = xhr.readyState;
-      this.response = xhr.response;
-      this.responseText = xhr.responseText;
-      this.responseType = xhr.responseType;
-      this.responseXML = xhr.responseXML;
-      this.status = xhr.status;
-      this.statusText = xhr.statusText;
-
-      return onreadyCallback && onreadyCallback.call(xhr);
+    this.xhr.onreadystatechange = () => {
+      _.extend(this, this.xhr);
+      if (onreadyCallback) { onreadyCallback.call(this.xhr); }
     };
 
-    xhr.onload = () => {
-      onloadCallback && onloadCallback.call(xhr);
+    this.xhr.onload = () => {
+      if (onloadCallback) { onloadCallback.call(this.xhr); }
     };
 
-    return xhr.send();
-  }
-
-  setRequestHeader(name, value) {
-    this._requestHeaders[name] = value;
-
-    this.xhr.setRequestHeader(name, value);
+    return this.xhr.send();
   }
 };
