@@ -1,0 +1,41 @@
+@import "node_modules/bulma/bulma";
+
+.words__container{
+  padding: 20px;
+
+  .column{
+    margin: 10px;
+
+    h1{
+      font-size: $size-4;
+      text-transform: capitalize;
+      border-bottom: 1px solid $grey-light;
+      padding-bottom: 5px;
+      margin-bottom: 5px;
+    }
+  }
+}
+
+.tags__container{
+  .tag{
+    cursor: pointer;
+    transition: background .2s ease;
+    margin: 5px;
+
+    &:hover{
+      background: $turquoise;
+    }
+  }
+}
+
+.search__container{
+  width: 500px;
+  margin: 20px auto 0 auto;
+  text-align: center;
+}
+
+.result__container{
+  .result__example{
+    margin: 20px 0;
+  }
+}
