@@ -48,8 +48,13 @@
     return `
       <div class="column box result__container">
         <h1>${result.word}</h1>
-        <div class="result__definition">${result.definition}</div>
-        <div class="result__example">${result.example}</div>
+        <div class="result__info">
+          <div class="result__definition">${result.definition}</div>
+          <div class="result__example">${result.example}</div>
+          <div class="result__show-more">
+            <div class="result__show-more__button">Show more</div>
+          </div>
+        </div>
         <div class="result__footer">
           By <a href="http://www.urbandictionary.com/author.php?author=${result.author}" target="_blank">${result.author}</a>
            - <a href="${result.permalink}" target="_blank">visit</a>
@@ -64,12 +69,6 @@
         </div>
       </div>
     `;
-  };
-
-  const addEvents = () => {
-    elements.input.addEventListener('keypress', onEnterWord);
-    elements.button.addEventListener('click', onSearchWord);
-    elements.tagsContainer.addEventListener('click', onTagClick);
   };
 
   const onTagClick = function(e) {
@@ -108,6 +107,23 @@
     }).catch(err => {
       console.log(err);
     });
+  };
+
+  const onShowMoreClick = function(e) {
+    const target = e.target;
+
+    if (!target.classList.contains('result__show-more__button')) return;
+
+    const container = target.parentElement.parentElement;
+
+    container.classList.add('result__info-overflow');
+  };
+
+  const addEvents = () => {
+    elements.input.addEventListener('keypress', onEnterWord);
+    elements.button.addEventListener('click', onSearchWord);
+    elements.tagsContainer.addEventListener('click', onTagClick);
+    elements.wordsContainer.addEventListener('click', onShowMoreClick);
   };
 
   const init = () => {

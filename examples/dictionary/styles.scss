@@ -38,4 +38,38 @@
   .result__example{
     margin: 20px 0;
   }
+  .result__info{
+    max-height: 310px;
+    overflow: hidden;
+    position: relative;
+
+    &.result__info-overflow{
+      max-height: none;
+
+      .result__show-more{
+        display: none;
+      }
+    }
+  }
+  .result__footer{
+    margin-top: 10px;
+  }
+  .result__show-more{
+    position: absolute;
+    background: white;
+    top: 285px;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+
+    .result__show-more__button{
+      width: 110px;
+      background: $blue;
+      margin: 0 auto;
+      border-radius: 3px;
+      color: white;
+      padding: 2px 0;
+      cursor: pointer;
+    }
+  }
 }
