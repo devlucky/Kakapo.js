@@ -8,13 +8,13 @@
   const host = 'https://mashape-community-urban-dictionary.p.mashape.com';
   const elements = {};
   const request = (url) => {
-    console.log('request', url);
 
     return new Promise((resolve, reject) => {
       superagent
         .get(url)
         .set('X-Mashape-Key', mashapeKey)
         .end(function(err, res) {
+          debugger
           if (err) return reject(err);
 
           resolve(res.body);
@@ -22,7 +22,6 @@
     });
   }
   const render = (res) => {
-    console.log(res)
     const columnsPerRow = 3;
     const delimiter = '</div><div class="columns">';
     const results = res.list;
@@ -101,7 +100,13 @@
 
     elements.button.classList.add('is-loading');
 
+    // return fetch(url).then(r => r.json()).then(res => {
+    //   debugger
+    // });
+
+    //Superagent
     return request(url).then(res => {
+      debugger;
       elements.button.classList.remove('is-loading');
       return res;
     }).catch(err => {
