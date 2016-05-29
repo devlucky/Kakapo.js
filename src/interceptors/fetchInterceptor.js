@@ -1,49 +1,44 @@
-import { baseInterceptor, getQuery } from './baseInterceptor';
 import { Response as KakapoResponse } from '../Response';
 import { nativeFetch } from '../helpers/nativeServices';
-
-export const name = 'fetch';
-export const reference = nativeFetch;
 
 const fakeResponse = (response = {}, headers = {}) => {
   const responseStr = JSON.stringify(response);
   return new window.Response(responseStr, { headers });
 };
 
-export const fakeService = config => {
-  return baseInterceptor(config, (helpers, url, options = {}) => {
-    url = url instanceof Request ? url.url : url;
-    const {getHandler, getParams} = helpers;
-    const method = options.method || 'GET';
-    const handler = getHandler(url, method);
+export const name = 'fetch';
+export const reference = nativeFetch;
+export const fakeService = helpers => (url, options = {}) => {
+  url = url instanceof Request ? url.url : url;
 
-    if (!handler) {
-      return reference(url, options);
-    }
+  const method = options.method || 'GET';
+  const handler = helpers.getHandler(url, method);
 
-    const request = {
-      params: getParams(url, method),
-      query: getQuery(url),
-      headers: options.headers || {},
-      body: options.body || ''
-    };
-    const {db} = config;
-    const response = handler(request, db);
+  if (!handler) {
+    return nativeFetch(url, options);
+  }
 
-    if (!(response instanceof KakapoResponse)) {
-      return new Promise((resolve) => setTimeout(
-        () => resolve(fakeResponse(response)),
-        config.requestDelay
-      ));
-    }
+  //TODO: Create 'request' const
+  const params = helpers.getParams(url, method);
+  const query = helpers.getQuery(url);
+  const body = options.body || '';
+  const headers = options.headers || {};
+  const db = helpers.getDB();
+  const response = handler({ params, query, body, headers }, db);
 
-    const result = fakeResponse(response.body, response.headers);
-    return new Promise((resolve, reject) => setTimeout(
-      () => {
-        if (response.error) { return reject(result); }
-        return resolve(result);
-      },
-      config.requestDelay
+  if (!(response instanceof KakapoResponse)) {
+    return new Promise((resolve) => setTimeout(
+      () => resolve(fakeResponse(response)),
+      helpers.getDelay()
     ));
-  })
+  }
+
+  const result = fakeResponse(response.body, response.headers);
+  return new Promise((resolve, reject) => setTimeout(
+    () => {
+      if (response.error) { return reject(result); }
+      return resolve(result);
+    },
+    helpers.getDelay()
+  ));
 };

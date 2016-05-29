@@ -1,6 +1,11 @@
 import test from 'tape';
 import { Database, Router, Server } from '../../src';
 
+//
+// TODO: Check the same with XHR
+//
+
+
 export const serverSpec = () => {
   // @TODO Test Server's config
 

@@ -6,6 +6,7 @@
   "scripts": {
     "build": "make build",
     "codecov": "make codecov",
+    "readme": "node create-readme.js",
     "test": "make test",
     "test:browser": "make test-browser",
     "test:karma": "make test-karma",
@@ -47,6 +48,7 @@
     "npm-run-all": "1.7.0",
     "semantic-release": "4.3.5",
     "serve": "1.4.0",
+    "superagent": "^2.0.0-alpha.3",
     "tap-spec": "^4.1.1",
     "tape": "^4.5.1",
     "tape-dom": "0.0.10",
