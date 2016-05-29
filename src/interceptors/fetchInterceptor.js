@@ -1,4 +1,5 @@
 import { Response as KakapoResponse } from '../Response';
+import { Request as KakapoRequest } from '../Request';
 import { nativeFetch } from '../helpers/nativeServices';
 
 const fakeResponse = (response = {}, headers = {}) => {
@@ -18,13 +19,14 @@ export const fakeService = helpers => (url, options = {}) => {
     return nativeFetch(url, options);
   }
 
-  //TODO: Create 'request' const
-  const params = helpers.getParams(url, method);
-  const query = helpers.getQuery(url);
-  const body = options.body || '';
-  const headers = options.headers || {};
+  const request = new KakapoRequest({
+    params: helpers.getParams(url, method),
+    query: helpers.getQuery(url),
+    body: options.body || '',
+    headers: options.headers || {}
+  });
   const db = helpers.getDB();
-  const response = handler({ params, query, body, headers }, db);
+  const response = handler(request, db);
 
   if (!(response instanceof KakapoResponse)) {
     return new Promise((resolve) => setTimeout(

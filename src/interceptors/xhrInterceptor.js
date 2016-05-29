@@ -1,5 +1,6 @@
 import { nativeXHR } from '../helpers/nativeServices';
 import { extendWithBind } from '../helpers/util';
+import { Request as KakapoRequest } from '../Request';
 
 export const name = 'XMLHttpRequest';
 export const Reference = nativeXHR;
@@ -30,15 +31,17 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
     const successCallback = onreadyCallback || onloadCallback;
 
     if (handler && successCallback) {
-      const params = this.getParams(this.url, this.method);
-      const query = helpers.getQuery(this.url);
-      const headers = this._requestHeaders;
+      //TODO: Pass 'body' to KakapoRequest
+      const request = new KakapoRequest({
+        params: this.getParams(this.url, this.method),
+        query: helpers.getQuery(this.url),
+        headers: this._requestHeaders
+      });
       const db = helpers.getDB();
 
       this.readyState = 4;
       this.status = 200; // @TODO (zzarcon): Support custom status codes
-      //TODO: Pass 'body' to handler
-      this.responseText = this.response = handler({params, query, headers}, db);
+      this.responseText = this.response = handler(request, db);
 
       return successCallback();
     }
