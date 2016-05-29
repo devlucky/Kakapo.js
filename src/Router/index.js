@@ -16,8 +16,6 @@ export class Router {
   constructor(interceptorConfig, routerConfig) {
     this.interceptorConfig = _.merge({}, interceptorDefaultConfig, interceptorConfig);
     this.routerConfig = _.merge({}, routerDefaultConfig, routerConfig);
-
-    this.intercept();
   }
 
   get(...args) {

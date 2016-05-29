@@ -4,7 +4,7 @@ import { Database, Router, Server } from '../../src';
 export const serverSpec = () => {
   // @TODO Test Server's config
 
-  test('Server # use', (assert) => {
+  test('Server # use database', (assert) => {
     const myDB = new Database();
     const router = new Router();
     const server = new Server();
@@ -16,7 +16,24 @@ export const serverSpec = () => {
 
     server.use(myDB);
     server.use(router);
-
     fetch('/posts');
+  });
+
+  test('Server # use router', (assert) => {
+    const router = new Router();
+    const server = new Server();
+
+    router.get('/comments', _ => {
+      assert.fail('Should not reach this handler since the request is fired before "server.use"');
+    });
+
+    router.get('/users', _ => {
+      assert.ok(true, 'It must only enter in this handler since the request has been triggered after the registration');
+      assert.end();
+    });
+
+    fetch('/comments');
+    server.use(router);
+    fetch('/users');
   });
 };

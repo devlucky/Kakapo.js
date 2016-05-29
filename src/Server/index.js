@@ -12,7 +12,7 @@ export class Server {
       this.db = entity;
     } else if (entity instanceof Router) {
       this.router = entity;
-      //TODO: Is in this moment when the router should start intercepting requests
+      this.router.intercept();
     } else {
       console.warn(`KAKAPO: Server doesn't know how to use the entity ${entity}`);
     }
