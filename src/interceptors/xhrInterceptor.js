@@ -1,13 +1,12 @@
 import { nativeXHR } from '../helpers/nativeServices';
 import { extendWithBind } from '../helpers/util';
+import { Request as KakapoRequest } from '../Request';
 
 export const name = 'XMLHttpRequest';
 export const Reference = nativeXHR;
 export const fakeService = helpers => class XMLHttpRequestInterceptor {
   constructor() {
     this.xhr = new nativeXHR();
-    this.getHandler = helpers.getHandler;
-    this.getParams = helpers.getParams;
     this._requestHeaders = {};
 
     extendWithBind(this, this.xhr);
@@ -23,21 +22,24 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
   //TODO: Handle 'data' parameter
   //TODO: Support all handlers 'progress', 'loadstart', 'abort', 'error'
   send(data) {
-    const handler = this.getHandler(this.url, this.method);
+    const handler = helpers.getHandler(this.url, this.method);
     const xhr = this.xhr;
     const onreadyCallback = this.onreadystatechange;
     const onloadCallback = this.onload;
     const successCallback = onreadyCallback || onloadCallback;
 
     if (handler && successCallback) {
-      const params = this.getParams(this.url, this.method);
-      const query = helpers.getQuery(this.url);
-      const headers = this._requestHeaders;
+      //TODO: Pass 'body' to KakapoRequest
+      const request = new KakapoRequest({
+        params: helpers.getParams(this.url, this.method),
+        query: helpers.getQuery(this.url),
+        headers: this._requestHeaders
+      });
+      const db = helpers.getDB();
 
       this.readyState = 4;
       this.status = 200; // @TODO (zzarcon): Support custom status codes
-      //TODO: Pass 'body' to handler
-      this.responseText = this.response = handler({params, query, headers});
+      this.responseText = this.response = handler(request, db);
 
       return successCallback();
     }

@@ -19,6 +19,9 @@ const extractUrl = ({ routes }, url, method) => ({
 });
 
 export const interceptorHelper = (config) => ({
+  getDB() {
+    return config.db;
+  },
   getDelay() {
     return config.requestDelay;
   },

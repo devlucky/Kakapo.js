@@ -1,14 +1,18 @@
 import test from 'tape';
-import { Response, Router } from '../../src';
+import { Server, Response, Router } from '../../src';
 
 export const responseSpec = () => {
   test('Response # body', (assert) => {
     assert.plan(2);
+
+    const server = new Server();
     const router = new Router();
 
     router.get('/users/:id', (request) =>
       new Response(200, { id: request.params.id, type: 'user' })
     );
+
+    server.use(router);
 
     fetch('/users/1')
       .then(r => r.json())
@@ -20,12 +24,16 @@ export const responseSpec = () => {
 
   test('Response # headers', (assert) => {
     assert.plan(2);
+
+    const server = new Server();
     const router = new Router();
 
     router.get('/users/:id', () =>
       new Response(200, {}, { 'x-header-1': 'one', 'x-header-2': 'two' })
     );
 
+    server.use(router);
+    
     fetch('/users/1')
       .then(result => {
         assert.equal(result.headers.get('x-header-1'), 'one',

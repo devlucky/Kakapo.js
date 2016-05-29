@@ -6,6 +6,7 @@ const routerDefaultConfig = {
 };
 
 const interceptorDefaultConfig = {
+  db: null,
   host: '',
   requestDelay: 0,
   routes: { GET: {}, POST: {}, PUT: {}, DELETE: {} },
@@ -15,8 +16,6 @@ export class Router {
   constructor(interceptorConfig, routerConfig) {
     this.interceptorConfig = _.merge({}, interceptorDefaultConfig, interceptorConfig);
     this.routerConfig = _.merge({}, routerDefaultConfig, routerConfig);
-
-    this.intercept();
   }
 
   get(...args) {
@@ -42,7 +41,8 @@ export class Router {
   intercept() {
     const strategies = this.routerConfig.strategies;
     _.forEach(strategies, name =>
-      interceptors[name].enable(this.interceptorConfig));
+      interceptors[name].enable(this.interceptorConfig)
+    );
   }
 
   reset() {
