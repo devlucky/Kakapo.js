@@ -7,8 +7,6 @@ export const Reference = nativeXHR;
 export const fakeService = helpers => class XMLHttpRequestInterceptor {
   constructor() {
     this.xhr = new nativeXHR();
-    this.getHandler = helpers.getHandler;
-    this.getParams = helpers.getParams;
     this._requestHeaders = {};
 
     extendWithBind(this, this.xhr);
@@ -24,7 +22,7 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
   //TODO: Handle 'data' parameter
   //TODO: Support all handlers 'progress', 'loadstart', 'abort', 'error'
   send(data) {
-    const handler = this.getHandler(this.url, this.method);
+    const handler = helpers.getHandler(this.url, this.method);
     const xhr = this.xhr;
     const onreadyCallback = this.onreadystatechange;
     const onloadCallback = this.onload;
@@ -33,7 +31,7 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
     if (handler && successCallback) {
       //TODO: Pass 'body' to KakapoRequest
       const request = new KakapoRequest({
-        params: this.getParams(this.url, this.method),
+        params: helpers.getParams(this.url, this.method),
         query: helpers.getQuery(this.url),
         headers: this._requestHeaders
       });

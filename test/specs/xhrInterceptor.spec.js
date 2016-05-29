@@ -8,7 +8,7 @@ export const xhrInterceptorSpec = () => {
   test('xhrInterceptor . constructor', (assert) => {
     const XMLHttpRequestInterceptor = fakeService({});
     const xhrInterceptor = new XMLHttpRequestInterceptor();
-    const xhrInterceptorOwnProps = ['xhr', 'getHandler', 'getParams'];
+    const xhrInterceptorOwnProps = ['xhr'];
 
     assert.ok(
       xhrInterceptorOwnProps.every(_.partial(_.has, xhrInterceptor)),
