@@ -1,27 +1,31 @@
+// @TODO Test Server's config
 import test from 'tape';
 import { Database, Router, Server } from '../../src';
 
-//
-// TODO: Check the same with XHR
-//
+const xhrRequest = (url) => {
+  const xhr = new XMLHttpRequest(); 
 
+  xhr.open('GET', url, true);
+  xhr.send();
+}
 
 export const serverSpec = () => {
-  // @TODO Test Server's config
-
   test('Server # use database', (assert) => {
+    assert.plan(2);
+
     const myDB = new Database();
     const router = new Router();
     const server = new Server();
 
     router.get('/posts', (request, db) => {
       assert.ok(db == myDB, 'The passed db is the correct one');
-      assert.end();
     });
 
     server.use(myDB);
     server.use(router);
+
     fetch('/posts');
+    xhrRequest('/posts');
   });
 
   test('Server # use router', (assert) => {
