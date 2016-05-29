@@ -1,5 +1,5 @@
 import test from 'tape';
-import { Router } from '../../src';
+import { Server, Router } from '../../src';
 
 export const routerSpec = () => {
   test('Router # config # host', (assert) => {
@@ -7,6 +7,7 @@ export const routerSpec = () => {
 
     // TODO: Create multiple servers at the same time with different
     // 'host' and check that works properly
+    const server = new Server();
     const router = new Router({
       host: 'https://api.github.com',
     });
@@ -15,6 +16,8 @@ export const routerSpec = () => {
       assert.comment('router GET /comments');
       assert.equal(typeof request, 'object', 'Request is present.');
     });
+
+    server.use(router);
 
     fetch('https://api.github.com/comments').then(response => {
       assert.comment('fetch GET https://api.github.com/comments');
@@ -34,6 +37,7 @@ export const routerSpec = () => {
   test('Router # config # requestDelay', (assert) => {
     assert.plan(4);
 
+    const server = new Server();
     const router = new Router({
       requestDelay: 1000,
     });
@@ -42,6 +46,8 @@ export const routerSpec = () => {
       assert.comment('router GET /comments');
       assert.equal(typeof request, 'object', 'Request is present.');
     });
+
+    server.use(router);
 
     fetch('/comments').then(response => {
       assert.comment('fetch GET /comments');
@@ -53,6 +59,8 @@ export const routerSpec = () => {
 
   test('Router#get', (assert) => {
     assert.plan(9);
+
+    const server = new Server();
     const router = new Router();
 
     router.get('/comments', request => {
@@ -69,6 +77,8 @@ export const routerSpec = () => {
         users: [{ firstName: 'hector' }],
       };
     });
+
+    server.use(router);
 
     fetch('/doesnt_exist')
       .then(response => {
@@ -99,6 +109,8 @@ export const routerSpec = () => {
 
   test('Router#post', (assert) => {
     assert.plan(6);
+
+    const server = new Server();
     const router = new Router();
     const body = JSON.stringify({ firstName: 'Joan', lastName: 'Romano' });
 
@@ -117,6 +129,8 @@ export const routerSpec = () => {
       };
     });
 
+    server.use(router);
+
     fetch('/users', { method: 'POST', body })
       .then(r => r.json())
       .then(response => {
@@ -132,6 +146,8 @@ export const routerSpec = () => {
 
   test('Router#put', (assert) => {
     assert.plan(6);
+
+    const server = new Server();
     const router = new Router();
 
     router.put('/users', request => {
@@ -149,6 +165,8 @@ export const routerSpec = () => {
       };
     });
 
+    server.use(router);
+
     fetch('/users?page=1', { method: 'PUT' })
       .then(r => r.json())
       .then(response => {
@@ -164,6 +182,8 @@ export const routerSpec = () => {
 
   test('Router#delete', (assert) => {
     assert.plan(6);
+
+    const server = new Server();
     const router = new Router();
 
     router.delete('/users/:user_id/comments/:comment_id', request => {
@@ -181,6 +201,8 @@ export const routerSpec = () => {
       };
     });
 
+    server.use(router);
+
     fetch('/users/1/comments/2', { method: 'DELETE' })
       .then(r => r.json())
       .then(response => {
@@ -196,6 +218,8 @@ export const routerSpec = () => {
 
   test('Router#XMLHttpRequest', (assert) => {
     assert.plan(7);
+
+    const server = new Server();
     const router = new Router();
 
     router.get('/comments', request => {
@@ -210,6 +234,8 @@ export const routerSpec = () => {
         { text: 'Second comment' },
       ];
     });
+
+    server.use(router);
 
     const xhr = new XMLHttpRequest();
     const xhr2 = new XMLHttpRequest();

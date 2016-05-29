@@ -1,9 +1,11 @@
 import test from 'tape';
-import { Router } from '../../src';
+import { Server, Router } from '../../src';
 
 export const requestSpec = () => {
   test('Request # headers', (assert) => {
     assert.plan(2);
+
+    const server = new Server();
     const router = new Router();
 
     router.post('/users', (request) => {
@@ -13,6 +15,8 @@ export const requestSpec = () => {
         'Receives the second header');
     });
 
+    server.use(router);
+    
     const headers = new Headers({
       'custom-request-header-1': 'one',
       'custom-request-header-2': 'two',
