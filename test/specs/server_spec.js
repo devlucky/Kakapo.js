@@ -5,6 +5,7 @@ import { Database, Router, Server } from '../../src';
 const xhrRequest = (url) => {
   const xhr = new XMLHttpRequest(); 
 
+  xhr.onreadystatechange = () => {};
   xhr.open('GET', url, true);
   xhr.send();
 }
@@ -17,15 +18,18 @@ export const serverSpec = () => {
     const router = new Router();
     const server = new Server();
 
-    router.get('/posts', (request, db) => {
-      assert.ok(db == myDB, 'The passed db is the correct one');
+    router.get('/fetch', (request, db) => {
+      assert.ok(db == myDB, 'The passed db is the correct one with fetch request');
+    });
+    router.get('/xhr', (request, db) => {
+      assert.ok(db == myDB, 'The passed db is the correct one with xhr request');
     });
 
     server.use(myDB);
     server.use(router);
 
-    fetch('/posts');
-    xhrRequest('/posts');
+    fetch('/fetch');
+    xhrRequest('/xhr');
   });
 
   test('Server # use router', (assert) => {
