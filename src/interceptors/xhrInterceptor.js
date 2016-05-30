@@ -2,6 +2,20 @@ import { nativeXHR } from '../helpers/nativeServices';
 import { extendWithBind } from '../helpers/util';
 import { Request as KakapoRequest } from '../Request';
 
+//TODO: Should this function capitalize each header name? 'content-type' --> 'Content-Type'
+const createAllFakeHeaders = (headers) => {
+  const fakeHeaders = Object.keys(headers).map(k => `${k}: ${headers[k]}`);
+
+  fakeHeaders.push(''); // This element in the array is important because generates a valid response headers
+
+  return fakeHeaders.join('\n');
+};
+
+const fakeHeaders = {
+  'content-type': 'application/json; charset=utf-8'
+}
+const allFakeHeaders = createAllFakeHeaders(fakeHeaders);
+
 export const name = 'XMLHttpRequest';
 export const Reference = nativeXHR;
 export const fakeService = helpers => class XMLHttpRequestInterceptor {
@@ -68,5 +82,15 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
     this._requestHeaders[name] = value;
 
     this.xhr.setRequestHeader(name, value);
+  }
+
+  getResponseHeader(name) {
+    const header = this.xhr.getResponseHeader(name) || fakeHeaders[name];
+    return header;
+  }
+
+  getAllResponseHeaders() {
+    const headers = this.xhr.getAllResponseHeaders() || allFakeHeaders;
+    return headers;
   }
 };

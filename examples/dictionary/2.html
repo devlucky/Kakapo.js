@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="styles.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Kakapo - Dictionary</title>
+  </head>
+  <body>
+    <div class="search__container">
+      <h1 class="title is-1">Urban Dictionary</h1>
+      <label class="label">Word:</label>
+      <p class="control has-addons">
+        <input class="input js-word" type="text" placeholder="Type a word..." value="car">
+        <button class="button is-info js-search-word">Search</button>
+      </p>
+      <div class="js-tags-container tags__container"></div>
+    </div>
+    <div class="js-words-container words__container"></div>
+    <script src="node_modules/superagent/superagent.js"></script>
+    <!-- <script src="../../lib/kakapo.js"></script> -->
+    <!-- <script src="kakapo-config.js"></script> -->
+    <script src="app.js"></script>
+  </body>
+</html>

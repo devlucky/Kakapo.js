@@ -1,0 +1,19 @@
+{
+  "name": "kakapo-dictionary-example",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "styles": "node-sass styles.scss styles.css -w"
+  },
+  "author": "kakapo-team",
+  "license": "MIT",
+  "dependencies": {
+    "bulma": "0.0.26",
+    "superagent": "^2.0.0-alpha.3",
+    "whatwg-fetch": "^1.0.0"
+  },
+  "devDependencies": {
+    "node-sass": "^3.7.0"
+  }
+}
