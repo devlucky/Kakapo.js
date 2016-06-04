@@ -43,19 +43,24 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
     const onloadCallback = this.onload;
     const successCallback = onreadyCallback || onloadCallback;
 
+    //Intercept: Fire fake handler
     if (handler && successCallback) {
       const params = this.getParams(this.url, this.method);
       const query = helpers.getQuery(this.url);
       const headers = this._requestHeaders;
+      //TODO: Pass 'body' to handler
+      const response = JSON.stringify(handler({params, query, headers}));
 
       this.readyState = 4;
       this.status = 200; // @TODO (zzarcon): Support custom status codes
-      //TODO: Pass 'body' to handler
-      this.responseText = this.response = handler({params, query, headers});
+
+      //TODO: should 'this.response' be the response string or the response json?
+      this.responseText = this.response = response;
 
       return successCallback();
     }
 
+    //Passthrough: Fire normal handler
     //TODO: Automatically set all the properties
     xhr.onreadystatechange = () => {
       this.readyState = xhr.readyState;
