@@ -1,6 +1,7 @@
 //TODO: Use robo hash api for avatars
 //TODO: Use loading button
 //TODO: Display audio
+//TODO: Handle "No results" state
 (function() {
   const defaultWord = 'car';
   const $ = (selector) => document.querySelector(selector);
@@ -14,7 +15,6 @@
         .get(url)
         .set('X-Mashape-Key', mashapeKey)
         .end(function(err, res) {
-          debugger
           if (err) return reject(err);
 
           resolve(res.body);
@@ -106,7 +106,6 @@
 
     //Superagent
     return request(url).then(res => {
-      debugger;
       elements.button.classList.remove('is-loading');
       return res;
     }).catch(err => {
