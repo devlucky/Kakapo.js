@@ -211,7 +211,7 @@ const xhr = new XMLHttpRequest();
 xhr.onreadystatechange = () => {
   if (xhr.readyState !== 4) return;
 
-  const response = xhr.responseText;
+  const response = JSON.parse(xhr.responseText);
   console.log(response[0].id === 1);
   console.log(response[1].id === 2);
 };
@@ -222,46 +222,117 @@ xhr.send();
 
 ### Database candyness
 
-```javascript
-import {Database, Router, Server} from 'Kakapo';
-  
-const router = new Router();
+Check how easy to build a consistent CRUD Api with the kakapo db.
 
-router.get('/users/', (request) => {
-  return 
+```javascript
+import {Database, Router, Server, Response as KakapoResponse} from 'Kakapo';
+  
+const sever = new Server();
+const router = new Router();
+const databse = new Database();
+
+database.register('user', faker => {
+  return {
+    firstName: faker.name.firstName,
+    lastName: faker.name.lastName,
+    age: 24
+  };
+});
+
+database.create('user', 5);
+
+router.get('/users', (request, db) => {
+  return db.all('user');
+});
+router.post('/users', (request, db) => {
+  const user = JSON.parse(request.body);
+
+  db.push('user', user);
+
+  return user;
+});
+router.put('/users/:user_id', (request, db) => {
+  const newLastName = JSON.parse(request.body).lastName;
+  const user = db.findOne('user', request.params.user_id);
+
+  user.lastName = newLastName;
+  user.save();
+
+  return user;
+});
+router.delete('/users/:user_id', (request, db) => {
+  const user = db.findOne('user', request.params.user_id);
+  const code = user ? 200 : 400;
+  const body = {code};
+  
+  user && user.delete();
+
+  return new KakapoResponse(code, body);
 });
 
 const server = new Server();
 
+server.use(database);
 server.use(router);
 
-// app.js
-fetch('/users', users => {
-  console.log(users[0].id === 1);
-  console.log(users[1].id === 2);
-});
+const getUsers = () => {
+  return fetch('/users').then(r => r.json());
+}
+
+const createUser = (user) => {
+  return $.post('/users', user);
+};
+
+const updateLast = () => {
+  return $.ajax({
+    url: '/users/6',
+    method: 'PUT',
+    data: {lastName: 'Zarco'}
+  });
+};
+
+const deleteFirst = () => {
+  return $.ajax({
+    url: '/users/1',
+    method: 'DELETE'
+  });
+};
+
+getUsers() // users[0].id === 1, users.length === 5
+  .then(createUser.bind(null, {firstName: 'Hector'})) // response.id === 6, response.firstName === 'Hector'
+  .then(deleteFirst) // response.code === 200
+  .then(getUsers) // users[0].id == 2, users[4].id == 6, users.length == 5
+  .then(updateLast) // user.id == 6, user.lastName == 'Zarco'
+  .then(getUsers) // users.length == 5
+
 ```
 
 ### Passthrough
 
+You don't need to do anything in order to keep your existing request working as they were before. Kakapo will just passthrough all the request that doesn't match any of the defined routes and fire the associated callback.
+
 ```javascript
 import {Router, Server} from 'Kakapo';
   
+const server = new Server();
 const router = new Router();
 
-router.get('/users/', (request) => {
-  return 
+router.get('/users', (request) => {
+  return 'Kakapo';
 });
 
 const server = new Server();
 
 server.use(router);
 
-// app.js
 fetch('/users', users => {
-  console.log(users[0].id === 1);
-  console.log(users[1].id === 2);
+  users == 'Kakapo';
 });
+
+fetch('https://api.github.com/users', users => {
+  //Real Github users data
+});
+
 ```
 
 ### Advanced example
@@ -279,7 +350,6 @@ const server = new Server();
 
 server.use(router);
 
-// app.js
 fetch('/users', users => {
   console.log(users[0].id === 1);
   console.log(users[1].id === 2);
@@ -292,7 +362,7 @@ fetch('/users', users => {
 
 Every project needs a TODO App, so here is the Kakapo one. Straightforward vanilla js app, uses the **fetch api** for the networking part.
 
-[Todo-app repo](https://github.com/devlucky/Kakapo.js/tree/master/examples/todo-app)
+[Check the demo](https://kakapo-todo-app.firebaseapp.com/) or [look at the code](https://github.com/devlucky/Kakapo.js/tree/master/examples/todo-app)
 
 ![](http://cl.ly/1K1z1G102X1P/Screen%20Recording%202016-05-16%20at%2010.06%20PM.gif)
 
@@ -300,7 +370,7 @@ Every project needs a TODO App, so here is the Kakapo one. Straightforward vanil
 
 Basic github users search example, based 100% on the (Github Api)[https://developer.github.com/v3]. It shows you how easy is to replicate the logic of a backend with Kakapo and iterate faster when building the UI. This example also uses jQuery just to demostrate the compatibility with Kakapo.
 
-[Github explorer repo](https://github.com/devlucky/Kakapo.js/tree/master/examples/github-explorer)
+[Check the demo](https://kakapo-github-explorer.firebaseapp.com) or [look at the code](https://github.com/devlucky/Kakapo.js/tree/master/examples/github-explorer)
 
 ![](https://raw.github.com/devlucky/Kakapo.js/master/examples/github-explorer/demo.gif)
 
@@ -388,7 +458,7 @@ Database along with the Router is also one of the most important components, if 
 
 **Factories**
 
-They come with (Faker)[https://github.com/Marak/faker.js] a cool library to generate fake data
+They come with [Faker](https://github.com/Marak/faker.js) a cool library to generate fake data
 Just a brief example of what you can achieve with the db:
 
 ```javascript
@@ -492,7 +562,35 @@ server.use(router);
 
 ## Serializers
 
-JSONApi  
+This is another component very familiar in backend laguages, Serializers offers you a way to abstract the **render** part of your entities. 
+In this example we cover a common case in which you have different versions of your Api and you want to represent that in Kakapo in the same way
+
+```javascript
+const ApiV2Serializer = (record, type) => {
+  const id = record.id;
+  const metadata = {created_at: new Date()};
+  const attributes = Object.assign({}, record, metadata);
+
+  return {
+    id,
+    type,
+    attributes
+  };
+};
+
+const db = new Database();
+
+db.register('user', () => ({
+  firstName: 'Hector',
+  lastName: 'Zarco',
+  age: 24,
+}), ApiV2Serializer);
+
+db.register('comment', () => ({
+  text: 'msg'
+}), ApiV2Serializer);
+
+```
 
 ## Interceptors
 
@@ -516,10 +614,48 @@ server.use(fetchRouter);
 server.use(xhrRouter);
   
 ```
+
 ## Scenarios
-  
+
+```javascript
+import {Server, Router, Database} from 'kakapo';
+
+const userFactory = (faker) => {
+  return {
+    name: faker.name.findName,
+    age: 24,
+    city: 'Valencia'
+  }
+};
+const usersHandler = (request, db) => db.all('user');
+const wifiServer = new Server({requestDelay: 150});
+const threeGServer = new Server({requestDelay: 1000});
+const router = new Router();
+const chillDB = new Database();
+const stressfulDB = new Database();
+
+chillDB.register('user', userFactory);
+chillDB.create('user', 5);
+
+stressfulDB.register('user', userFactory);
+stressfulDB.create('user', 1000);
+
+wifiServer.get('/users', usersHandler);
+threeGServer.get('/users', usersHandler);
+
+//Pick the server with more latency if you want to check how the spinner looks like
+//server.use(wifiServer);
+server.use(threeGServer);
+
+//Here you just have to switch between different databases in order to test the UI with tons of users
+//server.use(chillDB);
+server.use(stressfulDB);
+
+```  
+
 ## Fake data
-As mention above, you can use [Fake](https://github.com/Marak/faker.js) for generate fake data, take a look at the full demo [here](http://marak.com/faker.js/). Also note that you can define nested properties and use Faker on them:
+
+As mention above, you can use [Faker](https://github.com/Marak/faker.js) for generate fake data, take a look at the full demo [here](http://marak.com/faker.js/). Also note that you can define nested properties and use Faker on them:
 
 ```javascript
 db.register('user', faker => {
@@ -534,7 +670,7 @@ db.register('user', faker => {
 });
 ```
 
-## ROADMAP
+# ROADMAP
 
 **Full suport for JSONApiSerializer**
 
