@@ -6,7 +6,8 @@ import * as integrationSpecs from '../specs/integration';
 document.addEventListener('DOMContentLoaded', () => {
   tapeDOM.installCSS();
   tapeDOM.stream(tape);
-
-  Object.keys(integrationSpecs).forEach(specName => integrationSpecs[specName]());
+  
+  integrationSpecs.superagentSpec();
+  // Object.keys(integrationSpecs).forEach(specName => integrationSpecs[specName]());
   // Object.keys(specs).forEach(specName => specs[specName]());
 });
