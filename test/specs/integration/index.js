@@ -1,0 +1,1 @@
+export { jquerySpec } from './jquery_spec';

@@ -28,6 +28,7 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
     const onloadCallback = this.onload;
     const successCallback = onreadyCallback || onloadCallback;
 
+    //Intercept: Fire fake handler
     if (handler && successCallback) {
       //TODO: Pass 'body' to KakapoRequest
       const request = new KakapoRequest({
@@ -36,14 +37,17 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
         headers: this._requestHeaders
       });
       const db = helpers.getDB();
+      const response = JSON.stringify(handler(request, db));
 
       this.readyState = 4;
       this.status = 200; // @TODO (zzarcon): Support custom status codes
-      this.responseText = this.response = handler(request, db);
-
+      //TODO: should 'this.response' be the response string or the response json?
+      this.responseText = this.response = response;
+      
       return successCallback();
     }
 
+    //Passthrough: Fire normal handler
     //TODO: Automatically set all the properties
     xhr.onreadystatechange = () => {
       this.readyState = xhr.readyState;
