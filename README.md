@@ -6,7 +6,7 @@
 [![npm license](https://img.shields.io/npm/l/awesome-badges.svg)](https://tldrlegal.com/license/mit-license)
 <img src="http://benschwarz.github.io/bower-badges/badge@2x.png" width="130" height="25">
 
-> Next generation mocking library in Javascript - [docs](http://devlucky.github.io/kakapo-js)
+> Next generation mocking framework in Javascript - [docs](http://devlucky.github.io/kakapo-js)
 
 ## Contents
 - [Features](#features)
