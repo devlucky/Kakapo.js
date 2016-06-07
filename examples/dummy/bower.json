@@ -1,0 +1,14 @@
+{
+  "name": "kakapo-dummy-app",
+  "description": "Dummy app that shows how to integrate Kakapo.js",
+  "main": "index.js",
+  "authors": [
+    "kakapo-team"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/devlucky/Kakapo.js",
+  "private": true,
+  "dependencies": {
+    "kakapo": "https://github.com/devlucky/Kakapo.js.git#master"
+  }
+}

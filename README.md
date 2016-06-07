@@ -1,13 +1,12 @@
-# Kakapo.js [WIP]
+# Kakapo.js
 [![Build Status](https://travis-ci.org/devlucky/Kakapo.js.svg?branch=master)](https://travis-ci.org/devlucky/Kakapo.js)
 [![codecov.io](https://codecov.io/github/devlucky/Kakapo.js/coverage.svg?branch=master)](https://codecov.io/github/devlucky/Kakapo.js?branch=master)
-[![npm version](https://badge.fury.io/js/kakapo.svg)](https://badge.fury.io/js/kakapo)
+[![npm version](https://badge.fury.io/js/kakapo.svg)](https://npmjs.com/package/kakapo)
 [![dependencies](https://david-dm.org/devlucky/Kakapo.js.svg)](https://david-dm.org/devlucky/Kakapo.js)
 [![npm license](https://img.shields.io/npm/l/awesome-badges.svg)](https://tldrlegal.com/license/mit-license)
+<img src="http://benschwarz.github.io/bower-badges/badge@2x.png" width="130" height="25">
 
-> Next generation mocking framework in Javascript
-
-Teach Kakapo how to respond!!! that's the motto behind Kakapo.js, the client-side framework for http mocking.
+> Next generation mocking framework in Javascript - [docs](http://devlucky.github.io/kakapo-js)
 
 ## Contents
 - [Features](#features)
@@ -29,6 +28,13 @@ Teach Kakapo how to respond!!! that's the motto behind Kakapo.js, the client-sid
   - [Interceptors](#interceptors)
 
 Kakapo its a full featured http mocking library, he allows you to entirely replicate your backend logic in simple and declaritive way directly in the browser. This way you can easily prototype and develop the whole Application without backend and just deactivate Kakapo when you go production. In order to achieve that Kakapo gives you a set of utilities like Routing, Database, Response, Request and so on...
+
+## Installation
+
+`$ npm i kakapo -D`
+
+`$ bower i kakapo -D`
+
 
 # Examples
 
@@ -680,4 +686,4 @@ db.register('user', faker => {
 
 # Authors 
 
-[@oskarcieslik](https://github.com/oskarcieslik) - [@zzarcon](https://github.com/zzarcon)
+[@rpunkfu](https://github.com/rpunkfu) - [@zzarcon](https://github.com/zzarcon)
