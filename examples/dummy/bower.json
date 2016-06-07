@@ -8,11 +8,7 @@
   "license": "MIT",
   "homepage": "https://github.com/devlucky/Kakapo.js",
   "private": true,
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ]
+  "dependencies": {
+    "kakapo": "https://github.com/devlucky/Kakapo.js.git#master"
+  }
 }
