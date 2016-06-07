@@ -5,7 +5,7 @@
 [![dependencies](https://david-dm.org/devlucky/Kakapo.js.svg)](https://david-dm.org/devlucky/Kakapo.js)
 [![npm license](https://img.shields.io/npm/l/awesome-badges.svg)](https://tldrlegal.com/license/mit-license)
 
-> Next generation mocking library in Javascript
+> Next generation mocking framework in Javascript
 
 Teach Kakapo how to respond!!! that's the motto behind Kakapo.js, the client-side framework for http mocking.
 
