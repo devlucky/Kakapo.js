@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   tapeDOM.installCSS();
   tapeDOM.stream(tape);
   
-  integrationSpecs.superagentSpec();
+  integrationSpecs.fetchPolyfillSpec();
   // Object.keys(integrationSpecs).forEach(specName => integrationSpecs[specName]());
   // Object.keys(specs).forEach(specName => specs[specName]());
 });
