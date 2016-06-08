@@ -1,0 +1,20 @@
+{
+  "name": "kakapo-dummy-app",
+  "version": "0.1.0",
+  "description": "Dummy app that shows how to integrate Kakapo.js",
+  "main": "index.js",
+  "scripts": {
+    "browserify": "browserify browserify_test.js -o dist/browserify_bundle.js -t [ babelify --presets [ es2015 ] ]",
+    "browserify_require": "browserify browserify_require_test.js -o dist/browserify_require_bundle.js -t [ babelify --presets [ es2015 ] ]"
+  },
+  "author": "kakapo-team",
+  "license": "MIT",
+  "dependencies": {
+    "kakapo": "^0.1.2"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.9.0",
+    "babelify": "^7.3.0",
+    "browserify": "^13.0.1"
+  }
+}

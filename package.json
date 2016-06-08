@@ -1,8 +1,8 @@
 {
   "name": "kakapo",
-  "version": "0.1.2",
-  "description": "Next generation mocking library in Javascript",
-  "main": "lib/",
+  "version": "0.1.3",
+  "description": "Next generation mocking framework in Javascript",
+  "main": "src/index.js",
   "scripts": {
     "build": "make build",
     "codecov": "make codecov",
@@ -81,5 +81,15 @@
   },
   "directories": {
     "test": "test"
-  }
+  },
+  "keywords": [
+    "mocking",
+    "framework",
+    "kakapo",
+    "fetch",
+    "XMLHttpRequest",
+    "fake",
+    "stub",
+    "request"
+  ]
 }

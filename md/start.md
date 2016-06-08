@@ -1,29 +1,34 @@
-# Kakapo.js [WIP]
+# Kakapo.js <img src="https://sdl-stickershop.line.naver.jp/products/0/0/1/1087538/LINEStorePC/main.png?__=20150924" width="40" height="40" >
 [![Build Status](https://travis-ci.org/devlucky/Kakapo.js.svg?branch=master)](https://travis-ci.org/devlucky/Kakapo.js)
 [![codecov.io](https://codecov.io/github/devlucky/Kakapo.js/coverage.svg?branch=master)](https://codecov.io/github/devlucky/Kakapo.js?branch=master)
-[![npm version](https://badge.fury.io/js/kakapo.svg)](https://badge.fury.io/js/kakapo)
+[![npm version](https://badge.fury.io/js/kakapo.svg)](https://npmjs.com/package/kakapo)
 [![dependencies](https://david-dm.org/devlucky/Kakapo.js.svg)](https://david-dm.org/devlucky/Kakapo.js)
 [![npm license](https://img.shields.io/npm/l/awesome-badges.svg)](https://tldrlegal.com/license/mit-license)
+<img src="http://benschwarz.github.io/bower-badges/badge@2x.png" width="130" height="25">
 
-> Next generation mocking library in Javascript
-
-Teach Kakapo how to respond!!! that's the motto behind Kakapo.js, the client-side framework for http mocking.
+> Next generation mocking framework in Javascript - [docs](http://devlucky.github.io/kakapo-js)
 
 ## Contents
-- [Features](#features)
-- [Introduction](#introduction)
-  - [Why Kakapo?](#why-kakapo)
-  - [Concepts](#concepts)
-  - [How it works?](#how-it-works)
-- [Usage](#usage)
+- [Getting started](#getting-started)
   - [Installation](#installation)
-  - [Examples](#examples)
+- [Examples](#examples)
+  - [Basic](#basic)
+  - [Using the DB](#using-the-db)
+  - [Unchaining the Router](#unchaining-the-router)
+  - [Fetch & XMLHttpRequest support](#fetch--xmlhttprequest-support)
+  - [Database candyness](#database-candyness)
+  - [Passthrough](#passthrough)
+  - [Advanced example](#advanced-example)
+- [Demo Apps](#demo-apps)
+  - [TODO App](#todo-app)
+  - [Github explorer](#github-explorer)
 - [Components](#components)
   - [Server](#server)
   - [Router](#router)
   - [Database](#database)
-  - [Factories](#factories)
-  - [Scenarios](#scenarios)
+  - [Response](#response)
   - [Serializers](#serializers)
-  - [Fake Data](#fake-data)
   - [Interceptors](#interceptors)
+  - [Scenarios](#scenarios)
+  - [Fake data](#fake-data)
+- [Roadmap](#roadmap)
