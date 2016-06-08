@@ -1,4 +1,4 @@
-# Kakapo.js
+# Kakapo.js <img src="https://sdl-stickershop.line.naver.jp/products/0/0/1/1087538/LINEStorePC/main.png?__=20150924" width="40" height="40" >
 [![Build Status](https://travis-ci.org/devlucky/Kakapo.js.svg?branch=master)](https://travis-ci.org/devlucky/Kakapo.js)
 [![codecov.io](https://codecov.io/github/devlucky/Kakapo.js/coverage.svg?branch=master)](https://codecov.io/github/devlucky/Kakapo.js?branch=master)
 [![npm version](https://badge.fury.io/js/kakapo.svg)](https://npmjs.com/package/kakapo)
