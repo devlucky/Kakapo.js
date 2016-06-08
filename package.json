@@ -80,5 +80,15 @@
   },
   "directories": {
     "test": "test"
-  }
+  },
+  "keywords": [
+    "mocking",
+    "framework",
+    "kakapo",
+    "fetch",
+    "XMLHttpRequest",
+    "fake",
+    "stub",
+    "request"
+  ]
 }

@@ -8,6 +8,16 @@
   ],
   "license": "MIT",
   "homepage": "https://github.com/devlucky/Kakapo.js",
+  "keywords": [
+    "mocking",
+    "framework",
+    "kakapo",
+    "fetch",
+    "XMLHttpRequest",
+    "fake",
+    "stub",
+    "request"
+  ],
   "ignore": [
     "**/.*",
     "node_modules",
