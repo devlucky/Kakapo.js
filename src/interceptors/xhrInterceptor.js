@@ -33,7 +33,6 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
     this.xhr.open(method, url);
   }
 
-  //TODO: Handle 'data' parameter
   //TODO: Support all handlers 'progress', 'loadstart', 'abort', 'error'
   send(data) {
     const handler = helpers.getHandler(this.url, this.method);
@@ -44,10 +43,10 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
 
     //Intercept: Fire fake handler
     if (handler && successCallback) {
-      //TODO: Pass 'body' to KakapoRequest
       const request = new KakapoRequest({
         params: helpers.getParams(this.url, this.method),
         query: helpers.getQuery(this.url),
+        body: data,
         headers: this._requestHeaders
       });
       const db = helpers.getDB();

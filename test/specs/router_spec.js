@@ -144,6 +144,28 @@ export const routerSpec = () => {
       });
   });
 
+  test('Router # post # XMLHttpRequest', (assert) => {
+    assert.plan(1);
+
+    const server = new Server();
+    const router = new Router();
+    const body = JSON.stringify({ firstName: 'Joan', lastName: 'Romano' });
+
+    router.post('/hector', request => {
+      const body = JSON.parse(request.body);
+      
+      assert.equal(body.firstName, 'Joan', 'Request body has expected values when using XMLHttpRequest');
+    });
+
+    server.use(router);
+
+    const xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = () => {};
+    xhr.open('POST', '/hector', true);
+    xhr.send(body);
+  });
+
   test('Router#put', (assert) => {
     assert.plan(6);
 
