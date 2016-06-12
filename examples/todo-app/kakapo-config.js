@@ -1,4 +1,5 @@
 ((global) => {
+  const server = new global.Kakapo.Server();
   const router = new global.Kakapo.Router();
   const db = new global.Kakapo.Database();
 
@@ -32,4 +33,7 @@
     todo.delete();
     return db.all('todo');
   });
+
+  server.use(router);
+  server.use(db);
 })(this);
