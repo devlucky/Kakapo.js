@@ -144,6 +144,28 @@ export const routerSpec = () => {
       });
   });
 
+  test('Router # post # XMLHttpRequest', (assert) => {
+    assert.plan(1);
+
+    const server = new Server();
+    const router = new Router();
+    const body = JSON.stringify({ firstName: 'Joan', lastName: 'Romano' });
+
+    router.post('/hector', request => {
+      const body = JSON.parse(request.body);
+      
+      assert.equal(body.firstName, 'Joan', 'Request body has expected values when using XMLHttpRequest');
+    });
+
+    server.use(router);
+
+    const xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = () => {};
+    xhr.open('POST', '/hector', true);
+    xhr.send(body);
+  });
+
   test('Router#put', (assert) => {
     assert.plan(6);
 
@@ -217,7 +239,7 @@ export const routerSpec = () => {
   });
 
   test('Router#XMLHttpRequest', (assert) => {
-    assert.plan(7);
+    assert.plan(8);
 
     const server = new Server();
     const router = new Router();
@@ -257,11 +279,13 @@ export const routerSpec = () => {
 
       const response = xhr2.responseText;
       const texts = response;
+      const responseObject = JSON.parse(response);
 
       assert.comment('xhr GET /comments');
       assert.ok(true, 'Handler is fired by a fake function.');
-      assert.equal(typeof response, 'object', 'Response is present.');
-      assert.equal(texts.length, 2, 'Response body has expected values.');
+      assert.equal(typeof response, 'string', 'Response is present.');
+      assert.equal(typeof responseObject, 'object', 'Response is present.');
+      assert.equal(responseObject.length, 2, 'Response body has expected values.');
     };
     xhr2.open('GET', '/comments', true);
     xhr2.send();

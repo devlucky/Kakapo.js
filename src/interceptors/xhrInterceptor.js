@@ -2,6 +2,20 @@ import { nativeXHR } from '../helpers/nativeServices';
 import { extendWithBind } from '../helpers/util';
 import { Request as KakapoRequest } from '../Request';
 
+//TODO: Should this function capitalize each header name? 'content-type' --> 'Content-Type'
+const createAllFakeHeaders = (headers) => {
+  const fakeHeaders = Object.keys(headers).map(k => `${k}: ${headers[k]}`);
+
+  fakeHeaders.push(''); // This element in the array is important because generates a valid response headers
+
+  return fakeHeaders.join('\n');
+};
+
+const fakeHeaders = {
+  'content-type': 'application/json; charset=utf-8'
+}
+const allFakeHeaders = createAllFakeHeaders(fakeHeaders);
+
 export const name = 'XMLHttpRequest';
 export const Reference = nativeXHR;
 export const fakeService = helpers => class XMLHttpRequestInterceptor {
@@ -19,7 +33,6 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
     this.xhr.open(method, url);
   }
 
-  //TODO: Handle 'data' parameter
   //TODO: Support all handlers 'progress', 'loadstart', 'abort', 'error'
   send(data) {
     const handler = helpers.getHandler(this.url, this.method);
@@ -28,22 +41,26 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
     const onloadCallback = this.onload;
     const successCallback = onreadyCallback || onloadCallback;
 
+    //Intercept: Fire fake handler
     if (handler && successCallback) {
-      //TODO: Pass 'body' to KakapoRequest
       const request = new KakapoRequest({
         params: helpers.getParams(this.url, this.method),
         query: helpers.getQuery(this.url),
+        body: data,
         headers: this._requestHeaders
       });
       const db = helpers.getDB();
+      const response = JSON.stringify(handler(request, db));
 
       this.readyState = 4;
       this.status = 200; // @TODO (zzarcon): Support custom status codes
-      this.responseText = this.response = handler(request, db);
-
+      //TODO: should 'this.response' be the response string or the response json?
+      this.responseText = this.response = response;
+      
       return successCallback();
     }
 
+    //Passthrough: Fire normal handler
     //TODO: Automatically set all the properties
     xhr.onreadystatechange = () => {
       this.readyState = xhr.readyState;
@@ -68,5 +85,15 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
     this._requestHeaders[name] = value;
 
     this.xhr.setRequestHeader(name, value);
+  }
+
+  getResponseHeader(name) {
+    const header = this.xhr.getResponseHeader(name) || fakeHeaders[name];
+    return header;
+  }
+
+  getAllResponseHeaders() {
+    const headers = this.xhr.getAllResponseHeaders() || allFakeHeaders;
+    return headers;
   }
 };
