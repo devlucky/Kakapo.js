@@ -14,21 +14,16 @@ import test from 'tape';
 import request from 'superagent';
 import {Server, Router} from '../../../src';
 
-const server = new Server();
-const router = new Router();
-const response = [{name: 'Hector'}];
-const checkResponse = (assert, response) => assert.equal(response.body[0].name, 'Hector', 'Return the right response');
-
-router.get('/users', request => response)
-router.post('/users', request => response);
-router.put('/users', request => response);
-router.delete('/users', request => response);
-server.use(router);
-
 export const superagentSpec = () => {
+  const response = [{name: 'Hector'}];
+  const checkResponse = (assert, response) => assert.equal(response.body[0].name, 'Hector', 'Return the right response');
+
   test('Integration # superagent # get', (assert) => {
     assert.plan(1);
-
+    const server = new Server();
+    const router = new Router();
+    router.get('/users', request => response)
+    server.use(router);
     request.get('/users').end((err, res) => {
       checkResponse(assert, res);
     });
@@ -36,7 +31,10 @@ export const superagentSpec = () => {
 
   test('Integration # superagent # post', (assert) => {
     assert.plan(1);
-
+    const server = new Server();
+    const router = new Router();
+    router.post('/users', request => response)
+    server.use(router);
     request.post('/users').end((err, res) => {
       checkResponse(assert, res);
     });
@@ -44,7 +42,10 @@ export const superagentSpec = () => {
 
   test('Integration # superagent # put', (assert) => {
     assert.plan(1);
-
+    const server = new Server();
+    const router = new Router();
+    router.put('/users', request => response)
+    server.use(router);
     request.put('/users').end((err, res) => {
       checkResponse(assert, res);
     });
@@ -52,17 +53,12 @@ export const superagentSpec = () => {
 
   test('Integration # superagent # del', (assert) => {
     assert.plan(1);
-
+    const server = new Server();
+    const router = new Router();
+    router.delete('/users', request => response)
+    server.use(router);
     request.del('/users').end((err, res) => {
       checkResponse(assert, res);
     });
   });
-
-  test('Integration # superagent # get', (assert) => {
-    assert.plan(1);
-
-    request('/users', function(err, res){
-      checkResponse(assert, res);
-    });
-  }); 
 };
