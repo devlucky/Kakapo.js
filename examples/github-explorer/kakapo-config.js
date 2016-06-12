@@ -1,5 +1,6 @@
 (function() {
   const host = 'https://api.github.com';
+  const server = new Kakapo.Server();
   const router = new Kakapo.Router({host});
   const db = new Kakapo.Database();
   const stripedProperties = ['name', 'company', 'blog', 'location', 'email', 'hireable', 'bio', 'public_repos', 'public_gists', 'followers', 'following', 'created_at', 'updated_at'];
@@ -70,4 +71,7 @@
       .filter(u => u.login.toLowerCase().indexOf(q) >= 0)
       .sort((a, b) => a[sort] < b[sort] ? -1 : (a[sort] > b[sort] ? 1 : 0));
   });
+
+  server.use(router);
+  server.use(db);
 })();
