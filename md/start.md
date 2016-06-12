@@ -18,7 +18,6 @@
   - [Fetch & XMLHttpRequest support](#fetch--xmlhttprequest-support)
   - [Database candyness](#database-candyness)
   - [Passthrough](#passthrough)
-  - [Advanced example](#advanced-example)
 - [Demo Apps](#demo-apps)
   - [TODO App](#todo-app)
   - [Github explorer](#github-explorer)
@@ -31,4 +30,5 @@
   - [Interceptors](#interceptors)
   - [Scenarios](#scenarios)
   - [Fake data](#fake-data)
+- [Browser support](#browser-support)
 - [Roadmap](#roadmap)
