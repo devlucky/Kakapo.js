@@ -1,4 +1,5 @@
-import {Router, Database} from '../index';
+import {Router} from '../Router';
+import {Database} from '../Database';
 
 export class Server {
   constructor(config) {
