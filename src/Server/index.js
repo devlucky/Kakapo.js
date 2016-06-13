@@ -1,6 +1,9 @@
 import {Router} from '../Router';
 import {Database} from '../Database';
 
+const isRouter = entity => entity instanceof Router;
+const isDb = entity => entity instanceof Database;
+
 export class Server {
   constructor(config) {
     this.config = config;
@@ -9,9 +12,9 @@ export class Server {
   }
 
   use(entity) {
-    if (entity instanceof Database) {
+    if (isDb(entity)) {
       this.db = entity;
-    } else if (entity instanceof Router) {
+    } else if (isRouter(entity)) {
       this.router = entity;
       this.router.intercept();
     } else {
@@ -19,6 +22,16 @@ export class Server {
     }
 
     this.linkEntities();
+  }
+
+  remove(entity) {
+    if (isDb(entity) && this.router && this.router.interceptorConfig.db === entity) {
+      this.router.interceptorConfig.db = null;
+    } else if (isRouter(entity) && this.router == entity) {
+      this.router.reset();
+    } else {
+      console.warn("KAKAPO: Entity doesn't belongs to server", entity);
+    }
   }
 
   linkEntities() {
