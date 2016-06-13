@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import test from 'tape';
-import { Database } from '../../src';
+import { Server, Router, Database } from '../../src';
 
 const userFactory = faker => ({
   firstName: faker.name.firstName,
@@ -312,5 +312,45 @@ export const databaseSpec = () => {
       'Returns the same record when no changes made.');
 
     assert.end();
+  });
+
+  test('recordFactory # remove side effects', (assert) => {
+    assert.plan(4);
+
+    const server = new Server();
+    const router = new Router();
+    const database = new Database();
+
+    database.register('foo', _ => {
+      return {
+        foo: 'bar'
+      };
+    });
+    database.create('foo', 1);
+
+    router.get('/side_effects', (request, db) => {
+      return db.first('foo');
+    });
+
+    server.use(router);
+    server.use(database);
+
+    fetch('/side_effects').then(r => r.json()).then(response => {
+      assert.equal(response.save, undefined, 'Response doesnt contain save method for fetch api');
+      assert.equal(response.delete, undefined, 'Response doesnt contain delete method for fetch api');
+    });
+
+    const xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState !== 4) return;
+
+      const response = JSON.parse(xhr.responseText);
+      
+      assert.equal(response.save, undefined, 'Response doesnt contain save method for xhr');
+      assert.equal(response.delete, undefined, 'Response doesnt contain delete method for xhr');      
+    };
+    xhr.open('GET', '/side_effects', true);
+    xhr.send();
   });
 };
