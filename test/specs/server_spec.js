@@ -49,4 +49,48 @@ export const serverSpec = () => {
     server.use(router);
     fetch('/users');
   });
+
+  test('Server # remove database', (assert) => {
+    assert.plan(2);
+
+    const myDB = new Database();
+    const router = new Router();
+    const server = new Server();
+
+    router.get('/fetch_db', (request, db) => {
+      assert.equal(db, myDB, 'The passed db is fine');
+    });
+    router.get('/fetch_nodb', (request, db) => {
+      assert.equal(db, null, 'The passed db is undefined since we have been removed it from the server');
+    });
+
+    server.use(myDB);
+    server.use(router);
+    fetch('/fetch_db');
+
+    server.remove(myDB);
+    fetch('/fetch_nodb');
+  });
+  
+  test('Server # remove router', (assert) => {
+    assert.plan(2);
+
+    const router = new Router();
+    const server = new Server();
+
+    router.get('/fetch', _ => {
+      assert.ok(true, 'Server is active before being removed');
+    });
+    router.get('/fetch_fail', _ => {
+      assert.fail('Request is being intercepted when router is removed');
+    });
+
+    server.use(router);
+    fetch('/fetch');
+
+    server.remove(router);
+    fetch('/fetch_fail').then(response => {
+      assert.ok(response.status, 404, 'Server is inactive after removal');
+    });
+  });
 };
