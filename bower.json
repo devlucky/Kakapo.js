@@ -1,6 +1,6 @@
 {
   "name": "kakapo",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Next generation mocking framework in Javascript",
   "main": "lib/kakapo.js",
   "authors": [
