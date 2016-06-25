@@ -1,6 +1,8 @@
-import { nativeXHR } from '../helpers/nativeServices';
 import { extendWithBind } from '../helpers/util';
 import { Request as KakapoRequest } from '../Request';
+import { interceptorHelper } from './interceptorHelper';
+
+let nativeXHR;
 
 //TODO: Should this function capitalize each header name? 'content-type' --> 'Content-Type'
 const createAllFakeHeaders = (headers) => {
@@ -15,10 +17,8 @@ const fakeHeaders = {
   'content-type': 'application/json; charset=utf-8'
 }
 const allFakeHeaders = createAllFakeHeaders(fakeHeaders);
-
-export const name = 'XMLHttpRequest';
-export const Reference = nativeXHR;
-export const fakeService = helpers => class XMLHttpRequestInterceptor {
+const name = 'XMLHttpRequest';
+const fakeService = helpers => class XMLHttpRequestInterceptor {
   constructor() {
     this.xhr = new nativeXHR();
     this._requestHeaders = {};
@@ -88,12 +88,18 @@ export const fakeService = helpers => class XMLHttpRequestInterceptor {
   }
 
   getResponseHeader(name) {
-    const header = this.xhr.getResponseHeader(name) || fakeHeaders[name];
-    return header;
+    return this.xhr.getResponseHeader(name) || fakeHeaders[name];
   }
 
   getAllResponseHeaders() {
-    const headers = this.xhr.getAllResponseHeaders() || allFakeHeaders;
-    return headers;
+    return this.xhr.getAllResponseHeaders() || allFakeHeaders;
   }
+};
+
+export const enable = (config) => {
+  nativeXHR = nativeXHR || window.XMLHttpRequest;
+  window[name] = fakeService(interceptorHelper(config));
+};
+export const disable = () => {
+  window[name] = nativeXHR;
 };

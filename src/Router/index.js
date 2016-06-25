@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { interceptors } from '../interceptors';
-
 import environment from '../config/environment';
 
 const browserStrategies = ['fetch', 'XMLHttpRequest'];
@@ -44,6 +43,8 @@ export class Router {
   }
 
   intercept() {
+    const strategies = this.routerConfig.strategies;
+
     _.forEach(strategies, name =>
       interceptors[name].enable(this.interceptorConfig)
     );
