@@ -12,6 +12,7 @@
     "test:karma": "make test-karma",
     "test:karma:watch": "make test-karma-watch",
     "test:travis": "make test-travis",
+    "test:node": "babel-node --presets es2015 test/runners/node.js",
     "semantic-release": "make semantic-release"
   },
   "repository": {

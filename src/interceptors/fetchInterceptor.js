@@ -1,15 +1,14 @@
 import { Response as KakapoResponse } from '../Response';
 import { Request as KakapoRequest } from '../Request';
-import { nativeFetch } from '../helpers/nativeServices';
+import { interceptorHelper } from './interceptorHelper';
 
+let nativeFetch;
 const fakeResponse = (response = {}, headers = {}) => {
   const responseStr = JSON.stringify(response);
   return new window.Response(responseStr, { headers });
 };
-
-export const name = 'fetch';
-export const reference = nativeFetch;
-export const fakeService = helpers => (url, options = {}) => {
+const name = 'fetch';
+const fakeService = helpers => (url, options = {}) => {
   url = url instanceof Request ? url.url : url;
 
   const method = options.method || 'GET';
@@ -43,4 +42,12 @@ export const fakeService = helpers => (url, options = {}) => {
     },
     helpers.getDelay()
   ));
+};
+
+export const enable = (config) => {
+  nativeFetch = nativeFetch || window.fetch;
+  window[name] = fakeService(interceptorHelper(config));
+};
+export const disable = () => {
+  window[name] = nativeFetch;
 };
