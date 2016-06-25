@@ -1,8 +1,13 @@
 import _ from 'lodash';
 import { interceptors } from '../interceptors';
 
+import environment from '../config/environment';
+
+const browserStrategies = ['fetch', 'XMLHttpRequest'];
+//TODO: find proper name for Node.js strategies
+const nodeStrategies = ['http', 'https'];
 const routerDefaultConfig = {
-  strategies: ['fetch', 'XMLHttpRequest'],
+  strategies: environment.browserEnv ? browserStrategies : nodeStrategies
 };
 
 const interceptorDefaultConfig = {
@@ -39,13 +44,13 @@ export class Router {
   }
 
   intercept() {
-    const strategies = this.routerConfig.strategies;
     _.forEach(strategies, name =>
       interceptors[name].enable(this.interceptorConfig)
     );
   }
 
   reset() {
+    //TODO: Don't reset all 'interceptors'
     _.forEach(interceptors, interceptor => interceptor.disable());
   }
 }
