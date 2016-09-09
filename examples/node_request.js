@@ -33,7 +33,16 @@ const getRequest = () => {
 }
 
 const httpsGet = () => {
-  https.get('https://api.github.com/emojis', (res) => {
+  const options = {
+    hostname: 'api.github.com',
+    path: '/emojis',
+    method: 'GET',
+    headers: {
+      'User-Agent': 'Awesome-Octocat-App'
+    }
+  };
+  // https.get('https://api.github.com/emojis', (res) => {
+  https.get(options, res => {
     console.log('statusCode: ', res.statusCode);
     console.log('headers: ', res.headers);
 
@@ -67,5 +76,29 @@ const postRequest = () => {
 
 }
 
+const httpsGet2 = () => {
+  var options = {
+    hostname: 'encrypted.google.com',
+    port: 443,
+    path: '/',
+    method: 'GET'
+  };
+
+  var req = https.request(options, (res) => {
+    console.log('statusCode: ', res.statusCode);
+    console.log('headers: ', res.headers);
+
+    res.on('data', (d) => {
+      // console.log(d);
+    });
+  });
+  req.end();
+
+  req.on('error', (e) => {
+    console.error(e);
+  });
+}
+
 // getRequest();
 httpsGet();
+// httpsGet2();

@@ -4,7 +4,7 @@ import environment from '../config/environment';
 
 const browserStrategies = ['fetch', 'XMLHttpRequest'];
 //TODO: find proper name for Node.js strategies
-const nodeStrategies = ['http', 'https'];
+const nodeStrategies = ['https']; //, 'https'
 const routerDefaultConfig = {
   strategies: environment.browserEnv ? browserStrategies : nodeStrategies
 };
@@ -42,6 +42,9 @@ export class Router {
     this.interceptorConfig.routes[method][path] = handler;
   }
 
+  /**
+   * Enable all active strategies, check 'enable' function of any interceptor
+   */
   intercept() {
     const strategies = this.routerConfig.strategies;
 
