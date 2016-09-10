@@ -56,4 +56,29 @@ export const responseSpec = () => {
 
     assert.ok(response.ok, 'Is aware of success knowing the status code');
   });
+
+  test('Response # code', assert => {
+    assert.plan(2);
+
+    const server = new Server();
+    const router = new Router();
+    const responsePayload = {status: 'error'};
+
+    router.get('/users', request =>
+      new Response(400, responsePayload)
+    );
+
+    server.use(router);
+
+    const xhr = new XMLHttpRequest(); 
+
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        assert.ok(xhr.status === 400, 'Status code is taken from Kakapo Response class');
+        assert.ok(xhr.responseText === JSON.stringify(responsePayload), 'Response body is taken from Kakapo Response class');
+      }
+    };
+    xhr.open('GET', '/users', true);
+    xhr.send();
+  });
 };

@@ -1,4 +1,5 @@
 import { extendWithBind } from '../helpers/util';
+import { Response as KakapoResponse } from '../Response';
 import { Request as KakapoRequest } from '../Request';
 import { interceptorHelper } from './interceptorHelper';
 
@@ -50,12 +51,22 @@ const fakeService = helpers => class XMLHttpRequestInterceptor {
         headers: this._requestHeaders
       });
       const db = helpers.getDB();
-      const response = JSON.stringify(handler(request, db));
+      const response = handler(request, db);
+      const readyState = 4;
+      let status = 200;
+      let payload = response;
 
-      this.readyState = 4;
-      this.status = 200; // @TODO (zzarcon): Support custom status codes
+      if (response instanceof KakapoResponse) {
+        payload = response.body;
+        status = response.code;
+      }
+
+      const responseString = JSON.stringify(payload);
+      
+      this.readyState = readyState;
+      this.status = status;
       //TODO: should 'this.response' be the response string or the response json?
-      this.responseText = this.response = response;
+      this.responseText = this.response = responseString;
       
       return successCallback();
     }
