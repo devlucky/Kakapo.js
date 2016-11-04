@@ -46,7 +46,7 @@ _test-browser--serve:
 	$(SERVE) test/browser
 
 _test-browser--watchify:
-	$(WATCHIFY) test/runners/browser.js -o test/browser/test_bundle.js
+	$(WATCHIFY) test/runners/browser.js -o test/browser/test_bundle.js -v
 
 _test-browser--open:
 	open http://localhost:3000

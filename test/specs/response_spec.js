@@ -23,7 +23,7 @@ export const responseSpec = () => {
   });
 
   test('Response # headers', (assert) => {
-    assert.plan(2);
+    assert.plan(4);
 
     const server = new Server();
     const router = new Router();
@@ -41,6 +41,20 @@ export const responseSpec = () => {
         assert.equal(result.headers.get('x-header-2'), 'two',
           'The second header is correct');
       });
+
+    const xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        assert.equal(this.getResponseHeader('x-header-1'), 'one',
+          'The first header is correct with xhr');
+        assert.equal(this.getResponseHeader('x-header-2'), 'two',
+          'The second header is correct with xhr');
+      }
+    };
+
+    xhr.open('GET', '/users/1', true);
+    xhr.send();
   });
 
   test('Response # error', (assert) => {

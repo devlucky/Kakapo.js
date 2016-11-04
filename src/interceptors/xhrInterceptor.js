@@ -14,15 +14,15 @@ const createAllFakeHeaders = (headers) => {
   return fakeHeaders.join('\n');
 };
 
-const fakeHeaders = {
-  'content-type': 'application/json; charset=utf-8'
-}
-const allFakeHeaders = createAllFakeHeaders(fakeHeaders);
 const name = 'XMLHttpRequest';
 const fakeService = helpers => class XMLHttpRequestInterceptor {
   constructor() {
     this.xhr = new nativeXHR();
     this._requestHeaders = {};
+    this._responseHeaders = {
+      'content-type': 'application/json; charset=utf-8'
+    };
+    this._allFakeHeaders = createAllFakeHeaders(this._responseHeaders);
 
     extendWithBind(this, this.xhr);
   }
@@ -57,8 +57,12 @@ const fakeService = helpers => class XMLHttpRequestInterceptor {
       let payload = response;
 
       if (response instanceof KakapoResponse) {
+        const responseHeaders = response.headers;
+
         payload = response.body;
         status = response.code;
+
+        Object.assign(this._responseHeaders, responseHeaders);
       }
 
       const responseString = JSON.stringify(payload);
@@ -99,11 +103,11 @@ const fakeService = helpers => class XMLHttpRequestInterceptor {
   }
 
   getResponseHeader(name) {
-    return this.xhr.getResponseHeader(name) || fakeHeaders[name];
+    return this.xhr.getResponseHeader(name) || this._responseHeaders[name];
   }
 
   getAllResponseHeaders() {
-    return this.xhr.getAllResponseHeaders() || allFakeHeaders;
+    return this.xhr.getAllResponseHeaders() || this._allFakeHeaders;
   }
 };
 
