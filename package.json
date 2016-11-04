@@ -1,6 +1,6 @@
 {
   "name": "kakapo",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Next generation mocking framework in Javascript",
   "main": "src/index.js",
   "scripts": {
