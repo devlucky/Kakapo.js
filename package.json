@@ -13,7 +13,10 @@
     "test:karma:watch": "make test-karma-watch",
     "test:travis": "make test-travis",
     "test:node": "babel-node --presets es2015 test/runners/node.js",
-    "semantic-release": "make semantic-release"
+    "semantic-release": "make semantic-release",
+    "amend": "git add . && git commit --amend --reuse-message=HEAD",
+    "push": "git push --tags && git push",
+    "release": "npm version patch && make build && npm run amend && npm run push && npm publish"
   },
   "repository": {
     "type": "git",
