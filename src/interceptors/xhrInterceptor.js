@@ -68,7 +68,7 @@ const fakeService = helpers => class XMLHttpRequestInterceptor {
       //TODO: should 'this.response' be the response string or the response json?
       this.responseText = this.response = responseString;
       
-      return successCallback();
+      return successCallback.call(this);
     }
 
     //Passthrough: Fire normal handler
