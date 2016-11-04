@@ -239,7 +239,7 @@ export const routerSpec = () => {
   });
 
   test('Router#XMLHttpRequest', (assert) => {
-    assert.plan(8);
+    assert.plan(10);
 
     const server = new Server();
     const router = new Router();
@@ -274,13 +274,15 @@ export const routerSpec = () => {
     xhr.open('GET', '/doesnt_exist', true);
     xhr.send();
 
-    xhr2.onreadystatechange = () => {
+    xhr2.onreadystatechange = function() {
       if (xhr2.readyState !== 4 || xhr2.status !== 200) { return; }
 
       const response = xhr2.responseText;
       const texts = response;
       const responseObject = JSON.parse(response);
 
+      assert.equal(this.readyState, xhr2.readyState);
+      assert.equal(this.responseText, xhr2.responseText);
       assert.comment('xhr GET /comments');
       assert.ok(true, 'Handler is fired by a fake function.');
       assert.equal(typeof response, 'string', 'Response is present.');

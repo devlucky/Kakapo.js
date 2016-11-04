@@ -1,4 +1,0 @@
-{
-  "managers": ["npm", "bower"],
-  "build_command": "npm run build"
-}
