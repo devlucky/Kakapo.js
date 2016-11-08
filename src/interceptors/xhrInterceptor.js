@@ -93,7 +93,7 @@ const fakeService = helpers => class XMLHttpRequestInterceptor {
       onloadCallback && onloadCallback.call(xhr);
     };
 
-    return xhr.send();
+    return xhr.send(data);
   }
 
   setRequestHeader(name, value) {
