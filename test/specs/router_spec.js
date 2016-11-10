@@ -293,5 +293,28 @@ export const routerSpec = () => {
     xhr2.send();
   });
 
+  test('Router # Async support', (assert) => {
+    assert.plan(1);
+
+    const server = new Server();
+    const router = new Router();
+
+    router.get('/async_endpoint', request => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve({
+            body: 'async response'
+          });
+        }, 1000);
+      });
+    });
+
+    server.use(router);
+
+    fetch('/async_endpoint').then(r => r.json()).then(response => {
+      assert.equal(response.body, 'async response', `Response it's fine for async handlers`);
+    });
+  });
+
   // @TODO Test strategies in router.
 };

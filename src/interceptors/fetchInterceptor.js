@@ -27,6 +27,11 @@ const fakeService = helpers => (url, options = {}) => {
   const db = helpers.getDB();
   const response = handler(request, db);
 
+  if (response instanceof Promise) {
+    //TODO: Should we handle 'requestDelay' also for async responses?
+    return response.then(data => fakeResponse(data));
+  }
+
   if (!(response instanceof KakapoResponse)) {
     return new Promise((resolve) => setTimeout(
       () => resolve(fakeResponse(response)),
