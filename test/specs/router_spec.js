@@ -55,6 +55,8 @@ export const routerSpec = () => {
       assert.ok(response instanceof Response, 'Response instance is returned');
       assert.ok(response.ok, 'Route found, since it exists.');
     });
+    
+    assert.timeoutAfter(1100);
   });
 
   test('Router#get', (assert) => {
