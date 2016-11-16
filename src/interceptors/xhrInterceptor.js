@@ -72,10 +72,16 @@ const fakeService = helpers => class XMLHttpRequestInterceptor {
       //TODO: should 'this.response' be the response string or the response json?
       this.responseText = this.response = responseString;
       
-      return setTimeout(
-        () => successCallback.call(this),
-        helpers.getDelay()
-      );
+      const requestDelay = helpers.getDelay();
+      if (!requestDelay) {
+        // for backwards compatibility if there is no requestDelay ot it 0 return callback without setTimeout
+        return successCallback.call(this);
+      } else {
+        return setTimeout(
+          () => successCallback.call(this),
+          requestDelay
+        );
+      }
 
     }
 
