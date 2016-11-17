@@ -239,7 +239,7 @@ export const routerSpec = () => {
   });
 
   test('Router#XMLHttpRequest # config # requestDelay', (assert) => {
-    assert.plan(4);
+    assert.plan(1);
 
     const server = new Server();
     const router = new Router({
