@@ -240,6 +240,30 @@ export const routerSpec = () => {
       });
   });
 
+  test('Router#XMLHttpRequest # config # requestDelay', (assert) => {
+    assert.plan(1);
+
+    const server = new Server();
+    const router = new Router({
+      requestDelay: 1000,
+    });
+
+    router.get('/comments', request => {
+      assert.comment('router GET /comments');
+      assert.equal(typeof request, 'object', 'Request is present.');
+    });
+
+    server.use(router);
+
+    const xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = () => {};
+    xhr.open('GET', '/comments', true);
+    xhr.send();
+    
+    assert.timeoutAfter(1100);
+  });    
+  
   test('Router#XMLHttpRequest', (assert) => {
     assert.plan(10);
 
