@@ -198,7 +198,7 @@ fetch(request, {method: 'POST', headers}).then(response => {
 
 ### Fetch & XMLHttpRequest support
 
-Kakapo have Fetch and XMLHttpRequest support by default, but you can always change that if you want, see the [interceptors docs](#interceptors).
+Kakapo has Fetch and XMLHttpRequest support by default, but you can always change that if you want, see the [interceptors docs](#interceptors).
 
 ```javascript
 import {Router, Server} from 'Kakapo';
@@ -234,7 +234,7 @@ xhr.send();
 
 ### Database candyness
 
-Check how easy to build a consistent CRUD Api with the kakapo db.
+Check how easy it is to build a consistent CRUD Api with the kakapo db:
 
 ```javascript
 import {Database, Router, Server, Response as KakapoResponse} from 'Kakapo';
@@ -321,7 +321,7 @@ getUsers() // users[0].id === 1, users.length === 5
 
 ### Passthrough
 
-You don't need to do anything in order to keep your existing request working as they were before. Kakapo will just passthrough all the request that doesn't match any of the defined routes and fire the associated callback.
+You don't need to do anything in order to keep your existing requests working as they were before. Kakapo will just passthrough all the requests that don't match any of the defined routes and fire the associated callback.
 
 ```javascript
 import {Router, Server} from 'Kakapo';
@@ -360,7 +360,7 @@ Every project needs a TODO App, so here is the Kakapo one. Straightforward vanil
 
 ## Github explorer
 
-Basic github users search example, based 100% on the (Github Api)[https://developer.github.com/v3]. It shows you how easy is to replicate the logic of a backend with Kakapo and iterate faster when building the UI. This example also uses jQuery just to demostrate the compatibility with Kakapo.
+Basic github users search example, based 100% on the (Github Api)[https://developer.github.com/v3]. It shows you how easy it is to replicate the logic of a backend with Kakapo and to iterate faster when building the UI. This example also uses jQuery, just to demostrate the compatibility with Kakapo.
 
 [Check the demo](https://kakapo-github-explorer.firebaseapp.com) or [look at the code](https://github.com/devlucky/Kakapo.js/tree/master/examples/github-explorer)
 
@@ -369,11 +369,11 @@ Basic github users search example, based 100% on the (Github Api)[https://develo
 # Components
 
 ## Server
-  The Kakapo Server is the main component of the framework, he is charge of activate things and link components like the router or the database.
+  The Kakapo Server is the main component of the framework, he is in charge of activating things and linking components like the router or the database.
 
   **Linking components**
   
-  So, in order to make your router to start intercepting requests, you must connect him with your server using the *use* method. Also is a good practice to connect your *current database* with your server, that way you will receive her as a parameter in your request handlers. This practice is very useful when you have multiple databases and routers, since you can easily swicth them without rewriting anything, see [Scenarios](#scenarios) section
+  So, in order to make your router start intercepting requests, you must connect it with your server using the *use* method. Also, it is a good practice to connect your *current database* with your server, that way you will receive it as a parameter in your request handlers. This practice is very useful when you have multiple databases and routers, since you can easily switch between them without rewriting anything, see [Scenarios](#scenarios) section.
 
 ```javascript
 const myDB = new Database();
@@ -392,12 +392,12 @@ fetch('/posts');
 ```
 
 ## Router
-The Router class gives you the functionality to 
-it has a very intuitive interface, so if you ever had to build any kind of rest api in any server-side language, you are already familiar with the Kakapo router. that allows you to define complex routes (like in a real server)
+The Router class gives you the functionality to define your API.
+It has a very intuitive interface, so if you ever had to build any kind of rest api in any server-side language, you are already familiar with the Kakapo router. It allows you to define complex routes (like in a real server).
 
 **Method handling**
 
-Those are the supported http methods
+These are the supported http methods
 
 ```javascript
 import {Router} from 'kakapo';
@@ -412,7 +412,7 @@ router.delete('/users/:user_id')
 
 **Request object**
 
-You can access to all the request properties through the request object passed in the request handler
+You have access to all the request properties through the request object passed in the request handler
 
 ```javascript
 router.get('/posts/:post_id/comments/:comment_id', request => {
@@ -433,7 +433,7 @@ $.ajax({
 
 **Options**
 
-Other useful router options are the **host** and the **requestDelay**, you just need to pass them at the initialization moment
+Other useful router options are the **host** and the **requestDelay**, you just need to pass them at initialization
 
 ```javascript
 import {Router} from 'kakapo';
@@ -446,11 +446,11 @@ const router = new Router({
   
 ## Database
 
-Database along with the Router is also one of the most important components, if you learn how to use it properly you can reuse tons of code and become really productive, that's why Kakapo promotes the use of the Database but you can still don't use it and return whatever you want from the request handlers.
+Database, along with the Router, is also one of the most important components. If you learn how to use it properly, you can reuse tons of code and become really productive. That's why Kakapo promotes the use of the Database object, but you don't absolutely have to use it and return whatever you want from the request handlers.
 
 **Factories**
 
-They come with [Faker](https://github.com/Marak/faker.js) a cool library to generate fake data
+They come with [Faker](https://github.com/Marak/faker.js), a cool library to generate fake data.
 Just a brief example of what you can achieve with the db:
 
 ```javascript
@@ -498,9 +498,9 @@ server.use(router);
 
 **Relationships**
 
-Sometimes while mocking, you miss some sort of consistency in your responses. Let's say you have a blog and when you ask for comments of a post you return a **post_id** that doesn't match any of the post ids...
+Sometimes while mocking, you miss some sort of consistency in your responses. Let's say you have a blog and when you ask for comments of a post, you return a **post_id** that doesn't match any of the post ids...
 
-You can solve that using relationships, they are designed to help you create this consistent state across all your requests. The methods are **belongsTo** and **hasMany**
+You can solve that using relationships: they are designed to help you create this consistent state across all your requests. The methods are **belongsTo** and **hasMany**
 
 ```javascript
 import {Server, Database, Router} from 'kakapo';
@@ -534,7 +534,7 @@ db.create('blog', 1);
 
 ## Response
 
-The Response object is a helper class mostly used inside the request handlers to provide rich responses to your real handlers
+The Response object is a helper class mostly used inside the request handlers to provide rich responses to your real handlers.
   
 ```javascript
 import { Server, Response, Router } from 'kakapo';
@@ -554,8 +554,8 @@ server.use(router);
 
 ## Serializers
 
-This is another component very familiar in backend laguages, Serializers offers you a way to abstract the **render** part of your entities. 
-In this example we cover a common case in which you have different versions of your Api and you want to represent that in Kakapo in the same way
+This is another component very familiar in backend languages, Serializers offers you a way to abstract the **render** part of your entities. 
+In this example, we cover a common case in which you have different versions of your Api and you want to represent that in Kakapo in the same way
 
 ```javascript
 const ApiV2Serializer = (record, type) => {
@@ -586,7 +586,7 @@ db.register('comment', () => ({
 
 ## Interceptors
 
-This component is the one that actually handles the original request, is a private one but you can configure it in the Router. Just pass **strategies** in the constructor, by default both **fetch** and **XMLHttpRequest** are used.
+This component is the one that actually handles the original request, it is normally a private one, but you can configure it in the Router. Just pass **strategies** in the constructor, by default both **fetch** and **XMLHttpRequest** are used.
 
 ```javascript
 import {Server, Router} from 'kakapo';
@@ -609,9 +609,9 @@ server.use(xhrRouter);
 
 ## Scenarios
 
-The **scenario** concept is nothing else than the ability of having different presets of Kakapo, like router, database, etc... and later, allow the user to decide when he wants to use one of other.  
+The **scenario** concept is nothing else than the ability to have different presets of Kakapo, like router, database, etc... and later, allow the user to decide when he wants to use one of other.  
 
-Let's say you want to check how the spinners looks in your app, in that case you probably will put a higher value as a **requestDelay**, to make sure that the requests are intercepted late and you can check the UI... other good use case might be one in which you want to test the performance of a view when you have thousands of elements, in order to achieve that you will just need to pass a hight number to the **create** method of the **Database**: 
+Let's say you want to check how the spinners look in your app, in that case you probably will put a higher value as a **requestDelay**, to make sure that the requests are intercepted late and you can check the UI... Another good use case might be one in which you want to test the performance of a view when you have thousands of elements: in order to achieve that you will just need to pass a hight number to the **create** method of the **Database**: 
 
 ```javascript
 import {Server, Router, Database} from 'kakapo';
@@ -651,7 +651,7 @@ server.use(stressfulDB);
 
 ## Fake data
 
-As mention above, you can use [Faker](https://github.com/Marak/faker.js) for generate fake data, take a look at the full demo [here](http://marak.com/faker.js/). Also note that you can define nested properties and use Faker on them:
+As mentionned above, you can use [Faker](https://github.com/Marak/faker.js) for generating fake data. Take a look at the full demo [here](http://marak.com/faker.js/). Also note that you can define nested properties and use Faker on them:
 
 ```javascript
 db.register('user', faker => {
@@ -668,7 +668,7 @@ db.register('user', faker => {
 
 # Browser support
 
-Kakapo.js relies on [WeakMap](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/WeakMap) but we don't ship a polyfill with the library because the [current support](http://kangax.github.io/compat-table/es6/#test-WeakMap) is fine and this library should only we used for development purposes **never for production usage**, anyways you can find a [WeakMap polyfill here](https://github.com/Benvie/WeakMap).
+Kakapo.js relies on [WeakMap](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/WeakMap) but we don't ship a polyfill with the library because the [current support](http://kangax.github.io/compat-table/es6/#test-WeakMap) is fine and this library should only be used for development purposes **never for production usage**. In any case, you can find a [WeakMap polyfill here](https://github.com/Benvie/WeakMap).
 
 # ROADMAP
 
