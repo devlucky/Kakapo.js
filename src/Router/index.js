@@ -23,19 +23,19 @@ export class Router {
   }
 
   get(...args) {
-    this.register('GET', ...args);
+    this.register('GET', args);
   }
 
   post(...args) {
-    this.register('POST', ...args);
+    this.register('POST', args);
   }
 
   put(...args) {
-    this.register('PUT', ...args);
+    this.register('PUT', args);
   }
 
   delete(...args) {
-    this.register('DELETE', ...args);
+    this.register('DELETE', args);
   }
 
   register(method, path, handler) {
