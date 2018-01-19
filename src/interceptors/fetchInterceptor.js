@@ -3,9 +3,9 @@ import { Request as KakapoRequest } from '../Request';
 import { interceptorHelper } from './interceptorHelper';
 
 let nativeFetch;
-const fakeResponse = (response = {}, headers = {}) => {
+const fakeResponse = (response = {}, options = {}) => {
   const responseStr = JSON.stringify(response);
-  return new window.Response(responseStr, { headers });
+  return new window.Response(responseStr, options);
 };
 const name = 'fetch';
 const fakeService = helpers => (url, options = {}) => {
@@ -39,7 +39,7 @@ const fakeService = helpers => (url, options = {}) => {
     ));
   }
 
-  const result = fakeResponse(response.body, response.headers);
+  const result = fakeResponse(response.body, { headers: response.headers, status: response.code });
   return new Promise((resolve, reject) => setTimeout(
     () => {
       if (response.error) { return reject(result); }
