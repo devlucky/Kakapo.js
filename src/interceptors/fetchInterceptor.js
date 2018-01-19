@@ -39,7 +39,7 @@ const fakeService = helpers => (url, options = {}) => {
     ));
   }
 
-  const result = fakeResponse(response.body, { headers: response.headers, status: response.code });
+  const result = fakeResponse(response.body, { headers: response.headers, status: response.code, ...response.options });
   return new Promise((resolve, reject) => setTimeout(
     () => {
       if (response.error) { return reject(result); }
