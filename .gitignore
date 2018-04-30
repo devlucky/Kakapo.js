@@ -85,3 +85,5 @@ Temporary Items
 # sftp configuration file
 sftp-config.json
 
+lib
+package-lock.json

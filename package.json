@@ -2,10 +2,10 @@
   "name": "kakapo",
   "version": "1.0.2",
   "description": "Next generation mocking framework in Javascript",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "atlaskit:src": "src/index.js",
   "scripts": {
-    "build": "make build && git changelog",
+    "build": "babel -d dist src",
     "codecov": "make codecov",
     "readme": "node create-readme.js",
     "test": "make test",
@@ -17,7 +17,7 @@
     "semantic-release": "make semantic-release",
     "amend": "git add . && git commit --amend --reuse-message=HEAD",
     "push": "git push --tags && git push",
-    "release": "npm version patch && make build && npm run amend && npm run push && npm publish"
+    "release": "yarn version patch && yarn build && yarn amend && yarn push && yarn publish"
   },
   "repository": {
     "type": "git",
@@ -98,5 +98,8 @@
     "fake",
     "stub",
     "request"
+  ],
+  "files": [
+    "dist"
   ]
 }
