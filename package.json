@@ -17,7 +17,7 @@
     "semantic-release": "make semantic-release",
     "amend": "git add . && git commit --amend --reuse-message=HEAD",
     "push": "git push --tags && git push",
-    "release": "yarn version patch && yarn build && yarn amend && yarn push && yarn publish"
+    "release": "yarn build && yarn publish --silent --new-version patch && yarn push && yarn publish"
   },
   "repository": {
     "type": "git",
