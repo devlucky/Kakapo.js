@@ -1,3 +1,5 @@
+// @flow
+
 import _ from 'lodash';
 import pathMatch from 'path-match';
 import parseUrl from 'parse-url';
@@ -18,7 +20,22 @@ const extractUrl = ({ routes }, url, method) => ({
   fullpath: parseUrl(url).href,
 });
 
-export const interceptorHelper = (config) => ({
+export type InterceptorConfig = {
+  +host: string;
+  +routes: any;
+  +db: any;
+  +requestDelay: number;
+}
+
+export interface Interceptor {
+  getDB(): any;
+  getDelay(): number;
+  getHandler(url: string, method: string): any;
+  getParams(url: string, method: string): any;
+  getQuery(url: string): any;
+}
+
+export const interceptorHelper = (config: InterceptorConfig): Interceptor => ({
   getDB() {
     return config.db;
   },
