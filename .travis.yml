@@ -1,37 +1,9 @@
-sudo: false
 language: node_js
 node_js:
-  - '4'
-cache:
-  directories:
-    - node_modules
-env:
-  global:
-    - NODE_ENV=travis
-addons:
-  apt:
-    packages:
-      - xvfb
-  firefox: "45.0"
-before_install:
-  - npm i -g npm@^2.0.0
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-  - tar -xjf /tmp/firefox-45.0.tar.bz2 --directory /tmp
-  - export PATH="/tmp/firefox:$PATH"
-  - echo "Using firefox version `firefox --version`"
-install:
-  - npm install
-before_script:
-  - npm prune
+  - '8'
+cache: yarn
 script:
-  - npm run test:travis
-after_success:
-  - npm run codecov
-  - npm run semantic-release
-branches:
-  except:
-    - /^v\d+\.\d+\.\d+$/
+  - yarn
+  - yarn test:ci
 notifications:
-  slack: devlucky:ZlrFWfC8hwIF2U4HXDAKqdwr
   email: false

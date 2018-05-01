@@ -1,9 +1,3 @@
 {
-  "presets": ["flow"],
-  "plugins": ["transform-es2015-modules-umd"],
-  "env": {
-    "travis": {
-      "plugins": ["__coverage__"]
-    }
-  }
+  "presets": ["env", "flow"]
 }
