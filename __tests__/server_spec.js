@@ -1,6 +1,5 @@
 // @TODO Test Server's config
-import test from 'tape';
-import { Database, Router, Server } from '../../src';
+import { Database, Router, Server } from '../src';
 
 const xhrRequest = (url) => {
   const xhr = new XMLHttpRequest(); 
@@ -10,7 +9,7 @@ const xhrRequest = (url) => {
   xhr.send();
 }
 
-export const serverSpec = () => {
+describe.skip('Server', () => {
   test('Server # use database', (assert) => {
     assert.plan(2);
 
@@ -93,4 +92,4 @@ export const serverSpec = () => {
       assert.ok(response.status, 404, 'Server is inactive after removal');
     });
   });
-};
+});
