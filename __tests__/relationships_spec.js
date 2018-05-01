@@ -1,8 +1,7 @@
-import test from 'tape';
-import { Database } from '../../src';
+import { Database } from '../src';
 
-export const relationshipsSpec = () => {
-  test('Relationships # belongsTo', (assert) => {
+describe.skip('Relationships', () => {
+  test.skip('Relationships # belongsTo', (assert) => {
     const db = new Database();
     const userFactory = () => ({
       firstName: 'hector',
@@ -17,17 +16,17 @@ export const relationshipsSpec = () => {
       name: 'Valencia',
       country: 'Spain',
     });
-
+  
     db.register('user', userFactory);
     db.register('avatar', avatarFactory);
     db.register('city', cityFactory);
-
+  
     db.create('city', 1);
     db.create('avatar', 5);
     db.create('user', 2);
-
+  
     const user = db.findOne('user', { id: 1 });
-
+  
     assert.equal(user.avatar.type, 'avatar',
       'Finds the type of the relationship');
     assert.equal(typeof user.avatar.url, 'string',
@@ -36,10 +35,10 @@ export const relationshipsSpec = () => {
       'The city relationship has the expected name');
     assert.equal(user.city[0].country, 'Spain',
       'The city relationship has the expected country');
-
+  
     assert.end();
   });
-
+  
   test('Relationships # hasMany', (assert) => {
     const db = new Database();
     const blogFactory = () => ({
@@ -54,24 +53,24 @@ export const relationshipsSpec = () => {
       name: 'devlucky',
       followers: 1000,
     });
-
+  
     db.register('blog', blogFactory);
     db.register('post', postFactory);
     db.register('user', userFactory);
-
+  
     db.create('post', 10);
     db.create('user', 5);
     db.create('blog', 1);
-
+  
     const blog = db.first('blog');
-
+  
     assert.equal(blog.posts[0].title, 'Js for the lulz',
       'First record title is the expected one');
     assert.equal(blog.authors[0].name, 'devlucky',
       'First record title is the expected one');
     assert.equal(blog.authors.length, 2,
       'Limit is assigned to relationship');
-
+  
     assert.end();
   });
-};
+})
