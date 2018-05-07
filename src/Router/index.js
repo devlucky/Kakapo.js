@@ -1,44 +1,63 @@
-import _ from 'lodash';
-import { interceptors } from '../interceptors';
-import environment from '../config/environment';
+// @flow
+import _ from "lodash";
+import { interceptors } from "../interceptors";
+import environment from "../config/environment";
+import {
+  type InterceptorConfig,
+  type RouteHandler
+} from "../interceptors/interceptorHelper";
 
-const browserStrategies = ['fetch', 'XMLHttpRequest'];
+const browserStrategies = ["fetch", "XMLHttpRequest"];
 //TODO: find proper name for Node.js strategies
-const nodeStrategies = ['http', 'https'];
+const nodeStrategies = ["http", "https"];
 const routerDefaultConfig = {
   strategies: environment.browserEnv ? browserStrategies : nodeStrategies
 };
 
 const interceptorDefaultConfig = {
   db: null,
-  host: '',
+  host: "",
   requestDelay: 0,
-  routes: { GET: {}, POST: {}, PUT: {}, DELETE: {} },
+  routes: { GET: {}, POST: {}, PUT: {}, DELETE: {} }
+};
+
+export type RouterConfig = {
+  +strategies: string[]
 };
 
 export class Router {
-  constructor(interceptorConfig, routerConfig) {
-    this.interceptorConfig = _.merge({}, interceptorDefaultConfig, interceptorConfig);
+  +interceptorConfig: InterceptorConfig;
+  +routerConfig: RouterConfig;
+
+  constructor(
+    interceptorConfig: InterceptorConfig,
+    routerConfig: RouterConfig
+  ) {
+    this.interceptorConfig = _.merge(
+      {},
+      interceptorDefaultConfig,
+      interceptorConfig
+    );
     this.routerConfig = _.merge({}, routerDefaultConfig, routerConfig);
   }
 
-  get(...args) {
-    this.register('GET', ...args);
+  get(...args: any[]) {
+    this.register("GET", ...args);
   }
 
-  post(...args) {
-    this.register('POST', ...args);
+  post(...args: any[]) {
+    this.register("POST", ...args);
   }
 
-  put(...args) {
-    this.register('PUT', ...args);
+  put(...args: any[]) {
+    this.register("PUT", ...args);
   }
 
-  delete(...args) {
-    this.register('DELETE', ...args);
+  delete(...args: any[]) {
+    this.register("DELETE", ...args);
   }
 
-  register(method, path, handler) {
+  register(method: string, path: string, handler: RouteHandler) {
     this.interceptorConfig.routes[method][path] = handler;
   }
 
