@@ -10,13 +10,7 @@ lib-cov
 .lock-wscript
 build/Release
 node_modules
-<<<<<<< HEAD
-
 dist/
-
-# Debug log from npm
-=======
->>>>>>> master
 npm-debug.log
 npm-debug.log*
 .DS_Store
@@ -36,10 +30,6 @@ Temporary Items
 *.stTheme.cache
 *.sublime-workspace
 sftp-config.json
-<<<<<<< HEAD
-
 lib
 package-lock.json
-=======
 coverage
->>>>>>> master
