@@ -43,6 +43,10 @@ export class FakeFetch {
 
       const handler = interceptor.getHandler(url, method);
 
+      if (!handler) {
+        return nativeFetch(url, options);
+      }
+
       const request = new KakapoRequest({
         params: interceptor.getParams(url, method),
         query: interceptor.getQuery(url),
