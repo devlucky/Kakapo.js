@@ -1,5 +1,15 @@
+// @flow
+
 export class Response {
-  constructor(code = 200, body = {}, headers = {}) {
+  code: number;
+  body: any;
+  headers: { [header: string]: string };
+
+  constructor(
+    code: number = 200,
+    body: any = {},
+    headers: { [header: string]: string } = {}
+  ) {
     this.code = code;
     this.body = body;
     this.headers = headers;
@@ -11,5 +21,15 @@ export class Response {
 
   get ok() {
     return this.code >= 200 && this.code <= 299;
+  }
+
+  static wrap(response: any): Response {
+    if (response instanceof Response) {
+      return response;
+    } else {
+      return new Response(200, response, {
+        "content-type": "application/json; charset=utf-8"
+      });
+    }
   }
 }

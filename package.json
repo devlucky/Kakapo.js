@@ -1,17 +1,19 @@
 {
   "name": "kakapo",
-  "version": "1.0.2",
+  "version": "2.0.1",
   "description": "Next generation mocking framework in Javascript",
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "atlaskit:src": "src/index.js",
   "scripts": {
-    "build": "make build && git changelog",
+    "build": "babel -d dist src",
     "readme": "node create-readme.js",
     "test": "jest",
     "test:ci": "jest --runInBand --coverage",
     "test:watch": "jest --watch",
     "amend": "git add . && git commit --amend --reuse-message=HEAD",
     "push": "git push --tags && git push",
-    "release": "npm version patch && make build && npm run amend && npm run push && npm publish"
+    "prepublishOnly": "yarn build",
+    "release": "yarn publish --silent --new-version patch && yarn push"
   },
   "repository": {
     "type": "git",
@@ -24,8 +26,13 @@
   },
   "homepage": "https://github.com/devlucky/Kakapo.js#readme",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-jest": "^22.4.3",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
+    "babel-preset-flow": "^6.23.0",
+    "flow-bin": "^0.71.0",
     "http-server": "~0.7.1",
     "jest": "^22.4.3",
     "jquery": "^2.2.4",
@@ -51,5 +58,8 @@
     "fake",
     "stub",
     "request"
+  ],
+  "files": [
+    "dist"
   ]
 }
