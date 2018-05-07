@@ -4,10 +4,15 @@ import _ from "lodash";
 import pathMatch from "path-match";
 import parseUrl from "parse-url";
 import queryString from "query-string";
+import { Request } from "../Request";
+import { Response } from "../Response";
+import { Database } from '../Database';
+
+export type RouteHandler = (request: Request, db: Database) => Response | any;
 
 export type InterceptorConfig = {
   +host: string,
-  +routes: any,
+  +routes: { [method: string]: { [path: string]: RouteHandler } },
   +db: any,
   +requestDelay: number
 };
@@ -43,7 +48,7 @@ const extractUrl = (
 export interface Interceptor {
   getDB(): any;
   getDelay(): number;
-  getHandler(url: string, method: string): any;
+  getHandler(url: string, method: string): RouteHandler | null;
   getParams(url: string, method: string): any;
   getQuery(url: string): any;
 }
