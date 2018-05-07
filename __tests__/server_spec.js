@@ -10,18 +10,18 @@ const xhrRequest = (url) => {
 }
 
 describe.skip('Server', () => {
-  test('Server # use database', (assert) => {
-    assert.plan(2);
+  test('Server # use database', () => {
+    expect.assertions(2);
 
     const myDB = new Database();
     const router = new Router();
     const server = new Server();
 
     router.get('/fetch', (request, db) => {
-      assert.ok(db == myDB, 'The passed db is the correct one with fetch request');
+      expect(db == myDB, 'The passed db is the correct one with fetch request');
     });
     router.get('/xhr', (request, db) => {
-      assert.ok(db == myDB, 'The passed db is the correct one with xhr request');
+      expect(db == myDB, 'The passed db is the correct one with xhr request');
     });
 
     server.use(myDB);
@@ -31,17 +31,17 @@ describe.skip('Server', () => {
     xhrRequest('/xhr');
   });
 
-  test('Server # use router', (assert) => {
+  test('Server # use router', () => {
     const router = new Router();
     const server = new Server();
 
     router.get('/comments', _ => {
-      assert.fail('Should not reach this handler since the request is fired before "server.use"');
+      expect('Should not reach this handler since the request is fired before "server.use"');
     });
 
     router.get('/users', _ => {
-      assert.ok(true, 'It must only enter in this handler since the request has been triggered after the registration');
-      assert.end();
+      expect(true, 'It must only enter in this handler since the request has been triggered after the registration');
+      expect();
     });
 
     fetch('/comments');
@@ -49,18 +49,18 @@ describe.skip('Server', () => {
     fetch('/users');
   });
 
-  test('Server # remove database', (assert) => {
-    assert.plan(2);
+  test('Server # remove database', () => {
+    expect.assertions(2);
 
     const myDB = new Database();
     const router = new Router();
     const server = new Server();
 
     router.get('/fetch_db', (request, db) => {
-      assert.equal(db, myDB, 'The passed db is fine');
+      expect(db, myDB, 'The passed db is fine');
     });
     router.get('/fetch_nodb', (request, db) => {
-      assert.equal(db, null, 'The passed db is undefined since we have been removed it from the server');
+      expect(db, null, 'The passed db is undefined since we have been removed it from the server');
     });
 
     server.use(myDB);
@@ -71,17 +71,17 @@ describe.skip('Server', () => {
     fetch('/fetch_nodb');
   });
   
-  test('Server # remove router', (assert) => {
-    assert.plan(2);
+  test('Server # remove router', () => {
+    expect.assertions(2);
 
     const router = new Router();
     const server = new Server();
 
     router.get('/fetch', _ => {
-      assert.ok(true, 'Server is active before being removed');
+      expect(true, 'Server is active before being removed');
     });
     router.get('/fetch_fail', _ => {
-      assert.fail('Request is being intercepted when router is removed');
+      expect('Request is being intercepted when router is removed');
     });
 
     server.use(router);
@@ -89,7 +89,7 @@ describe.skip('Server', () => {
 
     server.remove(router);
     fetch('/fetch_fail').then(response => {
-      assert.ok(response.status, 404, 'Server is inactive after removal');
+      expect(response.status, 404, 'Server is inactive after removal');
     });
   });
 });

@@ -1,20 +1,19 @@
 import { Server, Router } from '../src';
 
-test.skip('Request # headers', (assert) => {
-  assert.plan(2);
+test.skip('Request # headers', () => {
+  expect.assertions(2);
 
   const server = new Server();
   const router = new Router();
 
   router.post('/users', (request) => {
-    assert.equal(request.headers.get('custom-request-header-1'), 'one',
-      'Receives the first header');
-    assert.equal(request.headers.get('custom-request-header-2'), 'two',
-      'Receives the second header');
+    expect(request.headers.get('custom-request-header-1')).toEqual('one');
+    expect(request.headers.get('custom-request-header-2')).toEqual('two');
   });
 
   server.use(router);
-  
+
+  // TODO: Headers is undefined in jsdom
   const headers = new Headers({
     'custom-request-header-1': 'one',
     'custom-request-header-2': 'two',

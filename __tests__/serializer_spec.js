@@ -1,8 +1,8 @@
 import { Database } from '../src';
 import { JSONApiSerializer } from '../src/serializers';
 
-describe.skip('Serializer', () => {
-  test('Serializer # JSONApi', (assert) => {
+describe('Serializer', () => {
+  test('Serializer # JSONApi', () => {
     const db = new Database();
 
     db.register('user', () => ({
@@ -24,16 +24,11 @@ describe.skip('Serializer', () => {
     const comment = db.findOne('comment', { id: 0 });
     const allUsers = db.all('user');
 
-    assert.equal(comment.text, 'comment text',
-      'Finds a record without serializer');
-    assert.equal(user.data.attributes.firstName, 'Hector',
-      'Finds JSONApi attributes');
-    assert.equal(user.data.id, 0, 'Find JSONApi attributes');
-    assert.equal(users[1].data.attributes.lastName, 'Zarco', 'Find JSONApi id');
-    assert.equal(users[1].data.id, 1, 'Find JSONApi id');
-    assert.equal(allUsers[0].data.id, 0,
-      'Serializer works fine with `all` method');
-
-    assert.end();
+    expect(comment.text).toEqual('comment text');
+    expect(user.data.attributes.firstName).toEqual('Hector')
+    expect(user.data.id).toEqual(0);
+    expect(users[1].data.attributes.lastName).toEqual('Zarco');
+    expect(users[1].data.id).toEqual(1);
+    expect(allUsers[0].data.id).toEqual(0);
   });
 });

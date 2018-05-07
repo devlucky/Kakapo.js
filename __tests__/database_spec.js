@@ -16,7 +16,7 @@ const commentFactory = faker => ({
   author: { name: 'Morty' },
 });
 
-export const databaseSpec = () => {
+describe('Database', () => {
   test('DB # all', () => {
     const db = new Database();
 
@@ -309,6 +309,4 @@ export const databaseSpec = () => {
     xhr.open('GET', '/side_effects', true);
     xhr.send();
   });
-};
-
-databaseSpec()
+});
