@@ -23,7 +23,6 @@ export class FakeFetch {
 
   use(config: InterceptorConfig) {
     this.interceptors.push(interceptorHelper(config));
-    console.log(this.interceptors);
   }
 
   fake() {
