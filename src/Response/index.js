@@ -1,5 +1,15 @@
+// @flow
+
 export class Response {
-  constructor(code = 200, body = {}, headers = {}) {
+  code: number;
+  body: any;
+  headers: { [header: string]: string };
+  
+  constructor(
+    code: number = 200,
+    body: any = {},
+    headers: { [header: string]: string } = {}
+  ) {
     this.code = code;
     this.body = body;
     this.headers = headers;
