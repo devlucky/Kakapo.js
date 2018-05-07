@@ -1,12 +1,28 @@
 // @flow
 
-import _ from 'lodash';
-import pathMatch from 'path-match';
-import parseUrl from 'parse-url';
-import queryString from 'query-string';
+import _ from "lodash";
+import pathMatch from "path-match";
+import parseUrl from "parse-url";
+import queryString from "query-string";
+
+export type InterceptorConfig = {
+  +host: string,
+  +routes: any,
+  +db: any,
+  +requestDelay: number
+};
+
+export type UrlDetails = {
+  +handlers: any,
+  +pathname: string,
+  +fullpath: string
+};
 
 // @TODO (oskar): This NEEDS refactor.
-const getRoute = ({ host }, { handlers, pathname, fullpath }) => {
+const getRoute = (
+  { host }: InterceptorConfig,
+  { handlers, pathname, fullpath }: UrlDetails
+) => {
   const matchesPathname = path => pathMatch()(path)(pathname);
   const route = _.keys(handlers).find(matchesPathname);
   const hasHost = _.includes(fullpath, host);
@@ -14,18 +30,15 @@ const getRoute = ({ host }, { handlers, pathname, fullpath }) => {
   return route && hasHost ? route : null;
 };
 
-const extractUrl = ({ routes }, url, method) => ({
+const extractUrl = (
+  { routes }: InterceptorConfig,
+  url: string,
+  method: string
+) => ({
   handlers: routes[method],
   pathname: parseUrl(url).pathname,
-  fullpath: parseUrl(url).href,
+  fullpath: parseUrl(url).href
 });
-
-export type InterceptorConfig = {
-  +host: string;
-  +routes: any;
-  +db: any;
-  +requestDelay: number;
-}
 
 export interface Interceptor {
   getDB(): any;
@@ -57,5 +70,5 @@ export const interceptorHelper = (config: InterceptorConfig): Interceptor => ({
   },
   getQuery(url) {
     return queryString.parse(parseUrl(url).search);
-  },
+  }
 });
