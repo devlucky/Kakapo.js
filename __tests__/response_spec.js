@@ -1,8 +1,9 @@
 import { Server, Response, Router } from '../src';
 
+// TODO: stub native Response
 describe.skip('Response', () => {
-  test('Response # body', (assert) => {
-    assert.plan(2);
+  test('Response # body', () => {
+    expect.assertions(2);
   
     const server = new Server();
     const router = new Router();
@@ -16,13 +17,13 @@ describe.skip('Response', () => {
     fetch('/users/1')
       .then(r => r.json())
       .then(result => {
-        assert.equal(result.id, '1', 'Response body id is valid');
-        assert.equal(result.type, 'user', 'Response body type is valid');
+        expect(result.id).toEqual('1');
+        expect(result.type).toEqual('user');
       });
   });
   
   test('Response # headers', (assert) => {
-    assert.plan(4);
+    expect.assertions(4);
   
     const server = new Server();
     const router = new Router();
@@ -35,20 +36,16 @@ describe.skip('Response', () => {
     
     fetch('/users/1')
       .then(result => {
-        assert.equal(result.headers.get('x-header-1'), 'one',
-          'The first header is correct');
-        assert.equal(result.headers.get('x-header-2'), 'two',
-          'The second header is correct');
+        expect(result.headers.get('x-header-1')).toEqual('one');
+        expect(result.headers.get('x-header-2')).toEqual('two');
       });
   
     const xhr = new XMLHttpRequest();
   
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {
-        assert.equal(this.getResponseHeader('x-header-1'), 'one',
-          'The first header is correct with xhr');
-        assert.equal(this.getResponseHeader('x-header-2'), 'two',
-          'The second header is correct with xhr');
+        expect(this.getResponseHeader('x-header-1')).toEqual('one');
+        expect(this.getResponseHeader('x-header-2')).toEqual('two');
       }
     };
   
@@ -57,21 +54,19 @@ describe.skip('Response', () => {
   });
   
   test('Response # error', (assert) => {
-    assert.plan(1);
     const response = new Response(404, {}, { 'x-header-1': 'one' });
   
-    assert.ok(response.error, 'Is aware of error knowing the status code');
+    expect(response.error).toBeTruthy();
   });
   
   test('Response # ok', (assert) => {
-    assert.plan(1);
     const response = new Response(204, {}, { 'x-header-1': 'one' });
   
-    assert.ok(response.ok, 'Is aware of success knowing the status code');
+    expect(response.ok).toBeTruthy();
   });
   
   test('Response # code', assert => {
-    assert.plan(2);
+    expect.assertions(2);
   
     const server = new Server();
     const router = new Router();
@@ -87,8 +82,8 @@ describe.skip('Response', () => {
   
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {
-        assert.ok(xhr.status === 400, 'Status code is taken from Kakapo Response class');
-        assert.ok(xhr.responseText === JSON.stringify(responsePayload), 'Response body is taken from Kakapo Response class');
+        expect(xhr.status).toEqual(400);
+        expect(xhr.responseText).toEqual(JSON.stringify(responsePayload));
       }
     };
     xhr.open('GET', '/users', true);

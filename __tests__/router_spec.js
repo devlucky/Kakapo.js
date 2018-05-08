@@ -1,8 +1,8 @@
 import { Server, Router } from '../src';
 
 describe.skip('Router', () => {
-  test('Router # config # host', (assert) => {
-    assert.plan(7);
+  test('Router # config # host', () => {
+    expect.assertions(7);
 
     // TODO: Create multiple servers at the same time with different
     // 'host' and check that works properly
@@ -12,29 +12,24 @@ describe.skip('Router', () => {
     });
 
     router.get('/comments', request => {
-      assert.comment('router GET /comments');
-      assert.equal(typeof request, 'object', 'Request is present.');
+      expect(typeof request).toEqual('object');
     });
 
     server.use(router);
 
     fetch('https://api.github.com/comments').then(response => {
-      assert.comment('fetch GET https://api.github.com/comments');
-      assert.ok(true, 'Handler is fired by fake function.');
-      assert.ok(response instanceof Response, 'Response instance is returned');
-      assert.ok(response.ok, 'Route found, since it exists.');
+      expect(response instanceof Response).toBeTruthy();
+      expect(response.ok).toBeTruthy();
     });
 
     fetch('/comments').then(response => {
-      assert.comment('fetch GET /comments');
-      assert.ok(true, 'Handler is fired by native function.');
-      assert.ok(response instanceof Response, 'Response instance is returned');
-      assert.notOk(response.ok, 'Route not found, since it doesn\'t exist.');
+      expect(response instanceof Response).toBeTruthy();
+      // expect.notOk(response.ok, 'Route not found, since it doesn\'t exist.');
     });
   });
 
-  test('Router # config # requestDelay', (assert) => {
-    assert.plan(4);
+  test('Router # config # requestDelay', () => {
+    expect.assertions(4);
 
     const server = new Server();
     const router = new Router({
@@ -42,37 +37,30 @@ describe.skip('Router', () => {
     });
 
     router.get('/comments', request => {
-      assert.comment('router GET /comments');
-      assert.equal(typeof request, 'object', 'Request is present.');
+      expect(typeof request).toEqual('object');
     });
 
     server.use(router);
 
     fetch('/comments').then(response => {
-      assert.comment('fetch GET /comments');
-      assert.ok(true, 'Handler is fired by delayed fake function.');
-      assert.ok(response instanceof Response, 'Response instance is returned');
-      assert.ok(response.ok, 'Route found, since it exists.');
+      expect(response instanceof Response).toBeTruthy();
+      expect(response.ok).toBeTruthy();
     });
-    
-    assert.timeoutAfter(1100);
   });
 
-  test('Router#get', (assert) => {
-    assert.plan(9);
+  test('Router#get', () => {
+    expect.assertions(9);
 
     const server = new Server();
     const router = new Router();
 
     router.get('/comments', request => {
-      assert.comment('router GET /comments');
-      assert.equal(typeof request, 'object', 'Request is present.');
+      expect(typeof request, 'object', 'Request is present.');
     });
 
     router.get('/users/:user_id', request => {
-      assert.comment('router GET /users/:user_id');
-      assert.equal(typeof request, 'object', 'Request is present.');
-      assert.equal(typeof request.params, 'object', 'Params are present');
+      expect(typeof request, 'object', 'Request is present.');
+      expect(typeof request.params, 'object', 'Params are present');
 
       return {
         users: [{ firstName: 'hector' }],
@@ -83,33 +71,28 @@ describe.skip('Router', () => {
 
     fetch('/doesnt_exist')
       .then(response => {
-        assert.comment('fetch GET /doesnt_exist');
-        assert.ok(true, 'Handler is fired by native function.');
-        assert.ok(response instanceof Response, 'Response instance is returned');
+        expect(response instanceof Response, 'Response instance is returned');
       });
 
     fetch('/comments')
       .then(response => {
-        assert.comment('fetch GET /comments');
-        assert.ok(true, 'Handler is fired by fake function.');
-        assert.ok(response instanceof Response, 'Response instance is returned');
+        expect(response instanceof Response, 'Response instance is returned');
       });
 
     fetch('/users/1')
       .then(response => {
-        assert.comment('fetch GET /users/1');
-        assert.ok(response instanceof Response, 'Response instance is returned');
+        expect(response instanceof Response, 'Response instance is returned');
 
         return response.json();
       })
       .then(response => {
         const firstName = response.users[0].firstName;
-        assert.equal(firstName, 'hector', 'Fake response is returned');
+        expect(firstName, 'hector', 'Fake response is returned');
       });
   });
 
-  test('Router#post', (assert) => {
-    assert.plan(6);
+  test('Router#post', () => {
+    expect.assertions(6);
 
     const server = new Server();
     const router = new Router();
@@ -119,10 +102,9 @@ describe.skip('Router', () => {
       const parsedBody = JSON.parse(request.body);
       const firstName = parsedBody.firstName;
 
-      assert.comment('router POST /users');
-      assert.equal(typeof request, 'object', 'Request is present.');
-      assert.equal(request.body, body, 'Expected request body is returned');
-      assert.equal(firstName, 'Joan', 'Request body has expected values.');
+      expect(typeof request, 'object', 'Request is present.');
+      expect(request.body, body, 'Expected request body is returned');
+      expect(firstName, 'Joan', 'Request body has expected values.');
 
       return {
         status: 'success',
@@ -138,15 +120,14 @@ describe.skip('Router', () => {
         const status = response.status;
         const firstName = response.record.firstName;
 
-        assert.comment('fetch POST /users');
-        assert.equal(typeof response, 'object', 'Response is present.');
-        assert.equal(status, 'success', 'Expected status is returned');
-        assert.equal(firstName, 'Joan', 'Response body has expected values.');
+        expect(typeof response, 'object', 'Response is present.');
+        expect(status, 'success', 'Expected status is returned');
+        expect(firstName, 'Joan', 'Response body has expected values.');
       });
   });
 
-  test('Router # post # XMLHttpRequest', (assert) => {
-    assert.plan(1);
+  test('Router # post # XMLHttpRequest', () => {
+    expect.assertions(1);
 
     const server = new Server();
     const router = new Router();
@@ -155,7 +136,7 @@ describe.skip('Router', () => {
     router.post('/hector', request => {
       const body = JSON.parse(request.body);
       
-      assert.equal(body.firstName, 'Joan', 'Request body has expected values when using XMLHttpRequest');
+      expect(body.firstName, 'Joan', 'Request body has expected values when using XMLHttpRequest');
     });
 
     server.use(router);
@@ -167,8 +148,8 @@ describe.skip('Router', () => {
     xhr.send(body);
   });
 
-  test('Router#put', (assert) => {
-    assert.plan(6);
+  test('Router#put', () => {
+    expect.assertions(6);
 
     const server = new Server();
     const router = new Router();
@@ -177,10 +158,9 @@ describe.skip('Router', () => {
       const query = request.query;
       const page = query.page;
 
-      assert.comment('router PUT /users');
-      assert.equal(typeof request, 'object', 'Request is present.');
-      assert.equal(typeof query, 'object', 'Request query is returned.');
-      assert.equal(page, '1', 'Request query has expected values.');
+      expect(typeof request, 'object', 'Request is present.');
+      expect(typeof query, 'object', 'Request query is returned.');
+      expect(page, '1', 'Request query has expected values.');
 
       return {
         status: 'success',
@@ -196,15 +176,14 @@ describe.skip('Router', () => {
         const status = response.status;
         const page = response.query.page;
 
-        assert.comment('fetch PUT /users?page=1');
-        assert.equal(typeof response, 'object', 'Response is present.');
-        assert.equal(status, 'success', 'Expected status is returned');
-        assert.equal(page, '1', 'Response body has expected values.');
+        expect(typeof response, 'object', 'Response is present.');
+        expect(status, 'success', 'Expected status is returned');
+        expect(page, '1', 'Response body has expected values.');
       });
   });
 
-  test('Router#delete', (assert) => {
-    assert.plan(6);
+  test('Router#delete', () => {
+    expect.assertions(6);
 
     const server = new Server();
     const router = new Router();
@@ -213,10 +192,9 @@ describe.skip('Router', () => {
       const params = request.params;
       const commentId = request.params.comment_id;
 
-      assert.comment('router DELETE /users/:user_id/comments/:comment_id');
-      assert.equal(typeof request, 'object', 'Request is present.');
-      assert.equal(typeof params, 'object', 'Request params are present.');
-      assert.equal(commentId, '2', 'Request params have expected values.');
+      expect(typeof request, 'object', 'Request is present.');
+      expect(typeof params, 'object', 'Request params are present.');
+      expect(commentId, '2', 'Request params have expected values.');
 
       return {
         status: 'success',
@@ -232,15 +210,14 @@ describe.skip('Router', () => {
         const status = response.status;
         const userId = response.params.user_id;
 
-        assert.comment('fetch DELETE /users/1/comments/2');
-        assert.equal(typeof response, 'object', 'Response is present.');
-        assert.equal(status, 'success', 'Expected status is returned.');
-        assert.equal(userId, '1', 'Response body has expected values.');
+        expect(typeof response, 'object', 'Response is present.');
+        expect(status, 'success', 'Expected status is returned.');
+        expect(userId, '1', 'Response body has expected values.');
       });
   });
 
-  test('Router#XMLHttpRequest # config # requestDelay', (assert) => {
-    assert.plan(1);
+  test('Router#XMLHttpRequest # config # requestDelay', () => {
+    expect.assertions(1);
 
     const server = new Server();
     const router = new Router({
@@ -248,8 +225,7 @@ describe.skip('Router', () => {
     });
 
     router.get('/comments', request => {
-      assert.comment('router GET /comments');
-      assert.equal(typeof request, 'object', 'Request is present.');
+      expect(typeof request, 'object', 'Request is present.');
     });
 
     server.use(router);
@@ -260,11 +236,11 @@ describe.skip('Router', () => {
     xhr.open('GET', '/comments', true);
     xhr.send();
     
-    assert.timeoutAfter(1100);
+    expect.timeoutAfter(1100);
   });    
   
-  test('Router#XMLHttpRequest', (assert) => {
-    assert.plan(10);
+  test('Router#XMLHttpRequest', () => {
+    expect.assertions(10);
 
     const server = new Server();
     const router = new Router();
@@ -272,9 +248,8 @@ describe.skip('Router', () => {
     router.get('/comments', request => {
       const params = request.params;
 
-      assert.comment('router GET /comments');
-      assert.equal(typeof request, 'object', 'Request is present.');
-      assert.equal(typeof params, 'object', 'Request params are present.');
+      expect(typeof request, 'object', 'Request is present.');
+      expect(typeof params, 'object', 'Request params are present.');
 
       return [
         { text: 'First comment' },
@@ -292,9 +267,7 @@ describe.skip('Router', () => {
 
       const response = xhr.responseText;
 
-      assert.comment('xhr GET doesnt_exist');
-      assert.ok(true, 'Handler is fired by a native function.');
-      assert.equal(typeof response, 'string', 'Response is present.');
+      expect(typeof response, 'string', 'Response is present.');
     };
     xhr.open('GET', '/doesnt_exist', true);
     xhr.send();
@@ -306,20 +279,18 @@ describe.skip('Router', () => {
       const texts = response;
       const responseObject = JSON.parse(response);
 
-      assert.equal(this.readyState, xhr2.readyState);
-      assert.equal(this.responseText, xhr2.responseText);
-      assert.comment('xhr GET /comments');
-      assert.ok(true, 'Handler is fired by a fake function.');
-      assert.equal(typeof response, 'string', 'Response is present.');
-      assert.equal(typeof responseObject, 'object', 'Response is present.');
-      assert.equal(responseObject.length, 2, 'Response body has expected values.');
+      expect(this.readyState, xhr2.readyState);
+      expect(this.responseText, xhr2.responseText);
+      expect(typeof response, 'string', 'Response is present.');
+      expect(typeof responseObject, 'object', 'Response is present.');
+      expect(responseObject.length, 2, 'Response body has expected values.');
     };
     xhr2.open('GET', '/comments', true);
     xhr2.send();
   });
 
-  test('Router # Async support', (assert) => {
-    assert.plan(1);
+  test('Router # Async support', () => {
+    expect.assertions(1);
 
     const server = new Server();
     const router = new Router();
@@ -337,7 +308,7 @@ describe.skip('Router', () => {
     server.use(router);
 
     fetch('/async_endpoint').then(r => r.json()).then(response => {
-      assert.equal(response.body, 'async response', `Response it's fine for async handlers`);
+      expect(response.body, 'async response', `Response it's fine for async handlers`);
     });
   });
 

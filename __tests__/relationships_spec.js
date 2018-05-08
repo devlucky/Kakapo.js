@@ -1,7 +1,7 @@
 import { Database } from '../src';
 
-describe.skip('Relationships', () => {
-  test.skip('Relationships # belongsTo', (assert) => {
+describe('Relationships', () => {
+  test('Relationships # belongsTo', () => {
     const db = new Database();
     const userFactory = () => ({
       firstName: 'hector',
@@ -27,19 +27,13 @@ describe.skip('Relationships', () => {
   
     const user = db.findOne('user', { id: 1 });
   
-    assert.equal(user.avatar.type, 'avatar',
-      'Finds the type of the relationship');
-    assert.equal(typeof user.avatar.url, 'string',
-      'Finds the url of the relationship');
-    assert.equal(user.city[0].name, 'Valencia',
-      'The city relationship has the expected name');
-    assert.equal(user.city[0].country, 'Spain',
-      'The city relationship has the expected country');
-  
-    assert.end();
+    expect(user.avatar.type).toEqual('avatar');
+    expect(typeof user.avatar.url).toEqual('string');
+    expect(user.city[0].name).toEqual('Valencia');
+    expect(user.city[0].country).toEqual('Spain');
   });
   
-  test('Relationships # hasMany', (assert) => {
+  test('Relationships # hasMany', () => {
     const db = new Database();
     const blogFactory = () => ({
       posts: db.hasMany('post'),
@@ -64,13 +58,8 @@ describe.skip('Relationships', () => {
   
     const blog = db.first('blog');
   
-    assert.equal(blog.posts[0].title, 'Js for the lulz',
-      'First record title is the expected one');
-    assert.equal(blog.authors[0].name, 'devlucky',
-      'First record title is the expected one');
-    assert.equal(blog.authors.length, 2,
-      'Limit is assigned to relationship');
-  
-    assert.end();
+    expect(blog.posts[0].title).toEqual('Js for the lulz');
+    expect(blog.authors[0].name).toEqual('devlucky');
+    expect(blog.authors).toHaveLength(2);
   });
 })
