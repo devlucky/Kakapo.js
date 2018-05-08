@@ -1,6 +1,7 @@
 // @flow
 
-import _ from "lodash";
+import keys from 'lodash.keys';
+import includes from 'lodash.includes';
 import pathMatch from "path-match";
 import parseUrl from "parse-url";
 import queryString from "query-string";
@@ -29,8 +30,8 @@ const getRoute = (
   { handlers, pathname, fullpath }: UrlDetails
 ) => {
   const matchesPathname = path => pathMatch()(path)(pathname);
-  const route = _.keys(handlers).find(matchesPathname);
-  const hasHost = _.includes(fullpath, host);
+  const route = keys(handlers).find(matchesPathname);
+  const hasHost = includes(fullpath, host);
 
   return route && hasHost ? route : null;
 };
