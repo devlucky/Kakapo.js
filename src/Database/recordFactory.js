@@ -1,4 +1,5 @@
-import _ from 'lodash';
+import find from 'lodash.find';
+import assign from 'lodash.assign';
 
 /**
  * Returns record updated according to changes on it's instance.
@@ -11,8 +12,8 @@ import _ from 'lodash';
  * @private
  */
 const updateRecord = (record, collectionName, recordStore) => {
-  const originalRecord = _.find(recordStore.get(collectionName), { id: record.id });
-  return _.assign(originalRecord, record);
+  const originalRecord = find(recordStore.get(collectionName), { id: record.id });
+  return assign(originalRecord, record);
 };
 
 /**
@@ -39,7 +40,7 @@ export const recordFactory = (record, collectionName, recordStore) => {
 
     delete() {
       const collection = recordStore.get(collectionName);
-      const record = _.find(collection, {id: this.id});
+      const record = find(collection, {id: this.id});
       const index = collection.indexOf(record);
 
       collection.splice(index, 1);

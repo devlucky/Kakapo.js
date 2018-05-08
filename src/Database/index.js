@@ -1,5 +1,13 @@
 import faker from 'faker';
-import _ from 'lodash';
+import cloneDeep from 'lodash.clonedeep';
+import sample from 'lodash.sample';
+import isFunction from 'lodash.isfunction';
+import assign from 'lodash.assign';
+import filter from 'lodash.filter';
+import first from 'lodash.first';
+import random from 'lodash.random';
+import sampleSize from 'lodash.samplesize';
+import last from 'lodash.last';
 import { recordFactory } from './recordFactory';
 import { deepMapValues } from '../helpers/util';
 
@@ -30,7 +38,7 @@ export class Database {
    */
   all(collectionName, raw = false) {
     this.checkFactoryPresence(collectionName);
-    const records = _.cloneDeep(recordStore.get(this).get(collectionName));
+    const records = cloneDeep(recordStore.get(this).get(collectionName));
     return raw ? records : records.map(r => this.serialize(r, collectionName));
   }
 
@@ -47,7 +55,7 @@ export class Database {
   belongsTo(collectionName, conditions) {
     return () => {
       if (conditions) { return this.find(collectionName, conditions); }
-      return _.sample(this.all(collectionName));
+      return sample(this.all(collectionName));
     };
   }
 
@@ -83,7 +91,7 @@ export class Database {
 
     for (let idx = 0; idx < size; ++idx) {
       const record = deepMapValues(factory(faker), (field) => {
-        if (_.isFunction(field)) { return field(); }
+        if (isFunction(field)) { return field(); }
         return field;
       });
 
@@ -105,7 +113,7 @@ export class Database {
    */
   decorateRecord(collectionName, record) {
     this.checkFactoryPresence(collectionName);
-    return _.assign({}, record, { id: this.uuid(collectionName) });
+    return assign({}, record, { id: this.uuid(collectionName) });
   }
 
   /**
@@ -119,7 +127,7 @@ export class Database {
    */
   find(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-    return _.filter(this.all(collectionName, true), conditions)
+    return filter(this.all(collectionName, true), conditions)
       .map(r => this.serialize(r, collectionName));
   }
 
@@ -134,7 +142,7 @@ export class Database {
    */
   findOne(collectionName, conditions) {
     this.checkFactoryPresence(collectionName);
-    return _.first(this.find(collectionName, conditions));
+    return first(this.find(collectionName, conditions));
   }
 
   /**
@@ -147,7 +155,7 @@ export class Database {
    */
   first(collectionName) {
     this.checkFactoryPresence(collectionName);
-    return _.first(this.all(collectionName));
+    return first(this.all(collectionName));
   }
 
   /**
@@ -185,8 +193,8 @@ export class Database {
    * @private
    */
   hasMany(collectionName, limit) {
-    const randomLimit = _.random(1, this.all(collectionName).length);
-    return () => _.sampleSize(this.all(collectionName), limit || randomLimit);
+    const randomLimit = random(1, this.all(collectionName).length);
+    return () => sampleSize(this.all(collectionName), limit || randomLimit);
   }
 
   /**
@@ -199,7 +207,7 @@ export class Database {
    */
   last(collectionName) {
     this.checkFactoryPresence(collectionName);
-    return _.last(this.all(collectionName));
+    return last(this.all(collectionName));
   }
 
   /**

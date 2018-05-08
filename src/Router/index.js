@@ -1,5 +1,6 @@
 // @flow
-import _ from "lodash";
+import merge from 'lodash.merge';
+import forEach from 'lodash.foreach';
 import { interceptors } from "../interceptors";
 import environment from "../config/environment";
 import {
@@ -33,12 +34,12 @@ export class Router {
     interceptorConfig: InterceptorConfig,
     routerConfig: RouterConfig
   ) {
-    this.interceptorConfig = _.merge(
+    this.interceptorConfig = merge(
       {},
       interceptorDefaultConfig,
       interceptorConfig
     );
-    this.routerConfig = _.merge({}, routerDefaultConfig, routerConfig);
+    this.routerConfig = merge({}, routerDefaultConfig, routerConfig);
   }
 
   get(...args: any[]) {
@@ -68,13 +69,13 @@ export class Router {
   intercept() {
     const strategies = this.routerConfig.strategies;
 
-    _.forEach(strategies, name =>
+    forEach(strategies, name =>
       interceptors[name].enable(this.interceptorConfig)
     );
   }
 
   reset() {
     //TODO: Don't reset all 'interceptors'
-    _.forEach(interceptors, interceptor => interceptor.disable());
+    forEach(interceptors, interceptor => interceptor.disable());
   }
 }

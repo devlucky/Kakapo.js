@@ -1,4 +1,8 @@
-import _ from 'lodash';
+import mapValues from 'lodash.mapvalues';
+import isPlainObject from 'lodash.isplainobject';
+import assignInWith from 'lodash.assigninwith';
+import isUndefined from 'lodash.isundefined';
+import isFunction from 'lodash.isfunction';
 
 /**
  * Returns copy of an object with mapped values. Works really similar to
@@ -11,14 +15,14 @@ import _ from 'lodash';
  * @returns {Object}
  * @private
  */
-export const deepMapValues = (obj, fn) => _.mapValues(obj, (value) => {
-  if (_.isPlainObject(value)) return deepMapValues(value, fn);
+export const deepMapValues = (obj, fn) => mapValues(obj, (value) => {
+  if (isPlainObject(value)) return deepMapValues(value, fn);
   return fn(value);
 });
 
 export const extendWithBind = (...args) =>
-  _.extendWith(...args, (objectValue, sourceValue, key, object, source) => {
-    if (!_.isUndefined(objectValue)) { return objectValue; }
-    if (_.isFunction(sourceValue)) { return sourceValue.bind(source); }
+  assignInWith(...args, (objectValue, sourceValue, key, object, source) => {
+    if (!isUndefined(objectValue)) { return objectValue; }
+    if (isFunction(sourceValue)) { return sourceValue.bind(source); }
     return sourceValue;
   });

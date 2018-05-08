@@ -1,4 +1,9 @@
 import _ from 'lodash';
+import every from 'lodash.every';
+import isString from 'lodash.isstring';
+import has from 'lodash.has';
+import filter from 'lodash.filter';
+import isObject from 'lodash.isobject';
 import { Server, Router, Database } from '../src';
 
 const userFactory = faker => ({
@@ -26,7 +31,6 @@ export const databaseSpec = () => {
     const users = db.all('user');
 
     expect(users).toHaveLength(10);
-    expect(_.isArray(users)).toBeTruthy()
 
     // expect(() => db.all('user'),
     //   'Doesn\'t throw error when collection is present.');
@@ -70,10 +74,10 @@ export const databaseSpec = () => {
     const users = db.all('user');
     const comments = db.all('comment');
 
-    expect(_.every(users, user => _.isString(user.firstName))).toBeTruthy();
-    expect(_.every(users, user => _.isString(user.address.streetName))).toBeTruthy();
-    expect(_.every(comments, comment => _.isString(comment.title))).toBeTruthy();
-    expect(_.every(comments, comment => _.isString(comment.author.name))).toBeTruthy();
+    expect(every(users, user => isString(user.firstName))).toBeTruthy();
+    expect(every(users, user => isString(user.address.streetName))).toBeTruthy();
+    expect(every(comments, comment => isString(comment.title))).toBeTruthy();
+    expect(every(comments, comment => isString(comment.author.name))).toBeTruthy();
   });
 
   test('DB # decorateRecord', () => {
@@ -83,7 +87,7 @@ export const databaseSpec = () => {
 
     const user = db.decorateRecord('user', { name: 'Morty' });
 
-    expect(_.has(user, 'id')).toBeTruthy();;
+    expect(has(user, 'id')).toBeTruthy();;
 
     expect(() => db.decorateRecord('user')).toBeTruthy();;
     expect(() => db.decorateRecord('game')).toBeTruthy();;
@@ -146,7 +150,7 @@ export const databaseSpec = () => {
 
     const user = db.first('user');
 
-    expect(_.isObject(user)).toBeTruthy();
+    expect(isObject(user)).toBeTruthy();
     expect(user.id).toEqual(0)
 
     // expect(() => db.first('user'),
@@ -163,7 +167,7 @@ export const databaseSpec = () => {
 
     const user = db.last('user');
 
-    expect(_.isObject(user)).toBeTruthy();
+    expect(isObject(user)).toBeTruthy();
     expect(user.id).toEqual(4);
 
     // expect(() => db.last('user'),
@@ -202,8 +206,8 @@ export const databaseSpec = () => {
       user.save();
     });
 
-    expect(_.filter(db.all('user'), { firstName: 'Hector' })).toHaveLength(10);
-    expect(_.filter(db.all('user'), { firstName: 'Oskar' })).toHaveLength(10);
+    expect(filter(db.all('user'), { firstName: 'Hector' })).toHaveLength(10);
+    expect(filter(db.all('user'), { firstName: 'Oskar' })).toHaveLength(10);
   });
 
   test('DB # register', () => {
