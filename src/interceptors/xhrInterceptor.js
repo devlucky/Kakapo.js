@@ -98,6 +98,7 @@ class FakeXMLHttpRequest {
     if (interceptors.length > 0) {
       interceptors.forEach(interceptor => {
         const handler = interceptor.getHandler(url, method);
+
         if (handler) {
           const db = interceptor.getDB();
           const delay = interceptor.getDelay();
@@ -108,13 +109,17 @@ class FakeXMLHttpRequest {
             body: data,
             headers: this._requestHeaders
           });
-          const response = KakapoResponse.wrap(handler(request, db));
-
-          if (delay) {
-            setTimeout(() => this._handleResponse(response), delay);
-          } else {
-            this._handleResponse(response);
-          }
+          // Wrapping handler into a promise to add promise support for free
+          const responsePromise = Promise.resolve(handler(request, db));
+          
+          responsePromise.then((result) => {
+            const response = KakapoResponse.wrap(result);
+            if (delay) {
+              setTimeout(() => this._handleResponse(response), delay);
+            } else {
+              this._handleResponse(response);
+            }
+          });
         }
       });
     } else {

@@ -1,0 +1,21 @@
+{
+  "name": "kakapo-react-example",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "devDependencies": {
+    "ts-react-toolbox": "^0.1.1"
+  },
+  "engines": {
+    "node": ">=8.5.0"
+  },
+  "scripts": {
+    "bootstrap": "ts-react-toolbox init",
+    "dev": "ts-react-toolbox dev",
+    "build": "ts-react-toolbox build",
+    "lint": "ts-react-toolbox lint"
+  },
+  "peerDependencies": {
+    "react": "^16.2.0"
+  }
+}

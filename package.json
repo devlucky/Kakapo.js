@@ -6,6 +6,7 @@
   "atlaskit:src": "src/index.js",
   "scripts": {
     "build": "babel -d dist src",
+    "build:watch": "babel -d dist src --watch",
     "readme": "node create-readme.js",
     "test": "jest",
     "test:ci": "jest --runInBand --coverage",
