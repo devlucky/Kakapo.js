@@ -9,13 +9,15 @@ class Request {
 //   }
 // }
 class Response {
+  body: any;
   ok = true
-  constructor() {
 
+  constructor(body: any) {
+    this.body = body;
   }
 
   json() {
-    return Promise.resolve();
+    return Promise.resolve(JSON.parse(this.body));
   }
 }
 
