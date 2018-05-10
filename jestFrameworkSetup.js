@@ -3,11 +3,6 @@ class Request {
 
 }
 
-// class Body {
-//   json() {
-
-//   }
-// }
 class Response {
   body: any;
   ok = true
