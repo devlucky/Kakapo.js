@@ -90,7 +90,7 @@ function isFakeFetch(fetch: any): boolean {
 const fakeFetch = new FakeFetch();
 
 export const enable = (config: InterceptorConfig) => {
-  if (!isFakeFetch(fetch)) {
+  if (!isFakeFetch(window.fetch)) {
     window.fetch = fakeFetch.fake();
   }
 

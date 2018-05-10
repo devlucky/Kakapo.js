@@ -1,9 +1,7 @@
 import { Server, Router } from '../src';
 
-describe.skip('Router', () => {
-  test('Router # config # host', () => {
-    expect.assertions(7);
-
+describe('Router', () => {
+  test('Router # config # host', async () => {
     // TODO: Create multiple servers at the same time with different
     // 'host' and check that works properly
     const server = new Server();
@@ -17,20 +15,16 @@ describe.skip('Router', () => {
 
     server.use(router);
 
-    fetch('https://api.github.com/comments').then(response => {
-      expect(response instanceof Response).toBeTruthy();
-      expect(response.ok).toBeTruthy();
-    });
+    const response = await fetch('https://api.github.com/comments');
+    
+    expect(response).toBeInstanceOf(Response);
+    expect(response.ok).toBeTruthy();
 
-    fetch('/comments').then(response => {
-      expect(response instanceof Response).toBeTruthy();
-      // expect.notOk(response.ok, 'Route not found, since it doesn\'t exist.');
-    });
+    const response2 = await fetch('/comments');
+    expect(response).toBeInstanceOf(Response);
   });
 
-  test('Router # config # requestDelay', () => {
-    expect.assertions(4);
-
+  test('Router # config # requestDelay', async () => {
     const server = new Server();
     const router = new Router({
       requestDelay: 1000,
@@ -42,26 +36,24 @@ describe.skip('Router', () => {
 
     server.use(router);
 
-    fetch('/comments').then(response => {
-      expect(response instanceof Response).toBeTruthy();
-      expect(response.ok).toBeTruthy();
-    });
+    const response = await fetch('/comments');
+
+    expect(response instanceof Response).toBeTruthy();
+    expect(response.ok).toBeTruthy();
   });
 
-  test('Router#get', () => {
-    expect.assertions(9);
-
+  test('Router#get', async () => {
     const server = new Server();
     const router = new Router();
 
     router.get('/comments', request => {
-      expect(typeof request, 'object', 'Request is present.');
+      expect(typeof request).toEqual('object');
     });
 
     router.get('/users/:user_id', request => {
-      expect(typeof request, 'object', 'Request is present.');
-      expect(typeof request.params, 'object', 'Params are present');
-
+      expect(typeof request).toEqual('object');
+      expect(typeof request.params).toEqual('object');
+      
       return {
         users: [{ firstName: 'hector' }],
       };
@@ -69,31 +61,19 @@ describe.skip('Router', () => {
 
     server.use(router);
 
-    fetch('/doesnt_exist')
-      .then(response => {
-        expect(response instanceof Response, 'Response instance is returned');
-      });
-
-    fetch('/comments')
-      .then(response => {
-        expect(response instanceof Response, 'Response instance is returned');
-      });
-
-    fetch('/users/1')
-      .then(response => {
-        expect(response instanceof Response, 'Response instance is returned');
-
-        return response.json();
-      })
-      .then(response => {
-        const firstName = response.users[0].firstName;
-        expect(firstName, 'hector', 'Fake response is returned');
-      });
+    expect(await fetch('/doesnt_exist')).toBeInstanceOf(Response);
+    expect(await fetch('/comments')).toBeInstanceOf(Response);
+    
+    return fetch('/users/1').then(response => {
+      expect(response).toBeInstanceOf(Response);
+      return response.json();
+    }).then(response => {
+      const firstName = response.users[0].firstName;
+      expect(firstName).toEqual('hector');
+    });
   });
 
-  test('Router#post', () => {
-    expect.assertions(6);
-
+  test('Router#post', async () => {
     const server = new Server();
     const router = new Router();
     const body = JSON.stringify({ firstName: 'Joan', lastName: 'Romano' });
@@ -102,9 +82,8 @@ describe.skip('Router', () => {
       const parsedBody = JSON.parse(request.body);
       const firstName = parsedBody.firstName;
 
-      expect(typeof request, 'object', 'Request is present.');
-      expect(request.body, body, 'Expected request body is returned');
-      expect(firstName, 'Joan', 'Request body has expected values.');
+      expect(request.body).toEqual(body);
+      expect(firstName).toEqual('Joan');
 
       return {
         status: 'success',
@@ -114,21 +93,15 @@ describe.skip('Router', () => {
 
     server.use(router);
 
-    fetch('/users', { method: 'POST', body })
-      .then(r => r.json())
-      .then(response => {
-        const status = response.status;
-        const firstName = response.record.firstName;
+    const response = await (await fetch('/users', { method: 'POST', body })).json();
+    const status = response.status;
+    const firstName = response.record.firstName;
 
-        expect(typeof response, 'object', 'Response is present.');
-        expect(status, 'success', 'Expected status is returned');
-        expect(firstName, 'Joan', 'Response body has expected values.');
-      });
+    expect(status).toEqual('success');
+    expect(firstName).toEqual('Joan');
   });
 
   test('Router # post # XMLHttpRequest', () => {
-    expect.assertions(1);
-
     const server = new Server();
     const router = new Router();
     const body = JSON.stringify({ firstName: 'Joan', lastName: 'Romano' });
@@ -136,7 +109,7 @@ describe.skip('Router', () => {
     router.post('/hector', request => {
       const body = JSON.parse(request.body);
       
-      expect(body.firstName, 'Joan', 'Request body has expected values when using XMLHttpRequest');
+      expect(body.firstName).toEqual('Joan');
     });
 
     server.use(router);
@@ -148,9 +121,7 @@ describe.skip('Router', () => {
     xhr.send(body);
   });
 
-  test('Router#put', () => {
-    expect.assertions(6);
-
+  test('Router#put', async () => {
     const server = new Server();
     const router = new Router();
 
@@ -158,9 +129,7 @@ describe.skip('Router', () => {
       const query = request.query;
       const page = query.page;
 
-      expect(typeof request, 'object', 'Request is present.');
-      expect(typeof query, 'object', 'Request query is returned.');
-      expect(page, '1', 'Request query has expected values.');
+      expect(page).toEqual('1');
 
       return {
         status: 'success',
@@ -170,21 +139,15 @@ describe.skip('Router', () => {
 
     server.use(router);
 
-    fetch('/users?page=1', { method: 'PUT' })
-      .then(r => r.json())
-      .then(response => {
-        const status = response.status;
-        const page = response.query.page;
+    const response = await (await fetch('/users?page=1', { method: 'PUT' })).json();
+    const status = response.status;
+    const page = response.query.page;
 
-        expect(typeof response, 'object', 'Response is present.');
-        expect(status, 'success', 'Expected status is returned');
-        expect(page, '1', 'Response body has expected values.');
-      });
+    expect(status).toEqual('success');
+    expect(page).toEqual('1');
   });
 
-  test('Router#delete', () => {
-    expect.assertions(6);
-
+  test('Router#delete', async () => {
     const server = new Server();
     const router = new Router();
 
@@ -192,9 +155,7 @@ describe.skip('Router', () => {
       const params = request.params;
       const commentId = request.params.comment_id;
 
-      expect(typeof request, 'object', 'Request is present.');
-      expect(typeof params, 'object', 'Request params are present.');
-      expect(commentId, '2', 'Request params have expected values.');
+      expect(commentId).toEqual('2');
 
       return {
         status: 'success',
@@ -204,28 +165,22 @@ describe.skip('Router', () => {
 
     server.use(router);
 
-    fetch('/users/1/comments/2', { method: 'DELETE' })
-      .then(r => r.json())
-      .then(response => {
-        const status = response.status;
-        const userId = response.params.user_id;
+    const response = await (await fetch('/users/1/comments/2', { method: 'DELETE' })).json();
+    const status = response.status;
+    const userId = response.params.user_id;
 
-        expect(typeof response, 'object', 'Response is present.');
-        expect(status, 'success', 'Expected status is returned.');
-        expect(userId, '1', 'Response body has expected values.');
-      });
+    expect(status).toEqual('success');
+    expect(userId).toEqual('1');
   });
 
   test('Router#XMLHttpRequest # config # requestDelay', () => {
-    expect.assertions(1);
-
     const server = new Server();
     const router = new Router({
-      requestDelay: 1000,
+      requestDelay: 10,
     });
 
     router.get('/comments', request => {
-      expect(typeof request, 'object', 'Request is present.');
+      expect(typeof request).toEqual('object');
     });
 
     server.use(router);
@@ -235,21 +190,17 @@ describe.skip('Router', () => {
     xhr.onreadystatechange = () => {};
     xhr.open('GET', '/comments', true);
     xhr.send();
-    
-    expect.timeoutAfter(1100);
-  });    
+  });
   
-  test('Router#XMLHttpRequest', () => {
-    expect.assertions(10);
-
+  test.skip('Router#XMLHttpRequest', () => {
     const server = new Server();
     const router = new Router();
 
     router.get('/comments', request => {
       const params = request.params;
 
-      expect(typeof request, 'object', 'Request is present.');
-      expect(typeof params, 'object', 'Request params are present.');
+      expect(typeof request).toEqual('object');
+      expect(typeof params).toEqual('object');
 
       return [
         { text: 'First comment' },
@@ -289,9 +240,7 @@ describe.skip('Router', () => {
     xhr2.send();
   });
 
-  test('Router # Async support', () => {
-    expect.assertions(1);
-
+  test('Router # Async support', async () => {
     const server = new Server();
     const router = new Router();
 
@@ -307,9 +256,9 @@ describe.skip('Router', () => {
 
     server.use(router);
 
-    fetch('/async_endpoint').then(r => r.json()).then(response => {
-      expect(response.body, 'async response', `Response it's fine for async handlers`);
-    });
+    const response = await (await fetch('/async_endpoint')).json();
+    
+    expect(response.body).toEqual('async response');
   });
 
   // @TODO Test strategies in router.
