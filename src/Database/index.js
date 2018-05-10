@@ -70,10 +70,10 @@ export class Database<M: DatabaseSchema> {
    * @returns {Array<Object>|Object}
    * @public
    */
-  all<C: $Keys<M>, T: $ElementType<M, C>>(
+  all<C: $Keys<M>>(
     collectionName: C,
     raw: boolean = false
-  ): Record<T>[] {
+  ): Record<$ElementType<M, C>>[] {
     // this.checkFactoryPresence(collectionName);
     // const records = cloneDeep(recordStore.get(this).get(collectionName));
     // return raw ? records : records.map(r => this.serialize(r, collectionName));
@@ -93,10 +93,10 @@ export class Database<M: DatabaseSchema> {
    * @returns {Function}
    * @private
    */
-  belongsTo<C: $Keys<M>, T: $ElementType<M, C>>(
+  belongsTo<C: $Keys<M>>(
     collectionName: C,
-    conditions: ?Predicate<T>
-  ): () => Record<T> {
+    conditions: ?Predicate<$ElementType<M, C>>
+  ): () => Record<$ElementType<M, C>> {
     return () => {
       if (conditions) {
         return this.findOne(collectionName, conditions);
@@ -115,10 +115,10 @@ export class Database<M: DatabaseSchema> {
    *
    * @public
    */
-  create<C: $Keys<M>, T: $ElementType<M, C>>(
+  create<C: $Keys<M>>(
     collectionName: C,
     size: number = 1
-  ): Record<T>[] {
+  ): Record<$ElementType<M, C>>[] {
     const { factory, serializer } = this.getCollection(collectionName);
     const records = [];
 
@@ -130,8 +130,8 @@ export class Database<M: DatabaseSchema> {
     return records.map(this.serialize(serializer));
   }
 
-  serialize<C: $Keys<M>, T: $ElementType<M, C>>(serializer: DataSerializer<T>) {
-    return (record: Record<T>): Record<T> => {
+  serialize<C: $Keys<M>>(serializer: DataSerializer<$ElementType<M, C>>) {
+    return (record: Record<$ElementType<M, C>>): Record<$ElementType<M, C>> => {
       const { data, ...others } = record;
       return {
         ...others,
@@ -140,10 +140,10 @@ export class Database<M: DatabaseSchema> {
     };
   }
 
-  createRecord<C: $Keys<M>, T: $ElementType<M, C>>(
+  createRecord<C: $Keys<M>>(
     collectionName: C,
-    data: T
-  ): Record<T> {
+    data: $ElementType<M, C>
+  ): Record<$ElementType<M, C>> {
     const collection = this.getCollection(collectionName);
     const { uuid, records } = collection;
 
@@ -169,10 +169,10 @@ export class Database<M: DatabaseSchema> {
    * @returns {Array<Object>}
    * @public
    */
-  find<C: $Keys<M>, T: $ElementType<M, C>>(
+  find<C: $Keys<M>>(
     collectionName: $Keys<M>,
-    conditions: ?Predicate<T>
-  ): Record<T>[] {
+    conditions: ?Predicate<$ElementType<M, C>>
+  ): Record<$ElementType<M, C>>[] {
     const { records } = this.getCollection(collectionName);
     return filter(records, conditions);
   }
@@ -186,9 +186,9 @@ export class Database<M: DatabaseSchema> {
    * @returns {Object}
    * @public
    */
-  findOne<C: $Keys<M>, T: $ElementType<M, C>>(
+  findOne<C: $Keys<M>>(
     collectionName: $Keys<M>,
-    conditions: ?Predicate<T>
+    conditions: ?Predicate<$ElementType<M, C>>
   ) {
     return first(this.find(collectionName, conditions));
   }
@@ -241,10 +241,10 @@ export class Database<M: DatabaseSchema> {
    * @returns {Object}
    * @public
    */
-  push<C: $Keys<M>, T: $ElementType<M, C>>(
+  push<C: $Keys<M>>(
     collectionName: C,
-    data: T
-  ): Record<T> {
+    data: $ElementType<M, C>
+  ): Record<$ElementType<M, C>> {
     const collection = this.getCollection(collectionName);
     const record = this.createRecord(collectionName, data);
 
@@ -263,10 +263,10 @@ export class Database<M: DatabaseSchema> {
    *
    * @public
    */
-  register<C: $Keys<M>, T: $ElementType<M, C>>(
+  register<C: $Keys<M>>(
     collectionName: C,
-    factory: DataFactory<T>,
-    serializer: DataSerializer<T> = data => data
+    factory: DataFactory<$ElementType<M, C>>,
+    serializer: DataSerializer<$ElementType<M, C>> = data => data
   ) {
     this.getCollectionStore().set(collectionName, {
       uuid: 0,
@@ -294,9 +294,9 @@ export class Database<M: DatabaseSchema> {
     }
   }
 
-  getCollection<C: $Keys<M>, T: $ElementType<M, C>>(
+  getCollection<C: $Keys<M>>(
     collectionName: C
-  ): Collection<T> {
+  ): Collection<$ElementType<M, C>> {
     const collectionStore = this.getCollectionStore();
     const collection = collectionStore.get(collectionName);
     if (collection) {

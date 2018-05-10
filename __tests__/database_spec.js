@@ -50,7 +50,8 @@ describe("Database", () => {
       );
       const [record] = database.create("cat");
 
-      expect(record.data).toEqual({ age: 6, name: "foo" });
+      expect(record.data.age).toEqual(6);
+      expect(record.data.name).toEqual("foo");
     });
   });
 });
