@@ -9,7 +9,7 @@ import { Request } from "../Request";
 import { Response } from "../Response";
 import { Database } from '../Database';
 
-export type RouteHandler = (request: Request, db: Database) => Response | any;
+export type RouteHandler = (request: Request, db: Database<any>) => Response | any;
 
 export type InterceptorConfig = {
   +host: string,

@@ -1,22 +1,58 @@
-import faker from 'faker';
-import cloneDeep from 'lodash.clonedeep';
-import sample from 'lodash.sample';
-import isFunction from 'lodash.isfunction';
-import assign from 'lodash.assign';
-import filter from 'lodash.filter';
-import first from 'lodash.first';
-import random from 'lodash.random';
-import sampleSize from 'lodash.samplesize';
-import last from 'lodash.last';
-import { recordFactory } from './recordFactory';
-import { deepMapValues } from '../helpers/util';
+// @flow
+import { type Predicate } from "lodash";
+import cloneDeep from "lodash/clonedeep";
+import sample from "lodash/sample";
+import isFunction from "lodash/isfunction";
+import assign from "lodash/assign";
+import filter from "lodash/filter";
+import first from "lodash/first";
+import random from "lodash/random";
+import sampleSize from "lodash/samplesize";
+import last from "lodash/last";
 
-const factoryStore = new WeakMap();
-const recordStore = new WeakMap();
-const serializerStore = new WeakMap();
-const uuidStore = new WeakMap();
+import { recordFactory } from "./recordFactory";
+import { deepMapValues } from "../helpers/util";
 
-export class Database {
+const databaseCollectionStores: WeakMap<
+  Database<any>,
+  CollectionStore<any, any, any>
+> = new WeakMap();
+
+export type Record<T> = {
+  +id: number,
+  save(): void,
+  delete(): void,
+  +data: T
+};
+
+export type DataSerializer<T> = (data: T) => T;
+
+export type DataFactory<T> = () => T;
+
+export class CollectionNotFoundError extends Error {
+  constructor(collectionName: string) {
+    super(`Collection ${collectionName} not found`);
+  }
+}
+
+export type DatabaseSchema = { [collectionName: string]: any };
+export type RecordStore<M: DatabaseSchema, C: $Keys<M>> = {
+  [collectionName: C]: $ElementType<M, C>
+};
+
+export type CollectionStore<
+  M: DatabaseSchema,
+  C: $Keys<M>,
+  T: $ElementType<M, C>
+> = Map<C, Collection<T>>;
+
+export type Collection<T> = {
+  uuid: number,
+  dataFactory: DataFactory<T>,
+  records: Record<T>[]
+};
+
+export class Database<M: DatabaseSchema> {
   /**
    * Creates new Database and initializes it's state.
    *
@@ -36,10 +72,17 @@ export class Database {
    * @returns {Array<Object>|Object}
    * @public
    */
-  all(collectionName, raw = false) {
-    this.checkFactoryPresence(collectionName);
-    const records = cloneDeep(recordStore.get(this).get(collectionName));
-    return raw ? records : records.map(r => this.serialize(r, collectionName));
+  all<C: $Keys<M>, T: $ElementType<M, C>>(
+    collectionName: C,
+    raw: boolean = false
+  ): Record<T>[] {
+    // this.checkFactoryPresence(collectionName);
+    // const records = cloneDeep(recordStore.get(this).get(collectionName));
+    // return raw ? records : records.map(r => this.serialize(r, collectionName));
+
+    const { records } = this.getCollection(collectionName);
+
+    return records;
   }
 
   /**
@@ -52,25 +95,17 @@ export class Database {
    * @returns {Function}
    * @private
    */
-  belongsTo(collectionName, conditions) {
+  belongsTo<C: $Keys<M>, T: $ElementType<M, C>>(
+    collectionName: C,
+    conditions: ?Predicate<T>
+  ): () => Record<T> {
     return () => {
-      if (conditions) { return this.find(collectionName, conditions); }
-      return sample(this.all(collectionName));
+      if (conditions) {
+        return this.findOne(collectionName, conditions);
+      } else {
+        return sample(this.all(collectionName));
+      }
     };
-  }
-
-  /**
-   * Throws error if collection with specified name doesn't exist.
-   *
-   * @param {string} collectionName - name of collection
-   *
-   * @throws {ReferenceError}.
-   * @private
-   */
-  checkFactoryPresence(collectionName) {
-    if (!this.getFactory(collectionName)) {
-      throw new ReferenceError(`Factory ${collectionName} not found`);
-    }
   }
 
   /**
@@ -82,38 +117,39 @@ export class Database {
    *
    * @public
    */
-  create(collectionName, size = 1) {
-    this.checkFactoryPresence(collectionName);
+  create<C: $Keys<M>, T: $ElementType<M, C>>(
+    collectionName: C,
+    size: number = 1
+  ): Record<T>[] {
+    const { dataFactory } = this.getCollection(collectionName);
+    const records = [];
 
-    const currentRecordStore = recordStore.get(this);
-    const factory = this.getFactory(collectionName);
-    const records = currentRecordStore.get(collectionName);
-
-    for (let idx = 0; idx < size; ++idx) {
-      const record = deepMapValues(factory(faker), (field) => {
-        if (isFunction(field)) { return field(); }
-        return field;
-      });
-
-      records.push(this.decorateRecord(collectionName, record));
+    for (let index = 0; index < size; index++) {
+      const data = dataFactory();
+      records.push(this.push(collectionName, data));
     }
 
-    currentRecordStore.set(collectionName, records.map(r =>
-      recordFactory(r, collectionName, currentRecordStore)));
+    return records;
   }
 
-  /**
-   * Returns record with generated uuid field added on it.
-   *
-   * @param {string} collectionName - name of collection
-   * @param {Object} record - record to decorate
-   *
-   * @returns {Object}
-   * @private
-   */
-  decorateRecord(collectionName, record) {
-    this.checkFactoryPresence(collectionName);
-    return assign({}, record, { id: this.uuid(collectionName) });
+  createRecord<C: $Keys<M>, T: $ElementType<M, C>>(
+    collectionName: C,
+    data: T
+  ): Record<T> {
+    const collection = this.getCollection(collectionName);
+    const { uuid, records } = collection;
+
+    collection.uuid++;
+
+    return {
+      id: uuid,
+      save: () => {},
+      delete: () => {
+        const index = records.findIndex(record => record.id === uuid);
+        records.splice(index, 1);
+      },
+      data
+    };
   }
 
   /**
@@ -125,10 +161,13 @@ export class Database {
    * @returns {Array<Object>}
    * @public
    */
-  find(collectionName, conditions) {
-    this.checkFactoryPresence(collectionName);
-    return filter(this.all(collectionName, true), conditions)
-      .map(r => this.serialize(r, collectionName));
+  find<C: $Keys<M>, T: $ElementType<M, C>>(
+    collectionName: $Keys<M>,
+    conditions: ?Predicate<T>
+  ): Record<T>[] {
+    return filter(this.all(collectionName, true), conditions).map(r =>
+      this.serialize(r, collectionName)
+    );
   }
 
   /**
@@ -140,8 +179,10 @@ export class Database {
    * @returns {Object}
    * @public
    */
-  findOne(collectionName, conditions) {
-    this.checkFactoryPresence(collectionName);
+  findOne<C: $Keys<M>, T: $ElementType<M, C>>(
+    collectionName: $Keys<M>,
+    conditions: ?Predicate<T>
+  ) {
     return first(this.find(collectionName, conditions));
   }
 
@@ -153,33 +194,8 @@ export class Database {
    * @returns {Object}
    * @public
    */
-  first(collectionName) {
-    this.checkFactoryPresence(collectionName);
+  first(collectionName: $Keys<M>) {
     return first(this.all(collectionName));
-  }
-
-  /**
-   * Returns factory for specified collection from Database's store.
-   *
-   * @param {string} collectionName - name of collection
-   *
-   * @returns {Map}
-   * @private
-   */
-  getFactory(collectionName) {
-    return factoryStore.get(this).get(collectionName);
-  }
-
-  /**
-   * Returns serializer for specified collection from Database's store.
-   *
-   * @param {string} collectionName - name of collection
-   *
-   * @returns {Map}
-   * @private
-   */
-  getSerializer(collectionName) {
-    return serializerStore.get(this).get(collectionName);
   }
 
   /**
@@ -192,7 +208,7 @@ export class Database {
    * @returns {Function}
    * @private
    */
-  hasMany(collectionName, limit) {
+  hasMany(collectionName: $Keys<M>, limit: number) {
     const randomLimit = random(1, this.all(collectionName).length);
     return () => sampleSize(this.all(collectionName), limit || randomLimit);
   }
@@ -205,8 +221,7 @@ export class Database {
    * @returns {Object}
    * @public
    */
-  last(collectionName) {
-    this.checkFactoryPresence(collectionName);
+  last(collectionName: $Keys<M>) {
     return last(this.all(collectionName));
   }
 
@@ -219,16 +234,14 @@ export class Database {
    * @returns {Object}
    * @public
    */
-  push(collectionName, record) {
-    this.checkFactoryPresence(collectionName);
-    record = this.decorateRecord(collectionName, record);
-    const currentRecordStore = recordStore.get(this);
-    const records = currentRecordStore.get(collectionName);
+  push<C: $Keys<M>, T: $ElementType<M, C>>(
+    collectionName: C,
+    data: T
+  ): Record<T> {
+    const collection = this.getCollection(collectionName);
+    const record = this.createRecord(collectionName, data);
 
-    records.push(record);
-
-    currentRecordStore.set(collectionName, records.map(r =>
-      recordFactory(r, collectionName, currentRecordStore)));
+    collection.records.push(record);
 
     return record;
   }
@@ -243,11 +256,16 @@ export class Database {
    *
    * @public
    */
-  register(collectionName, factory, serializer) {
-    factoryStore.get(this).set(collectionName, factory);
-    recordStore.get(this).set(collectionName, []);
-    serializerStore.get(this).set(collectionName, serializer);
-    uuidStore.get(this).set(collectionName, 0);
+  register<C: $Keys<M>, T: $ElementType<M, C>>(
+    collectionName: C,
+    dataFactory: DataFactory<T>,
+    serializer: DataSerializer<T> = data => data
+  ) {
+    this.getCollectionStore().set(collectionName, {
+      uuid: 0,
+      records: [],
+      dataFactory
+    });
   }
 
   /**
@@ -256,10 +274,28 @@ export class Database {
    * @public
    */
   reset() {
-    factoryStore.set(this, new Map());
-    recordStore.set(this, new Map());
-    serializerStore.set(this, new Map());
-    uuidStore.set(this, new Map());
+    databaseCollectionStores.set(this, new Map());
+  }
+
+  getCollectionStore<C: $Keys<M>>(): CollectionStore<M, C, $ElementType<M, C>> {
+    const collectionStore = databaseCollectionStores.get(this);
+    if (collectionStore) {
+      return collectionStore;
+    } else {
+      throw new Error("This database needs to be initialized.");
+    }
+  }
+
+  getCollection<C: $Keys<M>, T: $ElementType<M, C>>(
+    collectionName: C
+  ): Collection<T> {
+    const collectionStore = this.getCollectionStore();
+    const collection = collectionStore.get(collectionName);
+    if (collection) {
+      return collection;
+    } else {
+      throw new CollectionNotFoundError(collectionName);
+    }
   }
 
   /**
@@ -271,24 +307,8 @@ export class Database {
    * @returns {Object}
    * @private
    */
-  serialize(record, collectionName) {
-    const serializer = this.getSerializer(collectionName);
+  serialize<T>(record: Record<T>, collectionName: string): Record<T> {
+    const serializer = this.serializerStore.get(collectionName);
     return serializer ? serializer(record) : record;
-  }
-
-  /**
-   * Returns next generated uuid for specified collection.
-   *
-   * @param {string} collectionName - name of collection
-   *
-   * @returns {number}
-   * @private
-   */
-  uuid(collectionName) {
-    this.checkFactoryPresence(collectionName);
-    const id = uuidStore.get(this).get(collectionName);
-
-    uuidStore.get(this).set(collectionName, id + 1);
-    return id;
   }
 }
