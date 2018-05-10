@@ -20,6 +20,8 @@ describe("Database", () => {
 
       const record = records[0];
       expect(record.id).toEqual(0);
+      expect(record.save).toEqual(expect.any(Function));
+      expect(record.delete).toEqual(expect.any(Function));
       expect(record.data).toEqual(data);
     });
 
@@ -33,6 +35,22 @@ describe("Database", () => {
       const records = database.create("cat", 10);
 
       expect(records).toHaveLength(10);
+    });
+
+    it("should return a serialized record given serializer", () => {
+      const database: Database<ExampleSchema> = new Database();
+      const data = {
+        age: 3
+      };
+
+      database.register(
+        "cat",
+        () => data,
+        ({ age }) => ({ age: age * 2, name: "foo" })
+      );
+      const [record] = database.create("cat");
+
+      expect(record.data).toEqual({ age: 6, name: "foo" });
     });
   });
 });

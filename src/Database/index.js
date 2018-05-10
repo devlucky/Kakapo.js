@@ -10,9 +10,6 @@ import random from "lodash/random";
 import sampleSize from "lodash/samplesize";
 import last from "lodash/last";
 
-import { recordFactory } from "./recordFactory";
-import { deepMapValues } from "../helpers/util";
-
 const databaseCollectionStores: WeakMap<
   Database<any>,
   CollectionStore<any, any, any>
@@ -48,8 +45,9 @@ export type CollectionStore<
 
 export type Collection<T> = {
   uuid: number,
-  dataFactory: DataFactory<T>,
-  records: Record<T>[]
+  factory: DataFactory<T>,
+  records: Record<T>[],
+  serializer: DataSerializer<T>
 };
 
 export class Database<M: DatabaseSchema> {
@@ -121,15 +119,25 @@ export class Database<M: DatabaseSchema> {
     collectionName: C,
     size: number = 1
   ): Record<T>[] {
-    const { dataFactory } = this.getCollection(collectionName);
+    const { factory, serializer } = this.getCollection(collectionName);
     const records = [];
 
     for (let index = 0; index < size; index++) {
-      const data = dataFactory();
+      const data = factory();
       records.push(this.push(collectionName, data));
     }
 
-    return records;
+    return records.map(this.serialize(serializer));
+  }
+
+  serialize<C: $Keys<M>, T: $ElementType<M, C>>(serializer: DataSerializer<T>) {
+    return (record: Record<T>): Record<T> => {
+      const { data, ...others } = record;
+      return {
+        ...others,
+        data: serializer(data)
+      };
+    };
   }
 
   createRecord<C: $Keys<M>, T: $ElementType<M, C>>(
@@ -165,9 +173,8 @@ export class Database<M: DatabaseSchema> {
     collectionName: $Keys<M>,
     conditions: ?Predicate<T>
   ): Record<T>[] {
-    return filter(this.all(collectionName, true), conditions).map(r =>
-      this.serialize(r, collectionName)
-    );
+    const { records } = this.getCollection(collectionName);
+    return filter(records, conditions);
   }
 
   /**
@@ -258,13 +265,14 @@ export class Database<M: DatabaseSchema> {
    */
   register<C: $Keys<M>, T: $ElementType<M, C>>(
     collectionName: C,
-    dataFactory: DataFactory<T>,
+    factory: DataFactory<T>,
     serializer: DataSerializer<T> = data => data
   ) {
     this.getCollectionStore().set(collectionName, {
       uuid: 0,
       records: [],
-      dataFactory
+      factory,
+      serializer
     });
   }
 
@@ -296,19 +304,5 @@ export class Database<M: DatabaseSchema> {
     } else {
       throw new CollectionNotFoundError(collectionName);
     }
-  }
-
-  /**
-   * Returns record serialized with serializer specified in register method.
-   *
-   * @param {string} collectionName - name of collection
-   * @param {Object} record - record to decorate
-   *
-   * @returns {Object}
-   * @private
-   */
-  serialize<T>(record: Record<T>, collectionName: string): Record<T> {
-    const serializer = this.serializerStore.get(collectionName);
-    return serializer ? serializer(record) : record;
   }
 }
