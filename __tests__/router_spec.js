@@ -1,8 +1,8 @@
 import { Server, Router } from '../src';
 
-describe.skip('Router', () => {
+describe('Router', () => {
   test('Router # config # host', () => {
-    expect.assertions(7);
+    expect.assertions(4);
 
     // TODO: Create multiple servers at the same time with different
     // 'host' and check that works properly
@@ -24,13 +24,10 @@ describe.skip('Router', () => {
 
     fetch('/comments').then(response => {
       expect(response instanceof Response).toBeTruthy();
-      // expect.notOk(response.ok, 'Route not found, since it doesn\'t exist.');
     });
   });
 
-  test('Router # config # requestDelay', () => {
-    expect.assertions(4);
-
+  test('Router # config # requestDelay', async () => {
     const server = new Server();
     const router = new Router({
       requestDelay: 1000,
@@ -42,26 +39,24 @@ describe.skip('Router', () => {
 
     server.use(router);
 
-    fetch('/comments').then(response => {
-      expect(response instanceof Response).toBeTruthy();
-      expect(response.ok).toBeTruthy();
-    });
+    const response = await fetch('/comments');
+
+    expect(response instanceof Response).toBeTruthy();
+    expect(response.ok).toBeTruthy();
   });
 
-  test('Router#get', () => {
-    expect.assertions(9);
-
+  test.only('Router#get', async () => {
     const server = new Server();
     const router = new Router();
 
     router.get('/comments', request => {
-      expect(typeof request, 'object', 'Request is present.');
+      expect(typeof request).toEqual('object');
     });
 
     router.get('/users/:user_id', request => {
-      expect(typeof request, 'object', 'Request is present.');
-      expect(typeof request.params, 'object', 'Params are present');
-
+      expect(typeof request).toEqual('object');
+      expect(typeof request.params).toEqual('object');
+      console.log(1)
       return {
         users: [{ firstName: 'hector' }],
       };
@@ -69,26 +64,17 @@ describe.skip('Router', () => {
 
     server.use(router);
 
-    fetch('/doesnt_exist')
-      .then(response => {
-        expect(response instanceof Response, 'Response instance is returned');
-      });
-
-    fetch('/comments')
-      .then(response => {
-        expect(response instanceof Response, 'Response instance is returned');
-      });
-
-    fetch('/users/1')
-      .then(response => {
-        expect(response instanceof Response, 'Response instance is returned');
-
-        return response.json();
-      })
-      .then(response => {
-        const firstName = response.users[0].firstName;
-        expect(firstName, 'hector', 'Fake response is returned');
-      });
+    expect(await fetch('/doesnt_exist')).toBeInstanceOf(Response);
+    expect(await fetch('/comments')).toBeInstanceOf(Response);
+    
+    return fetch('/users/1').then(response => {
+      expect(response).toBeInstanceOf(Response);
+      console.log(response)
+      return response.json();
+    }).then(response => {
+      const firstName = response.users[0].firstName;
+      expect(firstName).toEqual('hector');
+    });
   });
 
   test('Router#post', () => {
