@@ -15,32 +15,13 @@ const databaseCollectionStores: WeakMap<
   CollectionStore<any, any, any>
 > = new WeakMap();
 
-export type Record<T> = {
-  +id: number,
-  save(): void,
-  delete(): void,
-  +data: T
-};
-
-export type DataSerializer<T> = (data: T) => T;
-
-export type DataFactory<T> = () => T;
-
-export class CollectionNotFoundError extends Error {
-  constructor(collectionName: string) {
-    super(`Collection ${collectionName} not found`);
-  }
-}
-
-export type DatabaseSchema = { [collectionName: string]: any };
-export type RecordStore<M: DatabaseSchema, C: $Keys<M>> = {
-  [collectionName: C]: $ElementType<M, C>
-};
+export type DatabaseSchema = { [collectionName: string]: CollectionSchema };
+export type CollectionSchema = any;
 
 export type CollectionStore<
   M: DatabaseSchema,
-  C: $Keys<M>,
-  T: $ElementType<M, C>
+  C = $Keys<M>,
+  T = $ElementType<M, C>
 > = Map<C, Collection<T>>;
 
 export type Collection<T> = {
@@ -48,6 +29,16 @@ export type Collection<T> = {
   factory: DataFactory<T>,
   records: Record<T>[],
   serializer: DataSerializer<T>
+};
+
+export type DataSerializer<T> = (data: T) => T;
+export type DataFactory<T> = () => T;
+
+export type Record<T> = {
+  +id: number,
+  save(): void,
+  delete(): void,
+  +data: T
 };
 
 export class Database<M: DatabaseSchema> {
@@ -304,5 +295,11 @@ export class Database<M: DatabaseSchema> {
     } else {
       throw new CollectionNotFoundError(collectionName);
     }
+  }
+}
+
+export class CollectionNotFoundError extends Error {
+  constructor(collectionName: string) {
+    super(`Collection ${collectionName} not found`);
   }
 }
