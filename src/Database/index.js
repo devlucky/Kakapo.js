@@ -142,26 +142,6 @@ export class Database<M: DatabaseSchema = Object> {
     return records;
   }
 
-  createRecord<K: $Keys<M>>(
-    collectionName: K,
-    data: DataType<M, K>
-  ): Record<DataType<M, K>> {
-    const collection = this.getCollection(collectionName);
-    const { uuid, records } = collection;
-
-    collection.uuid++;
-
-    return {
-      id: uuid,
-      save: () => {},
-      delete: () => {
-        const index = records.findIndex(record => record.id === uuid);
-        records.splice(index, 1);
-      },
-      data
-    };
-  }
-
   /**
    * Returns records from specified collection, matching specified requirements.
    *
@@ -250,8 +230,20 @@ export class Database<M: DatabaseSchema = Object> {
     collectionName: K,
     data: DataType<M, K>
   ): Record<SerializedType<M, K>> {
-    const { records, serializer } = this.getCollection(collectionName);
-    const record = this.createRecord(collectionName, data);
+    const collection = this.getCollection(collectionName);
+    const { uuid, records, serializer } = collection;
+
+    collection.uuid++;
+
+    const record = {
+      id: uuid,
+      save: () => {},
+      delete: () => {
+        const index = records.findIndex(record => record.id === uuid);
+        records.splice(index, 1);
+      },
+      data
+    };
 
     records.push(record);
 
