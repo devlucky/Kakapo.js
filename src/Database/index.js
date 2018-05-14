@@ -7,41 +7,62 @@ import assign from "lodash/assign";
 import filter from "lodash/filter";
 import first from "lodash/first";
 import random from "lodash/random";
-import sampleSize from "lodash/samplesize";
+import sampleSize from "lodash/sampleSize";
 import last from "lodash/last";
 
 const databaseCollectionStores: WeakMap<
   Database<any>,
-  CollectionStore<any, any, any>
+  CollectionStore<Object>
 > = new WeakMap();
 
-export type DatabaseSchema = { [collectionName: string]: CollectionSchema };
-export type CollectionSchema = any;
+export type DatabaseSchema = {
+  [collectionName: string]: CollectionSchema<Object, Object>
+};
 
-export type CollectionStore<
-  M: DatabaseSchema,
-  C = $Keys<M>,
-  T = $ElementType<M, C>
-> = Map<C, Collection<T>>;
+export type CollectionSchema<T: Object, S: Object = T> = {
+  type: T,
+  serialized: S
+};
 
-export type Collection<T> = {
+export type DataType<M: DatabaseSchema, K: $Keys<M>> = $PropertyType<
+  $ElementType<M, K>,
+  "type"
+>;
+
+export type SerializedType<M: DatabaseSchema, K: $Keys<M>> = $PropertyType<
+  $ElementType<M, K>,
+  "serialized"
+>;
+
+export type CollectionStore<M: DatabaseSchema, K: $Keys<M> = $Keys<M>> = {
+  [collectionName: K]: Collection<DataType<M, K>, SerializedType<M, K>>
+};
+
+export type Collection<T, S> = {
   uuid: number,
   factory: DataFactory<T>,
   records: Record<T>[],
-  serializer: DataSerializer<T>
+  serializer: DataSerializer<T, S>
 };
 
-export type DataSerializer<T> = (data: T) => T;
 export type DataFactory<T> = () => T;
 
+export type DataSerializer<T: Object, S: Object> = (data: T) => S;
+
 export type Record<T> = {
-  +id: number,
+  id: number,
   save(): void,
   delete(): void,
-  +data: T
+  data: T
 };
 
-export class Database<M: DatabaseSchema> {
+type AllFunction<M: DatabaseSchema> = (<K: $Keys<M>>(
+  K,
+  false
+) => Record<SerializedType<M, K>>[]) &
+  (<M: DatabaseSchema, K: $Keys<M>>(K, true) => Record<DataType<M, K>>[]);
+
+export class Database<M: DatabaseSchema = Object> {
   /**
    * Creates new Database and initializes it's state.
    *
@@ -61,17 +82,16 @@ export class Database<M: DatabaseSchema> {
    * @returns {Array<Object>|Object}
    * @public
    */
-  all<C: $Keys<M>>(
-    collectionName: C,
+  all<K: $Keys<M>>(
+    collectionName: K,
     raw: boolean = false
-  ): Record<$ElementType<M, C>>[] {
-    // this.checkFactoryPresence(collectionName);
-    // const records = cloneDeep(recordStore.get(this).get(collectionName));
-    // return raw ? records : records.map(r => this.serialize(r, collectionName));
-
-    const { records } = this.getCollection(collectionName);
-
-    return records;
+  ): Record<SerializedType<M, K>>[] | Record<DataType<M, K>> {
+    const { records, serializer } = this.getCollection(collectionName);
+    if (raw) {
+      return records;
+    } else {
+      return records.map(this.serialize(serializer));
+    }
   }
 
   /**
@@ -84,10 +104,10 @@ export class Database<M: DatabaseSchema> {
    * @returns {Function}
    * @private
    */
-  belongsTo<C: $Keys<M>>(
-    collectionName: C,
-    conditions: ?Predicate<$ElementType<M, C>>
-  ): () => Record<$ElementType<M, C>> {
+  belongsTo<K: $Keys<M>>(
+    collectionName: K,
+    conditions: ?Predicate<Record<DataType<M, K>>>
+  ): () => Record<SerializedType<M, K>> {
     return () => {
       if (conditions) {
         return this.findOne(collectionName, conditions);
@@ -106,35 +126,26 @@ export class Database<M: DatabaseSchema> {
    *
    * @public
    */
-  create<C: $Keys<M>>(
-    collectionName: C,
+  create<K: $Keys<M>>(
+    collectionName: K,
     size: number = 1
-  ): Record<$ElementType<M, C>>[] {
-    const { factory, serializer } = this.getCollection(collectionName);
+  ): Record<SerializedType<M, K>>[] {
+    const { factory } = this.getCollection(collectionName);
     const records = [];
 
     for (let index = 0; index < size; index++) {
-      const data = factory();
-      records.push(this.push(collectionName, data));
+      const data: DataType<M, K> = factory();
+      const record = this.push(collectionName, data);
+      records.push(record);
     }
 
-    return records.map(this.serialize(serializer));
+    return records;
   }
 
-  serialize<C: $Keys<M>>(serializer: DataSerializer<$ElementType<M, C>>) {
-    return (record: Record<$ElementType<M, C>>): Record<$ElementType<M, C>> => {
-      const { data, ...others } = record;
-      return {
-        ...others,
-        data: serializer(data)
-      };
-    };
-  }
-
-  createRecord<C: $Keys<M>>(
-    collectionName: C,
-    data: $ElementType<M, C>
-  ): Record<$ElementType<M, C>> {
+  createRecord<K: $Keys<M>>(
+    collectionName: K,
+    data: DataType<M, K>
+  ): Record<DataType<M, K>> {
     const collection = this.getCollection(collectionName);
     const { uuid, records } = collection;
 
@@ -160,12 +171,12 @@ export class Database<M: DatabaseSchema> {
    * @returns {Array<Object>}
    * @public
    */
-  find<C: $Keys<M>>(
-    collectionName: $Keys<M>,
-    conditions: ?Predicate<$ElementType<M, C>>
-  ): Record<$ElementType<M, C>>[] {
-    const { records } = this.getCollection(collectionName);
-    return filter(records, conditions);
+  find<K: $Keys<M>>(
+    collectionName: K,
+    conditions: ?Predicate<Record<DataType<M, K>>>
+  ): Record<SerializedType<M, K>>[] {
+    const { records, serializer } = this.getCollection(collectionName);
+    return filter(records, conditions).map(this.serialize(serializer));
   }
 
   /**
@@ -177,10 +188,10 @@ export class Database<M: DatabaseSchema> {
    * @returns {Object}
    * @public
    */
-  findOne<C: $Keys<M>>(
-    collectionName: $Keys<M>,
-    conditions: ?Predicate<$ElementType<M, C>>
-  ) {
+  findOne<K: $Keys<M>>(
+    collectionName: K,
+    conditions: ?Predicate<Record<SerializedType<M, K>>>
+  ): Record<SerializedType<M, K>> {
     return first(this.find(collectionName, conditions));
   }
 
@@ -192,8 +203,9 @@ export class Database<M: DatabaseSchema> {
    * @returns {Object}
    * @public
    */
-  first(collectionName: $Keys<M>) {
-    return first(this.all(collectionName));
+  first<K: $Keys<M>>(collectionName: K): Record<SerializedType<M, K>> {
+    const { records, serializer } = this.getCollection(collectionName);
+    return serializer(first(records));
   }
 
   /**
@@ -207,8 +219,9 @@ export class Database<M: DatabaseSchema> {
    * @private
    */
   hasMany(collectionName: $Keys<M>, limit: number) {
-    const randomLimit = random(1, this.all(collectionName).length);
-    return () => sampleSize(this.all(collectionName), limit || randomLimit);
+    const { records, serializer } = this.getCollection(collectionName);
+    const randomLimit = random(1, records.length);
+    return () => sampleSize(records, limit || randomLimit);
   }
 
   /**
@@ -219,8 +232,9 @@ export class Database<M: DatabaseSchema> {
    * @returns {Object}
    * @public
    */
-  last(collectionName: $Keys<M>) {
-    return last(this.all(collectionName));
+  last<K: $Keys<M>>(collectionName: K): Record<SerializedType<M, K>> {
+    const { records, serializer } = this.getCollection(collectionName);
+    return this.serialize(serializer)(last(records));
   }
 
   /**
@@ -232,16 +246,28 @@ export class Database<M: DatabaseSchema> {
    * @returns {Object}
    * @public
    */
-  push<C: $Keys<M>>(
-    collectionName: C,
-    data: $ElementType<M, C>
-  ): Record<$ElementType<M, C>> {
-    const collection = this.getCollection(collectionName);
+  push<K: $Keys<M>>(
+    collectionName: K,
+    data: DataType<M, K>
+  ): Record<SerializedType<M, K>> {
+    const { records, serializer } = this.getCollection(collectionName);
     const record = this.createRecord(collectionName, data);
 
-    collection.records.push(record);
+    records.push(record);
 
-    return record;
+    return this.serialize(serializer)(record);
+  }
+
+  serialize<K: $Keys<M>>(
+    serializer: DataSerializer<DataType<M, K>, SerializedType<M, K>>
+  ): DataSerializer<Record<DataType<M, K>>, Record<SerializedType<M, K>>> {
+    return record => {
+      const { data, ...others } = record;
+      return {
+        ...others,
+        data: serializer(data)
+      };
+    };
   }
 
   /**
@@ -254,17 +280,18 @@ export class Database<M: DatabaseSchema> {
    *
    * @public
    */
-  register<C: $Keys<M>>(
-    collectionName: C,
-    factory: DataFactory<$ElementType<M, C>>,
-    serializer: DataSerializer<$ElementType<M, C>> = data => data
+  register<K: $Keys<M>>(
+    collectionName: K,
+    factory: DataFactory<DataType<M, K>>,
+    serializer?: DataSerializer<DataType<M, K>, SerializedType<M, K>> = data =>
+      data
   ) {
-    this.getCollectionStore().set(collectionName, {
+    this.getCollectionStore()[collectionName] = {
       uuid: 0,
       records: [],
       factory,
       serializer
-    });
+    };
   }
 
   /**
@@ -276,7 +303,7 @@ export class Database<M: DatabaseSchema> {
     databaseCollectionStores.set(this, new Map());
   }
 
-  getCollectionStore<C: $Keys<M>>(): CollectionStore<M, C, $ElementType<M, C>> {
+  getCollectionStore(): CollectionStore<M> {
     const collectionStore = databaseCollectionStores.get(this);
     if (collectionStore) {
       return collectionStore;
@@ -285,11 +312,11 @@ export class Database<M: DatabaseSchema> {
     }
   }
 
-  getCollection<C: $Keys<M>>(
-    collectionName: C
-  ): Collection<$ElementType<M, C>> {
+  getCollection<K: $Keys<M>>(
+    collectionName: K
+  ): Collection<DataType<M, K>, SerializedType<M, K>> {
     const collectionStore = this.getCollectionStore();
-    const collection = collectionStore.get(collectionName);
+    const collection = collectionStore[collectionName];
     if (collection) {
       return collection;
     } else {
