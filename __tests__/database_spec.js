@@ -1,178 +1,152 @@
 //@flow
-import { Database } from "../src";
+import Faker from "faker";
+
+import {
+  Database,
+  CollectionNotFoundError,
+  type CollectionSchema,
+  type DataFactory,
+  type DataSerializer
+} from "../src/Database";
+import {
+  type User,
+  type SerializedUser,
+  type UserId,
+  type UserCollectionSchema,
+  userFactory,
+  userSerializer,
+  someUser
+} from "./data/users";
 
 describe("Database", () => {
-  type ExampleSchema = {
-    cat: { age: number }
+  type Book = {
+    +userId: UserId,
+    +name: string
+  };
+
+  type Schema = {
+    +user: UserCollectionSchema,
+    +book: CollectionSchema<Book>
+  };
+
+  type SetupOptions = {
+    +factory?: DataFactory<User>,
+    +users?: User[]
+  };
+
+  const setup = ({
+    factory = jest.fn(userFactory),
+    users = []
+  }: SetupOptions = {}) => {
+    const database: Database<Schema> = new Database();
+    const serializer = jest.fn(userSerializer);
+
+    database.register("user", factory, serializer);
+    users.forEach(user => database.push("user", user));
+
+    return {
+      database,
+      factory,
+      serializer
+    };
   };
 
   describe("create", () => {
-    it("should create a record given data factory", () => {
-      const database: Database<ExampleSchema> = new Database();
-      const data = {
-        age: 3
-      };
-
-      database.register("cat", () => data);
-      const records = database.create("cat");
+    it("should create a record given no size specified", () => {
+      const { database } = setup({ factory: () => someUser });
+      const records = database.create("user");
 
       expect(records).toHaveLength(1);
 
-      const record = records[0];
+      const [record] = records;
       expect(record.id).toEqual(0);
       expect(record.save).toEqual(expect.any(Function));
       expect(record.delete).toEqual(expect.any(Function));
-      expect(record.data).toEqual(data);
+      expect(record.data).toEqual({
+        id: someUser.id,
+        fullName: `${someUser.firstName} ${someUser.lastName}`,
+        age: someUser.age
+      });
     });
 
     it("should create multiple records given size is over 1", () => {
-      const database: Database<ExampleSchema> = new Database();
-      const data = {
-        age: 3
-      };
-
-      database.register("cat", () => data);
-      const records = database.create("cat", 10);
+      const { database } = setup();
+      const records = database.create("user", 10);
 
       expect(records).toHaveLength(10);
     });
 
-    it("should return a serialized record given serializer", () => {
-      const database: Database<ExampleSchema> = new Database();
-      const data = {
-        age: 3
-      };
+    it("should return a record with original data given no serializer", () => {
+      const database: Database<{
+        user: CollectionSchema<User>
+      }> = new Database();
 
-      database.register(
-        "cat",
-        () => data,
-        ({ age }) => ({ age: age * 2, name: "foo" })
-      );
-      const [record] = database.create("cat");
+      database.register("user", () => someUser);
 
-      expect(record.data.age).toEqual(6);
-      expect(record.data.name).toEqual("foo");
+      const [record] = database.create("user");
+
+      expect(record.data).toEqual(someUser);
+    });
+
+    it("should throw error given collection has not been registered", () => {
+      const database: Database<{
+        user: CollectionSchema<User>
+      }> = new Database();
+
+      expect(() => database.create("user")).toThrow();
+    });
+  });
+
+  describe("all", () => {
+    it("should return all records given collection name", () => {
+      const { database } = setup();
+
+      database.create("user", 10);
+      expect(database.all("user")).toHaveLength(10);
+
+      database.create("user", 5);
+      expect(database.all("user")).toHaveLength(15);
+    });
+
+    it("should return raw record given raw parameter set to true", () => {
+      const { database } = setup({ factory: () => someUser });
+
+      database.create("user", 1);
+
+      const [record] = database.all("user", true);
+
+      expect(record.data).toEqual(someUser);
+    });
+
+    it("should return serialized record given raw parameter set to false", () => {
+      const { database } = setup({ factory: () => someUser });
+
+      database.create("user", 1);
+
+      const [record] = database.all("user", false);
+
+      expect(record.data).toEqual({
+        id: someUser.id,
+        fullName: `${someUser.firstName} ${someUser.lastName}`,
+        age: someUser.age
+      });
+    });
+  });
+
+  describe("find", () => {
+    it("should return matching records given predicate", () => {
+      const { database } = setup();
+
+      database.create("user", 10);
+      database.create("user", 5, () => userFactory({ firstName: "Jimmy" }));
+
+      expect(database.all("user")).toHaveLength(15);
+      expect(database.find("user", { firstName: "Jimmy" })).toHaveLength(5);
     });
   });
 });
 
-// import _ from 'lodash';
-// import every from 'lodash.every';
-// import isString from 'lodash.isstring';
-// import has from 'lodash.has';
-// import filter from 'lodash.filter';
-// import isObject from 'lodash.isobject';
-// import { Server, Router, Database } from '../src';
-
-// const userFactory = faker => ({
-//   firstName: faker.name.firstName,
-//   lastName: faker.name.lastName,
-//   address: {
-//     streetName: faker.address.streetName,
-//   },
-//   avatar: faker.internet.avatar,
-// });
-
-// const commentFactory = faker => ({
-//   title: 'He-yo',
-//   content: faker.lorem.paragraph,
-//   author: { name: 'Morty' },
-// });
-
 // describe('Database', () => {
-//   test('DB # all', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-//     db.create('user', 10);
-
-//     const users = db.all('user');
-
-//     expect(users).toHaveLength(10);
-
-//     // expect(() => db.all('user'),
-//     //   'Doesn\'t throw error when collection is present.');
-//     // expect(() => db.all('game'),
-//     //   'Throws error when collection is not present.');
-//   });
-
-//   test('DB # checkFactoryPresence', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-
-//     // expect(() => db.checkFactoryPresence('user'),
-//     //   'Doesn\'t throw error when collection is present.');
-//     // expect(() => db.checkFactoryPresence('game'),
-//     //   'Throws error when collection is not present.');
-//   });
-
-//   test('DB # create', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-//     db.create('user', 5);
-
-//     expect(db.all('user')).toHaveLength(5);
-
-//     db.create('user', 2);
-
-//     expect(db.all('user')).toHaveLength(7);
-//   });
-
-//   test('DB # create # fake values', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-//     db.register('comment', commentFactory);
-
-//     db.create('user', 5);
-//     db.create('comment', 10);
-
-//     const users = db.all('user');
-//     const comments = db.all('comment');
-
-//     expect(every(users, user => isString(user.firstName))).toBeTruthy();
-//     expect(every(users, user => isString(user.address.streetName))).toBeTruthy();
-//     expect(every(comments, comment => isString(comment.title))).toBeTruthy();
-//     expect(every(comments, comment => isString(comment.author.name))).toBeTruthy();
-//   });
-
-//   test('DB # decorateRecord', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-
-//     const user = db.decorateRecord('user', { name: 'Morty' });
-
-//     expect(has(user, 'id')).toBeTruthy();;
-
-//     expect(() => db.decorateRecord('user')).toBeTruthy();;
-//     expect(() => db.decorateRecord('game')).toBeTruthy();;
-//   });
-
-//   test('DB # find', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-//     db.create('user', 5);
-
-//     db.register('comment', commentFactory);
-//     db.create('comment', 10);
-
-//     const users1 = db.find('user', user => user.id > 2);
-//     const users2 = db.find('user', { id: 2 });
-//     const comments = db.find('comment', { author: { name: 'Morty' } });
-
-//     expect(users1).toHaveLength(2);
-//     expect(users2).toHaveLength(1);
-//     expect(comments).toHaveLength(10);
-
-//     // expect(() => db.find('user'),
-//     //   'Doesn\'t throw error when collection is present.');
-//     // expect(() => db.find('game'),
-//     //   'Throws error when collection is not present.');
-//   });
 
 //   test('DB # findOne', () => {
 //     const db = new Database();
