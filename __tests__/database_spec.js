@@ -180,28 +180,18 @@ describe("Database", () => {
       expect(database.last("user").data).toEqual(serializer(someUser));
     });
   });
+
+  describe("push", () => {
+    const { database, serializer } = setup();
+
+    database.create("user", 10);
+    const record = database.push("user", someUser);
+
+    expect(record.data).toEqual(serializer(someUser));
+  });
 });
 
 // describe('Database', () => {
-
-//   test('DB # push', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-//     db.push('user', { id: 1, name: 'Rick' });
-//     db.push('user', { id: 2, name: 'Morty' });
-//     db.push('user', { id: 3, name: 'ICE-T' });
-
-//     const users = db.all('user');
-
-//     expect(users).toHaveLength(3);
-//     expect(users[0].name).toEqual('Rick');
-
-//     // expect(() => db.push('user', {}),
-//     //   'Doesn\'t throw error when collection is present.');
-//     // expect(() => db.push('game', {}),
-//     //   'Throws error when collection is not present.');
-//   });
 
 //   test('DB # record # save', () => {
 //     const db = new Database();
