@@ -189,7 +189,7 @@ export class Database<M: DatabaseSchema = Object> {
    */
   first<K: $Keys<M>>(collectionName: K): Record<SerializedData<M, K>> {
     const { records, serializer } = this.getCollection(collectionName);
-    return serializer(first(records));
+    return this.serialize(serializer)(first(records));
   }
 
   /**

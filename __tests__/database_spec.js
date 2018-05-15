@@ -30,19 +30,14 @@ describe("Database", () => {
   };
 
   type SetupOptions = {
-    +factory?: DataFactory<User>,
-    +users?: User[]
+    +factory?: DataFactory<User>
   };
 
-  const setup = ({
-    factory = jest.fn(userFactory),
-    users = []
-  }: SetupOptions = {}) => {
+  const setup = ({ factory = jest.fn(userFactory) }: SetupOptions = {}) => {
     const database: Database<Schema> = new Database();
     const serializer = jest.fn(userSerializer);
 
     database.register("user", factory, serializer);
-    users.forEach(user => database.push("user", user));
 
     return {
       database,
@@ -162,26 +157,23 @@ describe("Database", () => {
       ).toEqual("Jimmy Luong");
     });
   });
+
+  describe("first", () => {
+    it("should return the first record given collection name", () => {
+      const { database } = setup();
+
+      database.push(
+        "user",
+        userFactory({ firstName: "Jimmy", lastName: "Luong" })
+      );
+      database.create("user", 10);
+
+      expect(database.first("user").data.fullName).toEqual("Jimmy Luong");
+    });
+  });
 });
 
 // describe('Database', () => {
-
-//   test('DB # first', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-//     db.create('user', 5);
-
-//     const user = db.first('user');
-
-//     expect(isObject(user)).toBeTruthy();
-//     expect(user.id).toEqual(0)
-
-//     // expect(() => db.first('user'),
-//     //   'Doesn\'t throw error when collection is present.');
-//     // expect(() => db.first('game'),
-//     //   'Throws error when collection is not present.');
-//   });
 
 //   test('DB # last', () => {
 //     const db = new Database();
