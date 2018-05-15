@@ -50,8 +50,10 @@ export type DataFactory<T> = () => T;
 
 export type DataSerializer<T: Object, S: Object> = (data: T) => S;
 
+export opaque type RecordId = number;
+
 export type Record<T> = {
-  +id: number,
+  +id: RecordId,
   +data: T,
   save(): void,
   delete(): void
