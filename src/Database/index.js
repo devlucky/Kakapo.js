@@ -36,7 +36,9 @@ export type SerializedData<M: DatabaseSchema, K: $Keys<M>> = $PropertyType<
 >;
 
 export type CollectionStore<M: DatabaseSchema, K: $Keys<M> = $Keys<M>> = {
-  [collectionName: K]: Collection<RawData<M, K>, SerializedData<M, K>>
+  [collectionName: K]:
+    | Collection<RawData<M, K>, SerializedData<M, K>>
+    | typeof undefined
 };
 
 export type Collection<T, S> = {
@@ -144,6 +146,11 @@ export class Database<M: DatabaseSchema = Object> {
     }
 
     return records;
+  }
+
+  exists<K: $Keys<M>>(collectionName: K): boolean {
+    const collectionStore = this.getCollectionStore();
+    return !!collectionStore[collectionName];
   }
 
   /**

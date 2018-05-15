@@ -193,7 +193,7 @@ describe("Database", () => {
 
   describe("register", () => {
     it("should allow database to create records of given collection name", () => {
-      const { database, serializer } = setup();
+      const { database } = setup();
 
       database.register("book", () => ({
         id: Faker.random.uuid(),
@@ -207,26 +207,34 @@ describe("Database", () => {
     });
 
     it("should now allow database to create records of given collection has not been registered", () => {
-      const { database, serializer } = setup();
+      const { database } = setup();
 
       expect(() => database.create("book")).toThrow();
     });
   });
 
-  //   test('DB # reset', () => {
-  //     const db = new Database();
+  describe("reset", () => {
+    it("should remove all collections", () => {
+      const { database } = setup();
 
-  //     db.register('user', userFactory);
-  //     db.create('user', 2);
+      expect(database.exists("user")).toBeTruthy();
+      expect(database.exists("book")).toBeFalsy();
 
-  //     db.reset();
+      database.register("book", () => ({
+        id: Faker.random.uuid(),
+        name: Faker.hacker.phrase(),
+        userId: someUser.id
+      }));
 
-  //     // expect(() => db.all('user'),
-  //     //   'Cleans up all stores.');
+      expect(database.exists("user")).toBeTruthy();
+      expect(database.exists("book")).toBeTruthy();
 
-  //     // expect(() => db.checkFactoryPresence('user'),
-  //     //   'Cleans up all factories.');
-  //   });
+      database.reset();
+
+      expect(database.exists("user")).toBeFalsy();
+      expect(database.exists("book")).toBeFalsy();
+    });
+  });
 
   //   test('recordFactory # save', () => {
   //     const db = new Database();
