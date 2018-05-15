@@ -1,6 +1,7 @@
 module.exports = {
   transform: {
-    '^.+\\.js$': 'babel-jest'
+    "^.+\\.js$": "babel-jest"
   },
-  setupTestFrameworkScriptFile: `${__dirname}/jestFrameworkSetup.js`,
+  testMatch: ["**/__tests__/**/*_spec.js?(x)", "**/?(*.)(spec|test).js?(x)"],
+  setupTestFrameworkScriptFile: `${__dirname}/jestFrameworkSetup.js`
 };
