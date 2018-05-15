@@ -182,133 +182,129 @@ describe("Database", () => {
   });
 
   describe("push", () => {
-    const { database, serializer } = setup();
+    it("should return a record given some data", () => {
+      const { database, serializer } = setup();
 
-    database.create("user", 10);
-    const record = database.push("user", someUser);
+      const record = database.push("user", someUser);
 
-    expect(record.data).toEqual(serializer(someUser));
+      expect(record.data).toEqual(serializer(someUser));
+    });
   });
+
+  describe("register", () => {
+    it("should allow database to create records of given collection name", () => {
+      const { database, serializer } = setup();
+
+      database.register("book", () => ({
+        id: Faker.random.uuid(),
+        name: Faker.hacker.phrase(),
+        userId: someUser.id
+      }));
+
+      const records = database.create("book", 10);
+
+      expect(records).toHaveLength(10);
+    });
+
+    it("should now allow database to create records of given collection has not been registered", () => {
+      const { database, serializer } = setup();
+
+      expect(() => database.create("book")).toThrow();
+    });
+  });
+
+  //   test('DB # reset', () => {
+  //     const db = new Database();
+
+  //     db.register('user', userFactory);
+  //     db.create('user', 2);
+
+  //     db.reset();
+
+  //     // expect(() => db.all('user'),
+  //     //   'Cleans up all stores.');
+
+  //     // expect(() => db.checkFactoryPresence('user'),
+  //     //   'Cleans up all factories.');
+  //   });
+
+  //   test('recordFactory # save', () => {
+  //     const db = new Database();
+
+  //     db.register('user', userFactory);
+  //     db.create('user', 2);
+
+  //     const user1 = db.all('user')[0];
+  //     const user2 = db.all('user')[1];
+
+  //     const oldFirstname1 = user1.firstName;
+  //     const oldFirstname2 = user2.firstName;
+
+  //     user1.firstName = 'NEW NAME';
+
+  //     const newUser1 = user1.save();
+  //     const newUser2 = user2.save();
+
+  //     // expect(db.all('user')[0].firstName).toEqual(oldFirstname1);
+  //     expect(db.all('user')[1].firstName).toEqual(oldFirstname2);
+
+  //     // expect(newUser1.firstName).toEqual(oldFirstname1);
+  //     expect(newUser2.firstName).toEqual(oldFirstname2);
+  //   });
+
+  //   test.skip('recordFactory # remove side effects', () => {
+  //     expect(4);
+
+  //     const server = new Server();
+  //     const router = new Router();
+  //     const database = new Database();
+
+  //     database.register('foo', _ => {
+  //       return {
+  //         foo: 'bar'
+  //       };
+  //     });
+  //     database.create('foo', 1);
+
+  //     router.get('/side_effects', (request, db) => {
+  //       return db.first('foo');
+  //     });
+
+  //     server.use(router);
+  //     server.use(database);
+
+  //     fetch('/side_effects').then(r => r.json()).then(response => {
+  //       expect(response.save).toBeUndefined();
+  //       expect(response.delete).toBeUndefined();
+  //     });
+
+  //     const xhr = new XMLHttpRequest();
+
+  //     xhr.onreadystatechange = () => {
+  //       if (xhr.readyState !== 4) return;
+
+  //       const response = JSON.parse(xhr.responseText);
+
+  //       expect(response.save).toBeUndefined()
+  //       expect(response.delete).toBeUndefined()
+  //     };
+  //     xhr.open('GET', '/side_effects', true);
+  //     xhr.send();
+  //   });
 });
 
-// describe('Database', () => {
-
-//   test('DB # record # save', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-//     db.create('user', 20);
-
-//     db.all('user').forEach((user, index) => {
-//       user.firstName = (index % 2) ? 'Hector' : 'Oskar';
-//       user.save();
-//     });
-
-//     expect(filter(db.all('user'), { firstName: 'Hector' })).toHaveLength(10);
-//     expect(filter(db.all('user'), { firstName: 'Oskar' })).toHaveLength(10);
-//   });
-
-//   test('DB # register', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-
-//     // expect(() => db.checkFactoryPresence('user'),
-//     //       'Registers factory properly.');
-//   });
-
-//   test('DB # reset', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-//     db.create('user', 2);
-
-//     db.reset();
-
-//     // expect(() => db.all('user'),
-//     //   'Cleans up all stores.');
-
-//     // expect(() => db.checkFactoryPresence('user'),
-//     //   'Cleans up all factories.');
-//   });
-
-//   test('DB # uuid', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-//     db.register('comment', commentFactory);
-
-//     expect(db.uuid('user')).toEqual(0);
-//     expect(db.uuid('user')).toEqual(1);
-//     expect(db.uuid('comment')).toEqual(0);
-
-//     // expect(() => db.uuid('user'),
-//     //   'Doesn\'t throw error when collection is present.');
-//     // expect(() => db.uuid('game'),
-//     //   'Throws error when collection is not present.');
-//   });
-
-//   test('recordFactory # save', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-//     db.create('user', 2);
-
-//     const user1 = db.all('user')[0];
-//     const user2 = db.all('user')[1];
-
-//     const oldFirstname1 = user1.firstName;
-//     const oldFirstname2 = user2.firstName;
-
-//     user1.firstName = 'NEW NAME';
-
-//     const newUser1 = user1.save();
-//     const newUser2 = user2.save();
-
-//     // expect(db.all('user')[0].firstName).toEqual(oldFirstname1);
-//     expect(db.all('user')[1].firstName).toEqual(oldFirstname2);
-
-//     // expect(newUser1.firstName).toEqual(oldFirstname1);
-//     expect(newUser2.firstName).toEqual(oldFirstname2);
-//   });
-
-//   test.skip('recordFactory # remove side effects', () => {
-//     expect(4);
-
-//     const server = new Server();
-//     const router = new Router();
-//     const database = new Database();
-
-//     database.register('foo', _ => {
-//       return {
-//         foo: 'bar'
-//       };
-//     });
-//     database.create('foo', 1);
-
-//     router.get('/side_effects', (request, db) => {
-//       return db.first('foo');
-//     });
-
-//     server.use(router);
-//     server.use(database);
-
-//     fetch('/side_effects').then(r => r.json()).then(response => {
-//       expect(response.save).toBeUndefined();
-//       expect(response.delete).toBeUndefined();
-//     });
-
-//     const xhr = new XMLHttpRequest();
-
-//     xhr.onreadystatechange = () => {
-//       if (xhr.readyState !== 4) return;
-
-//       const response = JSON.parse(xhr.responseText);
-
-//       expect(response.save).toBeUndefined()
-//       expect(response.delete).toBeUndefined()
-//     };
-//     xhr.open('GET', '/side_effects', true);
-//     xhr.send();
-//   });
-// });
+describe("Record", () => {
+  describe("save", () => {
+    it("should do something", () => {
+      //     const db = new Database();
+      //     db.register('user', userFactory);
+      //     db.create('user', 20);
+      //     db.all('user').forEach((user, index) => {
+      //       user.firstName = (index % 2) ? 'Hector' : 'Oskar';
+      //       user.save();
+      //     });
+      //     expect(filter(db.all('user'), { firstName: 'Hector' })).toHaveLength(10);
+      //     expect(filter(db.all('user'), { firstName: 'Oskar' })).toHaveLength(10);
+    });
+  });
+});
