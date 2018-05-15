@@ -144,35 +144,27 @@ describe("Database", () => {
       expect(database.find("user", { firstName: "Jimmy" })).toHaveLength(5);
     });
   });
+
+  describe("findOne", () => {
+    it("should return first matching record given predicate", () => {
+      const { database } = setup();
+
+      database.create("user", 10);
+      database.push(
+        "user",
+        userFactory({ firstName: "Jimmy", lastName: "Luong" })
+      );
+      database.create("user", 5, () => userFactory({ firstName: "Jimmy" }));
+      database.create("user", 10);
+
+      expect(
+        database.findOne("user", { firstName: "Jimmy" }).data.fullName
+      ).toEqual("Jimmy Luong");
+    });
+  });
 });
 
 // describe('Database', () => {
-
-//   test('DB # findOne', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-//     db.create('user', 5);
-
-//     db.register('comment', commentFactory);
-//     db.create('comment', 10);
-
-//     const name = db.all('user')[0].firstName;
-//     const user1 = db.findOne('user', user => user.id === 2);
-//     const user2 = db.findOne('user', { firstName: name });
-
-//     const comment = db.findOne('comment', { author: { name: 'Morty' } });
-
-//     expect(user1.id).toEqual(2);
-//     expect(user2.firstName).toEqual(name)
-
-//     expect(comment.author.name).toEqual('Morty');
-
-//     // expect(() => db.findOne('user'),
-//     //   'Doesn\'t throw error when collection is present.');
-//     // expect(() => db.findOne('game'),
-//     //   'Throws error when collection is not present.');
-//   });
 
 //   test('DB # first', () => {
 //     const db = new Database();
