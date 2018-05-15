@@ -33,6 +33,9 @@ describe("Database", () => {
     +factory?: DataFactory<User>
   };
 
+  const firstName = Faker.name.firstName();
+  const lastName = Faker.name.lastName();
+
   const setup = ({ factory = jest.fn(userFactory) }: SetupOptions = {}) => {
     const database: Database<Schema> = new Database();
     const serializer = jest.fn(userSerializer);
@@ -133,64 +136,53 @@ describe("Database", () => {
       const { database } = setup();
 
       database.create("user", 10);
-      database.create("user", 5, () => userFactory({ firstName: "Jimmy" }));
+      database.create("user", 5, () => userFactory({ firstName }));
 
       expect(database.all("user")).toHaveLength(15);
-      expect(database.find("user", { firstName: "Jimmy" })).toHaveLength(5);
+      expect(database.find("user", { firstName })).toHaveLength(5);
     });
   });
 
   describe("findOne", () => {
     it("should return first matching record given predicate", () => {
-      const { database } = setup();
+      const { database, serializer } = setup();
+      const user = userFactory({ firstName, lastName });
 
       database.create("user", 10);
-      database.push(
-        "user",
-        userFactory({ firstName: "Jimmy", lastName: "Luong" })
+      database.push("user", user);
+      database.create("user", 5, () => userFactory({ firstName }));
+      database.create("user", 10);
+
+      expect(database.findOne("user", { firstName }).data).toEqual(
+        serializer(user)
       );
-      database.create("user", 5, () => userFactory({ firstName: "Jimmy" }));
-      database.create("user", 10);
-
-      expect(
-        database.findOne("user", { firstName: "Jimmy" }).data.fullName
-      ).toEqual("Jimmy Luong");
     });
   });
 
   describe("first", () => {
     it("should return the first record given collection name", () => {
-      const { database } = setup();
+      const { database, serializer } = setup();
 
-      database.push(
-        "user",
-        userFactory({ firstName: "Jimmy", lastName: "Luong" })
-      );
+      database.push("user", someUser);
       database.create("user", 10);
 
-      expect(database.first("user").data.fullName).toEqual("Jimmy Luong");
+      expect(database.first("user").data).toEqual(serializer(someUser));
+    });
+  });
+
+  describe("last", () => {
+    it("should return the last record given collection name", () => {
+      const { database, serializer } = setup();
+
+      database.create("user", 10);
+      database.push("user", someUser);
+
+      expect(database.last("user").data).toEqual(serializer(someUser));
     });
   });
 });
 
 // describe('Database', () => {
-
-//   test('DB # last', () => {
-//     const db = new Database();
-
-//     db.register('user', userFactory);
-//     db.create('user', 5);
-
-//     const user = db.last('user');
-
-//     expect(isObject(user)).toBeTruthy();
-//     expect(user.id).toEqual(4);
-
-//     // expect(() => db.last('user'),
-//     //   'Doesn\'t throw error when collection is present.');
-//     // expect(() => db.last('game'),
-//     //   'Throws error when collection is not present.');
-//   });
 
 //   test('DB # push', () => {
 //     const db = new Database();
