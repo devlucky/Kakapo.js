@@ -1,8 +1,8 @@
-import mapValues from 'lodash.mapvalues';
-import isPlainObject from 'lodash.isplainobject';
-import assignInWith from 'lodash.assigninwith';
-import isUndefined from 'lodash.isundefined';
-import isFunction from 'lodash.isfunction';
+import mapValues from 'lodash/mapvalues';
+import isPlainObject from 'lodash/isplainobject';
+import assignInWith from 'lodash/assigninwith';
+import isUndefined from 'lodash/isundefined';
+import isFunction from 'lodash/isfunction';
 
 /**
  * Returns copy of an object with mapped values. Works really similar to

@@ -1,6 +1,6 @@
 // @flow
-import merge from 'lodash.merge';
-import forEach from 'lodash.foreach';
+import merge from 'lodash/merge';
+import forEach from 'lodash/foreach';
 import { interceptors } from "../interceptors";
 import environment from "../config/environment";
 import {
@@ -60,7 +60,7 @@ export class Router {
 
   head(...args: any[]) {
     this.register("HEAD", ...args);
-  }  
+  }
 
   register(method: string, path: string, handler: RouteHandler) {
     this.interceptorConfig.routes[method][path] = handler;

@@ -1,7 +1,7 @@
 // @flow
 
-import keys from 'lodash.keys';
-import includes from 'lodash.includes';
+import keys from 'lodash/keys';
+import includes from 'lodash/includes';
 import pathMatch from "path-match";
 import parseUrl from "parse-url";
 import queryString from "query-string";
