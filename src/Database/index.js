@@ -1,15 +1,9 @@
 // @flow
 import { type Predicate } from "lodash";
-import cloneDeep from "lodash/clonedeep";
 import sample from "lodash/sample";
-import isFunction from "lodash/isfunction";
-import assign from "lodash/assign";
 import filter from "lodash/filter";
 import first from "lodash/first";
-import random from "lodash/random";
-import sampleSize from "lodash/sampleSize";
 import last from "lodash/last";
-import some from "lodash/some";
 
 const databaseCollectionStores: WeakMap<
   Database<any>,
