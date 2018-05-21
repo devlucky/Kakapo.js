@@ -81,6 +81,23 @@ export class Database<M: DatabaseSchema = Object> {
     return records;
   }
 
+  delete<K: $Keys<M>>(
+    collectionName: K,
+    id: RecordId
+  ): Record<$ElementType<M, K>> | null {
+    const collection = this.getCollection(collectionName);
+    const { records } = collection;
+    const record = records.find(record => record.id === id);
+
+    if (record) {
+      const index = records.indexOf(record);
+      records.splice(index, 1);
+      return record;
+    } else {
+      return null;
+    }
+  }
+
   exists<K: $Keys<M>>(collectionName: K): boolean {
     const collectionStore = this.getCollectionStore();
     return !!collectionStore[collectionName];

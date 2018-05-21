@@ -79,6 +79,31 @@ describe("Database", () => {
     });
   });
 
+  describe("delete", () => {
+    it("should return a record given id of existing record", () => {
+      const { database } = setup();
+      const user = userFactory({ firstName, lastName });
+
+      database.create("user", 10);
+      const record = database.push("user", user);
+
+      expect(database.all("user")).toHaveLength(11);
+      expect(database.delete("user", record.id)).toEqual(record);
+      expect(database.all("user")).toHaveLength(10);
+    });
+
+    it("should return null given id of non-existing record", () => {
+      const { database } = setup();
+      const user = userFactory({ firstName, lastName });
+
+      database.create("user", 10);
+
+      expect(database.all("user")).toHaveLength(10);
+      expect(database.delete("user", (123: any))).toBeNull();
+      expect(database.all("user")).toHaveLength(10);
+    });
+  });
+
   describe("find", () => {
     it("should return matching records given predicate", () => {
       const { database } = setup();
