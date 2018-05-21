@@ -202,22 +202,6 @@ export class Database<M: DatabaseSchema = Object> {
   }
 
   /**
-   * Returns thunk returning collection of records from specified collection of
-   * specified limit.
-   *
-   * @param {string} collectionName - name of collection
-   * @param {number} [limit = 1] - limit of records in collection to return
-   *
-   * @returns {Function}
-   * @private
-   */
-  hasMany(collectionName: $Keys<M>, limit: number) {
-    const { records, serializer } = this.getCollection(collectionName);
-    const randomLimit = random(1, records.length);
-    return () => sampleSize(records, limit || randomLimit);
-  }
-
-  /**
    * Returns last record from specified collection.
    *
    * @param {string} collectionName - name of collection
