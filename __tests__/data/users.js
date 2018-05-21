@@ -1,9 +1,7 @@
 // @flow
 import Faker from "faker";
 import {
-  type CollectionSchema,
   type DataFactory,
-  type DataSerializer
 } from "../../src/Database";
 
 export opaque type UserId = string;
@@ -15,14 +13,6 @@ export type User = {
   +age: number
 };
 
-export type SerializedUser = {
-  +id: UserId,
-  +fullName: string,
-  +age: number
-};
-
-export type UserCollectionSchema = CollectionSchema<User, SerializedUser>;
-
 export const userFactory = ({
   id = Faker.random.uuid(),
   firstName = Faker.name.firstName(),
@@ -32,17 +22,6 @@ export const userFactory = ({
   id,
   firstName,
   lastName,
-  age
-});
-
-export const userSerializer: DataSerializer<User, SerializedUser> = ({
-  id,
-  firstName,
-  lastName,
-  age
-}) => ({
-  id,
-  fullName: `${firstName} ${lastName}`,
   age
 });
 

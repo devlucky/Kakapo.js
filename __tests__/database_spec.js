@@ -4,19 +4,9 @@ import Faker from "faker";
 import {
   Database,
   CollectionNotFoundError,
-  type CollectionSchema,
-  type DataFactory,
-  type DataSerializer
+  type DataFactory
 } from "../src/Database";
-import {
-  type User,
-  type SerializedUser,
-  type UserId,
-  type UserCollectionSchema,
-  userFactory,
-  userSerializer,
-  someUser
-} from "./data/users";
+import { type User, type UserId, userFactory, someUser } from "./data/users";
 
 describe("Database", () => {
   type Book = {
@@ -25,8 +15,8 @@ describe("Database", () => {
   };
 
   type Schema = {
-    +user: UserCollectionSchema,
-    +book: CollectionSchema<Book>
+    +user: User,
+    +book: Book
   };
 
   type SetupOptions = {
@@ -38,14 +28,12 @@ describe("Database", () => {
 
   const setup = ({ factory = jest.fn(userFactory) }: SetupOptions = {}) => {
     const database: Database<Schema> = new Database();
-    const serializer = jest.fn(userSerializer);
 
-    database.register("user", factory, serializer);
+    database.register("user", factory);
 
     return {
       database,
-      factory,
-      serializer
+      factory
     };
   };
 
@@ -60,11 +48,7 @@ describe("Database", () => {
       expect(record.id).toEqual(0);
       expect(record.save).toEqual(expect.any(Function));
       expect(record.delete).toEqual(expect.any(Function));
-      expect(record.data).toEqual({
-        id: someUser.id,
-        fullName: `${someUser.firstName} ${someUser.lastName}`,
-        age: someUser.age
-      });
+      expect(record.data).toEqual(someUser);
     });
 
     it("should create multiple records given size is over 1", () => {
@@ -74,21 +58,9 @@ describe("Database", () => {
       expect(records).toHaveLength(10);
     });
 
-    it("should return a record with original data given no serializer", () => {
-      const database: Database<{
-        user: CollectionSchema<User>
-      }> = new Database();
-
-      database.register("user", () => someUser);
-
-      const [record] = database.create("user");
-
-      expect(record.data).toEqual(someUser);
-    });
-
     it("should throw error given collection has not been registered", () => {
       const database: Database<{
-        user: CollectionSchema<User>
+        user: User
       }> = new Database();
 
       expect(() => database.create("user")).toThrow();
@@ -104,30 +76,6 @@ describe("Database", () => {
 
       database.create("user", 5);
       expect(database.all("user")).toHaveLength(15);
-    });
-
-    it("should return raw record given raw parameter set to true", () => {
-      const { database } = setup({ factory: () => someUser });
-
-      database.create("user", 1);
-
-      const [record] = database.all("user", true);
-
-      expect(record.data).toEqual(someUser);
-    });
-
-    it("should return serialized record given raw parameter set to false", () => {
-      const { database } = setup({ factory: () => someUser });
-
-      database.create("user", 1);
-
-      const [record] = database.all("user", false);
-
-      expect(record.data).toEqual({
-        id: someUser.id,
-        fullName: `${someUser.firstName} ${someUser.lastName}`,
-        age: someUser.age
-      });
     });
   });
 
@@ -145,7 +93,7 @@ describe("Database", () => {
 
   describe("findOne", () => {
     it("should return first matching record given predicate", () => {
-      const { database, serializer } = setup();
+      const { database } = setup();
       const user = userFactory({ firstName, lastName });
 
       database.create("user", 10);
@@ -153,41 +101,39 @@ describe("Database", () => {
       database.create("user", 5, () => userFactory({ firstName }));
       database.create("user", 10);
 
-      expect(database.findOne("user", { firstName }).data).toEqual(
-        serializer(user)
-      );
+      expect(database.findOne("user", { firstName }).data).toEqual(user);
     });
   });
 
   describe("first", () => {
     it("should return the first record given collection name", () => {
-      const { database, serializer } = setup();
+      const { database } = setup();
 
       database.push("user", someUser);
       database.create("user", 10);
 
-      expect(database.first("user").data).toEqual(serializer(someUser));
+      expect(database.first("user").data).toEqual(someUser);
     });
   });
 
   describe("last", () => {
     it("should return the last record given collection name", () => {
-      const { database, serializer } = setup();
+      const { database } = setup();
 
       database.create("user", 10);
       database.push("user", someUser);
 
-      expect(database.last("user").data).toEqual(serializer(someUser));
+      expect(database.last("user").data).toEqual(someUser);
     });
   });
 
   describe("push", () => {
     it("should return a record given some data", () => {
-      const { database, serializer } = setup();
+      const { database } = setup();
 
       const record = database.push("user", someUser);
 
-      expect(record.data).toEqual(serializer(someUser));
+      expect(record.data).toEqual(someUser);
     });
   });
 
