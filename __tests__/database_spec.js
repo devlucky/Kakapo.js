@@ -46,8 +46,6 @@ describe("Database", () => {
 
       const [record] = records;
       expect(record.id).toEqual(0);
-      expect(record.save).toEqual(expect.any(Function));
-      expect(record.delete).toEqual(expect.any(Function));
       expect(record.data).toEqual(someUser);
     });
 
@@ -207,6 +205,34 @@ describe("Database", () => {
     });
   });
 
+  describe("update", () => {
+    it("should return an updated record given id of existing record", () => {
+      const { database } = setup();
+      const [record] = database.create("user");
+
+      const updatedRecord = database.update("user", record.id, {
+        firstName: "Jimmy"
+      });
+
+      expect(updatedRecord.id).toEqual(record.id);
+      expect(updatedRecord.data).toEqual({
+        ...record.data,
+        firstName: "Jimmy"
+      });
+    });
+
+    it("should return null given id of non-existing record", () => {
+      const { database } = setup();
+      const user = userFactory({ firstName, lastName });
+
+      database.create("user", 10);
+
+      expect(database.all("user")).toHaveLength(10);
+      expect(database.delete("user", (123: any))).toBeNull();
+      expect(database.all("user")).toHaveLength(10);
+    });
+  });
+
   //   test('recordFactory # save', () => {
   //     const db = new Database();
 
@@ -270,20 +296,4 @@ describe("Database", () => {
   //     xhr.open('GET', '/side_effects', true);
   //     xhr.send();
   //   });
-});
-
-describe("Record", () => {
-  describe("save", () => {
-    it("should do something", () => {
-      //     const db = new Database();
-      //     db.register('user', userFactory);
-      //     db.create('user', 20);
-      //     db.all('user').forEach((user, index) => {
-      //       user.firstName = (index % 2) ? 'Hector' : 'Oskar';
-      //       user.save();
-      //     });
-      //     expect(filter(db.all('user'), { firstName: 'Hector' })).toHaveLength(10);
-      //     expect(filter(db.all('user'), { firstName: 'Oskar' })).toHaveLength(10);
-    });
-  });
 });

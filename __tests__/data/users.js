@@ -8,9 +8,9 @@ export opaque type UserId = string;
 
 export type User = {
   +id: UserId,
-  +firstName: string,
-  +lastName: string,
-  +age: number
+  firstName: string,
+  lastName: string,
+  age: number
 };
 
 export const userFactory = ({

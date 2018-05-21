@@ -36,9 +36,7 @@ export opaque type RecordId = number;
 
 export type Record<T> = {
   +id: RecordId,
-  +data: T,
-  save(): void,
-  delete(): void
+  +data: T
 };
 
 export class Database<M: DatabaseSchema = Object> {
@@ -134,20 +132,13 @@ export class Database<M: DatabaseSchema = Object> {
   ): Record<$ElementType<M, K>> {
     const collection = this.getCollection(collectionName);
     const { uuid, records } = collection;
-
-    collection.uuid++;
-
     const record = {
       id: uuid,
-      save: () => {},
-      delete: () => {
-        const index = records.findIndex(record => record.id === uuid);
-        records.splice(index, 1);
-      },
       data
     };
 
     records.push(record);
+    collection.uuid++;
 
     return record;
   }
@@ -165,6 +156,30 @@ export class Database<M: DatabaseSchema = Object> {
 
   reset() {
     databaseCollectionStores.set(this, new Map());
+  }
+
+  update<K: $Keys<M>>(
+    collectionName: K,
+    id: RecordId,
+    data: $Shape<$ElementType<M, K>>
+  ): Record<$ElementType<M, K>> {
+    const collection = this.getCollection(collectionName);
+    const { records } = collection;
+    const oldRecord = this.delete(collectionName, id);
+
+    if (oldRecord) {
+      const record = {
+        ...oldRecord,
+        data: {
+          ...oldRecord.data,
+          ...data
+        }
+      };
+      records.push(record);
+      return record;
+    } else {
+      throw new RecordNotFoundError(collectionName, id);
+    }
   }
 
   getCollectionStore(): CollectionStore<M> {
@@ -192,5 +207,11 @@ export class Database<M: DatabaseSchema = Object> {
 export class CollectionNotFoundError extends Error {
   constructor(collectionName: string) {
     super(`Collection ${collectionName} not found`);
+  }
+}
+
+export class RecordNotFoundError extends Error {
+  constructor(collectionName: string, id: RecordId) {
+    super(`Record ${id} not found in collection ${collectionName}`);
   }
 }
