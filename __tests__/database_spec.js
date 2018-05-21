@@ -221,79 +221,14 @@ describe("Database", () => {
       });
     });
 
-    it("should return null given id of non-existing record", () => {
+    it("should throw an error given id of non-existing record", () => {
       const { database } = setup();
-      const user = userFactory({ firstName, lastName });
 
       database.create("user", 10);
 
-      expect(database.all("user")).toHaveLength(10);
-      expect(database.delete("user", (123: any))).toBeNull();
-      expect(database.all("user")).toHaveLength(10);
+      expect(() =>
+        database.update("user", (123: any), { firstName: "Jimmy" })
+      ).toThrow();
     });
   });
-
-  //   test('recordFactory # save', () => {
-  //     const db = new Database();
-
-  //     db.register('user', userFactory);
-  //     db.create('user', 2);
-
-  //     const user1 = db.all('user')[0];
-  //     const user2 = db.all('user')[1];
-
-  //     const oldFirstname1 = user1.firstName;
-  //     const oldFirstname2 = user2.firstName;
-
-  //     user1.firstName = 'NEW NAME';
-
-  //     const newUser1 = user1.save();
-  //     const newUser2 = user2.save();
-
-  //     // expect(db.all('user')[0].firstName).toEqual(oldFirstname1);
-  //     expect(db.all('user')[1].firstName).toEqual(oldFirstname2);
-
-  //     // expect(newUser1.firstName).toEqual(oldFirstname1);
-  //     expect(newUser2.firstName).toEqual(oldFirstname2);
-  //   });
-
-  //   test.skip('recordFactory # remove side effects', () => {
-  //     expect(4);
-
-  //     const server = new Server();
-  //     const router = new Router();
-  //     const database = new Database();
-
-  //     database.register('foo', _ => {
-  //       return {
-  //         foo: 'bar'
-  //       };
-  //     });
-  //     database.create('foo', 1);
-
-  //     router.get('/side_effects', (request, db) => {
-  //       return db.first('foo');
-  //     });
-
-  //     server.use(router);
-  //     server.use(database);
-
-  //     fetch('/side_effects').then(r => r.json()).then(response => {
-  //       expect(response.save).toBeUndefined();
-  //       expect(response.delete).toBeUndefined();
-  //     });
-
-  //     const xhr = new XMLHttpRequest();
-
-  //     xhr.onreadystatechange = () => {
-  //       if (xhr.readyState !== 4) return;
-
-  //       const response = JSON.parse(xhr.responseText);
-
-  //       expect(response.save).toBeUndefined()
-  //       expect(response.delete).toBeUndefined()
-  //     };
-  //     xhr.open('GET', '/side_effects', true);
-  //     xhr.send();
-  //   });
 });
