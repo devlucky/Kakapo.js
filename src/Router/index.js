@@ -1,6 +1,5 @@
 // @flow
-import merge from 'lodash/merge';
-import forEach from 'lodash/foreach';
+import { merge, forEach } from "lodash";
 import { interceptors } from "../interceptors";
 import environment from "../config/environment";
 import {

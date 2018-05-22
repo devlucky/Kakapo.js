@@ -1,9 +1,5 @@
 // @flow
-import { type Predicate } from "lodash";
-import sample from "lodash/sample";
-import filter from "lodash/filter";
-import first from "lodash/first";
-import last from "lodash/last";
+import { type Predicate, sample, first, last, filter } from "lodash";
 
 const databaseCollectionStores: WeakMap<
   Database<any>,
