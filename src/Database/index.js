@@ -1,294 +1,207 @@
-import faker from 'faker';
-import cloneDeep from 'lodash.clonedeep';
-import sample from 'lodash.sample';
-import isFunction from 'lodash.isfunction';
-import assign from 'lodash.assign';
-import filter from 'lodash.filter';
-import first from 'lodash.first';
-import random from 'lodash.random';
-import sampleSize from 'lodash.samplesize';
-import last from 'lodash.last';
-import { recordFactory } from './recordFactory';
-import { deepMapValues } from '../helpers/util';
+// @flow
+import { type Predicate, sample, first, last, filter } from "lodash";
 
-const factoryStore = new WeakMap();
-const recordStore = new WeakMap();
-const serializerStore = new WeakMap();
-const uuidStore = new WeakMap();
+const databaseCollectionStores: WeakMap<
+  Database<any>,
+  CollectionStore<Object>
+> = new WeakMap();
 
-export class Database {
-  /**
-   * Creates new Database and initializes it's state.
-   *
-   * @public
-   */
+export type DatabaseSchema = {
+  +[collectionName: string]: Object
+};
+
+export type CollectionStore<M: DatabaseSchema, K: $Keys<M> = $Keys<M>> = {
+  [collectionName: K]: $ElementType<M, K> | typeof undefined
+};
+
+export type Collection<T> = {
+  +uuid: number,
+  +factory: DataFactory<T>,
+  +records: Record<T>[]
+};
+
+export type DataFactory<T> = () => T;
+
+export opaque type RecordId = number;
+
+export type Record<T> = {
+  +id: RecordId,
+  +data: T
+};
+
+export class Database<M: DatabaseSchema = Object> {
   constructor() {
     this.reset();
   }
 
-  /**
-   * Returns all records from specified collection, either as an array
-   * or as a serialized object.
-   *
-   * @param {string} collectionName - name of collection
-   * @param {boolean} [raw=false] - flag to specify if records should be serialized
-   *
-   * @returns {Array<Object>|Object}
-   * @public
-   */
-  all(collectionName, raw = false) {
-    this.checkFactoryPresence(collectionName);
-    const records = cloneDeep(recordStore.get(this).get(collectionName));
-    return raw ? records : records.map(r => this.serialize(r, collectionName));
+  all<K: $Keys<M>>(collectionName: K): Record<$ElementType<M, K>>[] {
+    const { records } = this.getCollection(collectionName);
+    return records;
   }
 
-  /**
-   * Returns thunk returning record from specified collection, based on conditions or
-   * random record if no conditions were specified.
-   *
-   * @param {string} collectionName - name of collection
-   * @param {Array|Function|Object|string} [conditions] - search conditions for the record
-   *
-   * @returns {Function}
-   * @private
-   */
-  belongsTo(collectionName, conditions) {
+  belongsTo<K: $Keys<M>>(
+    collectionName: K,
+    conditions: ?Predicate<$ElementType<M, K>>
+  ): () => Record<$ElementType<M, K>> {
     return () => {
-      if (conditions) { return this.find(collectionName, conditions); }
-      return sample(this.all(collectionName));
+      if (conditions) {
+        return this.findOne(collectionName, conditions);
+      } else {
+        return sample(this.all(collectionName));
+      }
     };
   }
 
-  /**
-   * Throws error if collection with specified name doesn't exist.
-   *
-   * @param {string} collectionName - name of collection
-   *
-   * @throws {ReferenceError}.
-   * @private
-   */
-  checkFactoryPresence(collectionName) {
-    if (!this.getFactory(collectionName)) {
-      throw new ReferenceError(`Factory ${collectionName} not found`);
+  create<K: $Keys<M>>(
+    collectionName: K,
+    size: number = 1,
+    factory?: DataFactory<$ElementType<M, K>>
+  ): Record<$ElementType<M, K>>[] {
+    const dataFactory = factory || this.getCollection(collectionName).factory;
+    const records = [];
+
+    for (let index = 0; index < size; index++) {
+      const data = dataFactory();
+      const record = this.push(collectionName, data);
+      records.push(record);
+    }
+
+    return records;
+  }
+
+  delete<K: $Keys<M>>(
+    collectionName: K,
+    id: RecordId
+  ): Record<$ElementType<M, K>> | null {
+    const collection = this.getCollection(collectionName);
+    const { records } = collection;
+    const record = records.find(record => record.id === id);
+
+    if (record) {
+      const index = records.indexOf(record);
+      records.splice(index, 1);
+      return record;
+    } else {
+      return null;
     }
   }
 
-  /**
-   * Creates collection of records in Database instance of specified size, based
-   * on record's factory registered before.
-   *
-   * @param {string} collectionName - name of collection
-   * @param {number} [size=1] - size of collection to create
-   *
-   * @public
-   */
-  create(collectionName, size = 1) {
-    this.checkFactoryPresence(collectionName);
-
-    const currentRecordStore = recordStore.get(this);
-    const factory = this.getFactory(collectionName);
-    const records = currentRecordStore.get(collectionName);
-
-    for (let idx = 0; idx < size; ++idx) {
-      const record = deepMapValues(factory(faker), (field) => {
-        if (isFunction(field)) { return field(); }
-        return field;
-      });
-
-      records.push(this.decorateRecord(collectionName, record));
-    }
-
-    currentRecordStore.set(collectionName, records.map(r =>
-      recordFactory(r, collectionName, currentRecordStore)));
+  exists<K: $Keys<M>>(collectionName: K): boolean {
+    const collectionStore = this.getCollectionStore();
+    return !!collectionStore[collectionName];
   }
 
-  /**
-   * Returns record with generated uuid field added on it.
-   *
-   * @param {string} collectionName - name of collection
-   * @param {Object} record - record to decorate
-   *
-   * @returns {Object}
-   * @private
-   */
-  decorateRecord(collectionName, record) {
-    this.checkFactoryPresence(collectionName);
-    return assign({}, record, { id: this.uuid(collectionName) });
+  find<K: $Keys<M>>(
+    collectionName: K,
+    conditions: ?Predicate<$ElementType<M, K>>
+  ): Record<$ElementType<M, K>>[] {
+    const { records } = this.getCollection(collectionName);
+    return filter(records, { data: conditions });
   }
 
-  /**
-   * Returns records from specified collection, matching specified requirements.
-   *
-   * @param {string} collectionName - name of collection
-   * @param {Array|Function|Object|string} [conditions] - search conditions for the record
-   *
-   * @returns {Array<Object>}
-   * @public
-   */
-  find(collectionName, conditions) {
-    this.checkFactoryPresence(collectionName);
-    return filter(this.all(collectionName, true), conditions)
-      .map(r => this.serialize(r, collectionName));
-  }
-
-  /**
-   * Returns one record from specified collection, matching specified requirements.
-   *
-   * @param {string} collectionName - name of collection
-   * @param {Array|Function|Object|string} [conditions] - search conditions for the record
-   *
-   * @returns {Object}
-   * @public
-   */
-  findOne(collectionName, conditions) {
-    this.checkFactoryPresence(collectionName);
+  findOne<K: $Keys<M>>(
+    collectionName: K,
+    conditions: ?Predicate<$ElementType<M, K>>
+  ): Record<$ElementType<M, K>> {
     return first(this.find(collectionName, conditions));
   }
 
-  /**
-   * Returns first record from specified collection.
-   *
-   * @param {string} collectionName - name of collection
-   *
-   * @returns {Object}
-   * @public
-   */
-  first(collectionName) {
-    this.checkFactoryPresence(collectionName);
-    return first(this.all(collectionName));
+  first<K: $Keys<M>>(collectionName: K): Record<$ElementType<M, K>> {
+    const { records } = this.getCollection(collectionName);
+    return first(records);
   }
 
-  /**
-   * Returns factory for specified collection from Database's store.
-   *
-   * @param {string} collectionName - name of collection
-   *
-   * @returns {Map}
-   * @private
-   */
-  getFactory(collectionName) {
-    return factoryStore.get(this).get(collectionName);
+  last<K: $Keys<M>>(collectionName: K): Record<$ElementType<M, K>> {
+    const { records } = this.getCollection(collectionName);
+    return last(records);
   }
 
-  /**
-   * Returns serializer for specified collection from Database's store.
-   *
-   * @param {string} collectionName - name of collection
-   *
-   * @returns {Map}
-   * @private
-   */
-  getSerializer(collectionName) {
-    return serializerStore.get(this).get(collectionName);
-  }
-
-  /**
-   * Returns thunk returning collection of records from specified collection of
-   * specified limit.
-   *
-   * @param {string} collectionName - name of collection
-   * @param {number} [limit = 1] - limit of records in collection to return
-   *
-   * @returns {Function}
-   * @private
-   */
-  hasMany(collectionName, limit) {
-    const randomLimit = random(1, this.all(collectionName).length);
-    return () => sampleSize(this.all(collectionName), limit || randomLimit);
-  }
-
-  /**
-   * Returns last record from specified collection.
-   *
-   * @param {string} collectionName - name of collection
-   *
-   * @returns {Object}
-   * @public
-   */
-  last(collectionName) {
-    this.checkFactoryPresence(collectionName);
-    return last(this.all(collectionName));
-  }
-
-  /**
-   * Pushes record manually to the end of specified collection.
-   *
-   * @param {string} collectionName - name of collection
-   * @param {Object} record - record to push
-   *
-   * @returns {Object}
-   * @public
-   */
-  push(collectionName, record) {
-    this.checkFactoryPresence(collectionName);
-    record = this.decorateRecord(collectionName, record);
-    const currentRecordStore = recordStore.get(this);
-    const records = currentRecordStore.get(collectionName);
+  push<K: $Keys<M>>(
+    collectionName: K,
+    data: $ElementType<M, K>
+  ): Record<$ElementType<M, K>> {
+    const collection = this.getCollection(collectionName);
+    const { uuid, records } = collection;
+    const record = {
+      id: uuid,
+      data
+    };
 
     records.push(record);
-
-    currentRecordStore.set(collectionName, records.map(r =>
-      recordFactory(r, collectionName, currentRecordStore)));
+    collection.uuid++;
 
     return record;
   }
 
-  /**
-   * Registers factory for use in creation of records in specified collection.
-   * Registers serializer for use in returning of records in specified collection.
-   *
-   * @param {string} collectionName name of collection
-   * @param {Object} [factory] - factory to create records with
-   * @param {Object} [serializer] - serializer to serialize records with
-   *
-   * @public
-   */
-  register(collectionName, factory, serializer) {
-    factoryStore.get(this).set(collectionName, factory);
-    recordStore.get(this).set(collectionName, []);
-    serializerStore.get(this).set(collectionName, serializer);
-    uuidStore.get(this).set(collectionName, 0);
+  register<K: $Keys<M>>(
+    collectionName: K,
+    factory: DataFactory<$ElementType<M, K>>
+  ) {
+    this.getCollectionStore()[collectionName] = {
+      uuid: 0,
+      records: [],
+      factory
+    };
   }
 
-  /**
-   * Restores all Database's stores to their initial state.
-   *
-   * @public
-   */
   reset() {
-    factoryStore.set(this, new Map());
-    recordStore.set(this, new Map());
-    serializerStore.set(this, new Map());
-    uuidStore.set(this, new Map());
+    databaseCollectionStores.set(this, new Map());
   }
 
-  /**
-   * Returns record serialized with serializer specified in register method.
-   *
-   * @param {string} collectionName - name of collection
-   * @param {Object} record - record to decorate
-   *
-   * @returns {Object}
-   * @private
-   */
-  serialize(record, collectionName) {
-    const serializer = this.getSerializer(collectionName);
-    return serializer ? serializer(record) : record;
+  update<K: $Keys<M>>(
+    collectionName: K,
+    id: RecordId,
+    data: $Shape<$ElementType<M, K>>
+  ): Record<$ElementType<M, K>> {
+    const collection = this.getCollection(collectionName);
+    const { records } = collection;
+    const oldRecord = this.delete(collectionName, id);
+
+    if (oldRecord) {
+      const record = {
+        ...oldRecord,
+        data: {
+          ...oldRecord.data,
+          ...data
+        }
+      };
+      records.push(record);
+      return record;
+    } else {
+      throw new RecordNotFoundError(collectionName, id);
+    }
   }
 
-  /**
-   * Returns next generated uuid for specified collection.
-   *
-   * @param {string} collectionName - name of collection
-   *
-   * @returns {number}
-   * @private
-   */
-  uuid(collectionName) {
-    this.checkFactoryPresence(collectionName);
-    const id = uuidStore.get(this).get(collectionName);
+  getCollectionStore(): CollectionStore<M> {
+    const collectionStore = databaseCollectionStores.get(this);
+    if (collectionStore) {
+      return collectionStore;
+    } else {
+      throw new Error("This database needs to be initialized.");
+    }
+  }
 
-    uuidStore.get(this).set(collectionName, id + 1);
-    return id;
+  getCollection<K: $Keys<M>>(
+    collectionName: K
+  ): Collection<$ElementType<M, K>> {
+    const collectionStore = this.getCollectionStore();
+    const collection = collectionStore[collectionName];
+    if (collection) {
+      return collection;
+    } else {
+      throw new CollectionNotFoundError(collectionName);
+    }
+  }
+}
+
+export class CollectionNotFoundError extends Error {
+  constructor(collectionName: string) {
+    super(`Collection ${collectionName} not found`);
+  }
+}
+
+export class RecordNotFoundError extends Error {
+  constructor(collectionName: string, id: RecordId) {
+    super(`Record ${id} not found in collection ${collectionName}`);
   }
 }

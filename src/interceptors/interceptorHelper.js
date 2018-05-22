@@ -1,15 +1,17 @@
 // @flow
 
-import keys from 'lodash.keys';
-import includes from 'lodash.includes';
+import { keys, includes } from "lodash";
 import pathMatch from "path-match";
 import parseUrl from "parse-url";
 import queryString from "query-string";
 import { Request } from "../Request";
 import { Response } from "../Response";
-import { Database } from '../Database';
+import { Database } from "../Database";
 
-export type RouteHandler = (request: Request, db: Database) => Response | any;
+export type RouteHandler = (
+  request: Request,
+  db: Database<any>
+) => Response | any;
 
 export type InterceptorConfig = {
   +host: string,
