@@ -76,7 +76,15 @@ class FakeXMLHttpRequest {
   get responseText(): string {
     return this.response;
   }
-  // responseType: string;
+
+  responseType:
+    | void
+    | ""
+    | "arraybuffer"
+    | "blob"
+    | "document"
+    | "json"
+    | "text";
 
   _requestHeaders: { [header: string]: string } = {};
   setRequestHeader(header: string, value: string): void {
@@ -111,8 +119,8 @@ class FakeXMLHttpRequest {
           });
           // Wrapping handler into a promise to add promise support for free
           const responsePromise = Promise.resolve(handler(request, db));
-          
-          responsePromise.then((result) => {
+
+          responsePromise.then(result => {
             const response = KakapoResponse.wrap(result);
             if (delay) {
               setTimeout(() => this._handleResponse(response), delay);
@@ -127,10 +135,21 @@ class FakeXMLHttpRequest {
     }
   }
 
-  _handleResponse(response: KakapoResponse): void {
-    this._response = JSON.stringify(response.body);
-    this._status = response.code;
-    this._responseHeaders = response.headers;
+  _handleResponse({ code, headers, body }: KakapoResponse): void {
+    const { "content-type": contentType } = headers;
+
+    this._status = code;
+    this._responseHeaders = headers;
+
+    if (this.responseType === "blob") {
+      if (body instanceof Blob) {
+        this._response = body;
+      } else {
+        this._response = new Blob([body]);
+      }
+    } else {
+      this._response = JSON.stringify(body);
+    }
 
     this._setReadyState(FakeXMLHttpRequest.DONE);
 
