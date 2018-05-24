@@ -9,6 +9,7 @@ import {
 } from "./interceptorHelper";
 
 const NativeXMLHttpRequest = XMLHttpRequest;
+const NativeXMLHttpRequestEventTarget = XMLHttpRequestEventTarget;
 
 class FakeXMLHttpRequest {
   static +interceptors: Interceptor[] = [];
@@ -200,7 +201,7 @@ class FakeXMLHttpRequest {
     }
   }
 
-  // upload: XMLHttpRequestEventTarget;
+  upload: XMLHttpRequestEventTarget = new XMLHttpRequestEventTarget();
 
   onabort: ProgressEventHandler;
   onerror: ProgressEventHandler;
@@ -240,11 +241,29 @@ class FakeXMLHttpRequest {
   }
 }
 
+type AddEventListenerOptions = {
+  capture?: boolean,
+  once?: boolean,
+  passive?: boolean
+};
+
+class FakeXMLHttpRequestEventTarget {
+  addEventListener(
+    type: string,
+    listener: Function,
+    useCaptureOrOptions: boolean | AddEventListenerOptions = false
+  ) {
+    // do nothing for now
+  }
+}
+
 export const enable = (config: InterceptorConfig) => {
   const interceptor = interceptorHelper(config);
   FakeXMLHttpRequest.use(interceptor);
   window.XMLHttpRequest = FakeXMLHttpRequest;
+  window.XMLHttpRequestEventTarget = FakeXMLHttpRequestEventTarget;
 };
 export const disable = () => {
   window.XMLHttpRequest = NativeXMLHttpRequest;
+  window.XMLHttpRequestEventTarget = NativeXMLHttpRequestEventTarget;
 };
