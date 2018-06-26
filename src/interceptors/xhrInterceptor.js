@@ -9,7 +9,7 @@ import {
 } from "./interceptorHelper";
 
 const NativeXMLHttpRequest = XMLHttpRequest;
-const NativeXMLHttpRequestEventTarget = XMLHttpRequestEventTarget;
+const NativeXMLHttpRequestEventTarget = window.XMLHttpRequestEventTarget;
 
 class FakeXMLHttpRequest {
   static +interceptors: Interceptor[] = [];
