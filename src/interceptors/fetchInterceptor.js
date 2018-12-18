@@ -6,9 +6,9 @@ import {
   Interceptor,
   type InterceptorConfig
 } from "./interceptorHelper";
-import { mapRequestInfoToUrlString } from "../utils";
+import { mapRequestInfoToUrlString, canUseWindow } from "../utils";
 
-const nativeFetch = window.fetch;
+const nativeFetch = canUseWindow && window.fetch;
 const fakeResponse = (response = {}, headers = {}) => {
   const responseStr = JSON.stringify(response);
   return new Response(responseStr, { headers });

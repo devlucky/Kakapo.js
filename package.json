@@ -19,7 +19,8 @@
     "perf:build": "yarn build && webpack-cli --config webpack.perf.config.js",
     "perf:stats": "webpack-cli --config webpack.perf.config.js --json > perf/dist/stats.json",
     "perf:analyze": "webpack-bundle-analyzer perf/dist/stats.json",
-    "perf": "mkdir -p perf/dist && yarn perf:build && yarn perf:stats && yarn perf:analyze"
+    "perf": "mkdir -p perf/dist && yarn perf:build && yarn perf:stats && yarn perf:analyze",
+    "typecheck": "flow check --max-warnings=0"
   },
   "repository": {
     "type": "git",

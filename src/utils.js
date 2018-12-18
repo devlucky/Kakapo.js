@@ -9,3 +9,5 @@ export function mapRequestInfoToUrlString(requestInfo: RequestInfo): string {
     return requestInfo;
   }
 }
+
+export const canUseWindow = typeof window !== 'undefined';

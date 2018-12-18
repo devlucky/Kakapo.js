@@ -7,9 +7,10 @@ import {
   type InterceptorConfig,
   interceptorHelper
 } from "./interceptorHelper";
+import {canUseWindow} from '../utils';
 
-const NativeXMLHttpRequest = XMLHttpRequest;
-const NativeXMLHttpRequestEventTarget = window.XMLHttpRequestEventTarget;
+const NativeXMLHttpRequest = canUseWindow && XMLHttpRequest;
+const NativeXMLHttpRequestEventTarget = canUseWindow && window.XMLHttpRequestEventTarget;
 
 class FakeXMLHttpRequest {
   static +interceptors: Interceptor[] = [];
