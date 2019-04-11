@@ -1,4 +1,4 @@
-import { Server, Router } from '../src';
+import { Server, Router, Response as KakapoResponse } from '../src';
 
 describe('Router', () => {
   test('Router # config # host', async () => {
@@ -261,5 +261,60 @@ describe('Router', () => {
     expect(response.body).toEqual('async response');
   });
 
+
+  test('Router # Fetch # Content-Type image/svg+xml', async () => {
+    const server = new Server();
+    const router = new Router();
+
+    const svgData = 'svgData';
+
+
+    router.get('/svg_content', request => {
+      return new KakapoResponse(200, svgData, {
+        'content-type': 'image/svg+xml'
+      });
+    });
+
+    server.use(router);
+
+    const response = await fetch('/svg_content');
+    
+    expect(response.body).toEqual(svgData);
+  });
+
+
+  test('Router # Fetch # No Content Type', async () => {
+    const server = new Server();
+    const router = new Router();
+    const expectedResponse = { foo: 'bar'};
+
+    router.get('/json_content', request => {
+      return new KakapoResponse(200, expectedResponse);
+    });
+
+    server.use(router);
+
+    const response = await fetch('/json_content');
+    
+    expect(response.json()).resolves.toEqual(expectedResponse);
+  });
+
+  test('Router # Fetch # Content Type application/json', async () => {
+    const server = new Server();
+    const router = new Router();
+    const expectedResponse = { foo: 'bar'};
+
+    router.get('/json_content', request => {
+      return new KakapoResponse(200, expectedResponse, {
+        'content-type': 'application/json',
+      });
+    });
+
+    server.use(router);
+
+    const response = await fetch('/json_content');
+    
+    expect(response.body).toEqual(JSON.stringify(expectedResponse));
+  });
   // @TODO Test strategies in router.
 });
