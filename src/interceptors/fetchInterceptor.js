@@ -9,9 +9,11 @@ import {
 import { mapRequestInfoToUrlString, canUseWindow } from "../utils";
 
 const nativeFetch = canUseWindow && window.fetch;
-const fakeResponse = (response = {}, headers = {}) => {
+const fakeResponse = (response: string | any = {}, headers = {}) => {
   // If content type exist and is different to application/json no parse the response
   if (headers['content-type'] && headers['content-type'].indexOf('application/json') == -1) {
+    console.log(response);
+    
     return new Response(response, { headers });
   }
   
