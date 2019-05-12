@@ -1,19 +1,17 @@
-// @flow
-
-export type RequestOptions = {
+export type KakapoRequestOptions = {
   params: any,
   query: any,
   body?: any,
   headers: any
 };
 
-export class Request {
+export class KakapoRequest {
   params: any;
   query: any;
   body: any | null;
   headers: any;
 
-  constructor(options: RequestOptions) {
+  constructor(options: KakapoRequestOptions) {
     this.params = options.params || {};
     this.query = options.query || {};
     this.body = options.body || null;

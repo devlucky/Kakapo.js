@@ -1,4 +1,4 @@
-import { Server, Router, Response as KakapoResponse } from '../src';
+import { Server, Router, KakapoResponse } from '../src';
 
 describe('Router', () => {
   test('Router # config # host', async () => {
@@ -218,7 +218,7 @@ describe('Router', () => {
 
       const response = xhr.responseText;
 
-      expect(typeof response, 'string', 'Response is present.');
+      expect(typeof response).toEqual('string');
     };
     xhr.open('GET', '/doesnt_exist', true);
     xhr.send();
@@ -230,11 +230,11 @@ describe('Router', () => {
       const texts = response;
       const responseObject = JSON.parse(response);
 
-      expect(this.readyState, xhr2.readyState);
-      expect(this.responseText, xhr2.responseText);
-      expect(typeof response, 'string', 'Response is present.');
-      expect(typeof responseObject, 'object', 'Response is present.');
-      expect(responseObject.length, 2, 'Response body has expected values.');
+      expect(this.readyState).toEqual(xhr2.readyState);
+      expect(this.responseText).toEqual(xhr2.responseText);
+      expect(typeof response).toEqual('string');
+      expect(typeof responseObject).toEqual('object');
+      expect(responseObject.length).toEqual(2);
     };
     xhr2.open('GET', '/comments', true);
     xhr2.send();

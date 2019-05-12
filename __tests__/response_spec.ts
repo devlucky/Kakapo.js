@@ -1,4 +1,4 @@
-import { Server, Response, Router } from '../src';
+import { Server, KakapoResponse, Router } from '../src';
 
 // TODO: stub native Response
 describe.skip('Response', () => {
@@ -9,7 +9,7 @@ describe.skip('Response', () => {
     const router = new Router();
   
     router.get('/users/:id', (request) =>
-      new Response(200, { id: request.params.id, type: 'user' })
+      new KakapoResponse(200, { id: request.params.id, type: 'user' })
     );
   
     server.use(router);
@@ -29,7 +29,7 @@ describe.skip('Response', () => {
     const router = new Router();
   
     router.get('/users/:id', () =>
-      new Response(200, {}, { 'x-header-1': 'one', 'x-header-2': 'two' })
+      new KakapoResponse(200, {}, { 'x-header-1': 'one', 'x-header-2': 'two' })
     );
   
     server.use(router);
@@ -54,13 +54,13 @@ describe.skip('Response', () => {
   });
   
   test('Response # error', (assert) => {
-    const response = new Response(404, {}, { 'x-header-1': 'one' });
+    const response = new KakapoResponse(404, {}, { 'x-header-1': 'one' });
   
     expect(response.error).toBeTruthy();
   });
   
   test('Response # ok', (assert) => {
-    const response = new Response(204, {}, { 'x-header-1': 'one' });
+    const response = new KakapoResponse(204, {}, { 'x-header-1': 'one' });
   
     expect(response.ok).toBeTruthy();
   });
@@ -73,7 +73,7 @@ describe.skip('Response', () => {
     const responsePayload = {status: 'error'};
   
     router.get('/users', request =>
-      new Response(400, responsePayload)
+      new KakapoResponse(400, responsePayload)
     );
   
     server.use(router);

@@ -1,13 +1,9 @@
-// @flow
-import Faker from "faker";
-import {
-  type DataFactory,
-} from "../../src/Database";
+import * as Faker from 'faker';
 
-export opaque type UserId = string;
+export type UserId = string;
 
 export type User = {
-  +id: UserId,
+  id: UserId,
   firstName: string,
   lastName: string,
   age: number
@@ -18,7 +14,7 @@ export const userFactory = ({
   firstName = Faker.name.firstName(),
   lastName = Faker.name.lastName(),
   age = Faker.random.number()
-}: { ...User } = {}) => ({
+}: Partial<User> = {} as User) => ({
   id,
   firstName,
   lastName,

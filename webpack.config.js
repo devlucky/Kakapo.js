@@ -8,8 +8,8 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: /\.js$/,
-        loader: 'babel',
+        test: /\.tsx?$/,
+        loader: 'ts-loader',
         include: __dirname,
         exclude: /node_modules/
       },
