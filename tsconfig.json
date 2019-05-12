@@ -13,9 +13,11 @@
       "es2015.iterable",
       "es2015.promise"
     ],
-    "allowJs": false
+    "allowJs": false,
+    "declaration": true,
+    "outDir": "dist/es5",
+    "noEmitOnError": true
   },
-  "outDir": "dist/es5",
   "include": [
     "src/**/*",
     "typings/**/*",
