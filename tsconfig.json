@@ -15,7 +15,7 @@
     ],
     "allowJs": false,
     "declaration": true,
-    "outDir": "dist/es5",
+    "outDir": "dist",
     "noEmitOnError": true
   },
   "include": [

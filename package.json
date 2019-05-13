@@ -3,10 +3,10 @@
   "version": "3.3.5",
   "description": "Next generation mocking framework in Javascript",
   "main": "dist/index.js",
-  "atlaskit:src": "src/index.js",
-  "types": "src/index.d.ts",
+  "atlaskit:src": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.dist.json",
     "typecheck": "tsc --noEmit",
     "readme": "node create-readme.js",
     "test": "jest",
@@ -19,7 +19,7 @@
     "perf:build": "yarn build && webpack-cli --config webpack.perf.config.js",
     "perf:stats": "webpack-cli --config webpack.perf.config.js --json > perf/dist/stats.json",
     "perf:analyze": "webpack-bundle-analyzer perf/dist/stats.json",
-    "perf": "mkdir -p perf/dist && yarn perf:build && yarn perf:stats && yarn perf:analyze"
+    "perf": "mkdir -p ./perf/dist && yarn perf:build && yarn perf:stats && yarn perf:analyze"
   },
   "repository": {
     "type": "git",
@@ -67,7 +67,6 @@
     "request"
   ],
   "files": [
-    "dist",
-    "src/index.d.ts"
+    "dist"
   ]
 }

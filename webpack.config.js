@@ -6,7 +6,7 @@ module.exports = {
     publicPath: '/'
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.tsx?$/,
         loader: 'ts-loader',

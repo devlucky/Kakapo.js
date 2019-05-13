@@ -7,11 +7,16 @@ module.exports = {
     filename: './perf/dist/bundle.js',
   },
   resolve: {
-    extensions: [".js", ".jsx"]
+    extensions: [".ts", ".tsx"]
   },
   module: {
     rules: [
-      { test: /\.jsx?$/, loader: 'babel-loader', exclude: /(node_modules)/ }
+      {
+        test: /\.tsx?$/,
+        loader: 'ts-loader',
+        include: __dirname,
+        exclude: [/node_modules/]
+      },
     ]
   }
 };

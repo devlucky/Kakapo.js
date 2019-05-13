@@ -1,24 +1,24 @@
 import { sample, first, last, filter } from 'lodash';
 
 const databaseCollectionStores: WeakMap<
-Database<any>,
-CollectionStore<any>
+  Database<any>,
+  CollectionStore<any>
 > = new WeakMap();
 
 export interface DatabaseSchema {
-    [collectionName: string]: Record<string, any>;
+  [collectionName: string]: any;
 }
 
 export type DBKeys = 'key1' | 'key2';
 
-export type CollectionStore<M = DatabaseSchema> = {
-    [collectionName in keyof M]: any
+export type CollectionStore<DatabaseSchema> = {
+  [collectionName in keyof DatabaseSchema]: any
 };
 
 export interface Collection<T> {
-    uuid: number;
-    factory: DataFactory<T>;
-    records: Record<T>[];
+  uuid: number;
+  factory: DataFactory<T>;
+  records: Record<T>[];
 };
 
 export type DataFactory<T> = () => T;
@@ -26,8 +26,8 @@ export type DataFactory<T> = () => T;
 export type RecordId = number;
 
 export interface Record<T> {
-    id: RecordId;
-    data: T;
+  id: RecordId;
+  data: T;
 };
 
 export class Database<M extends DatabaseSchema> {
