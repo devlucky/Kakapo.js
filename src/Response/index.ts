@@ -1,6 +1,4 @@
-// @flow
-
-export class Response {
+export class KakapoResponse {
   code: number;
   body: any;
   headers: { [header: string]: string };
@@ -23,11 +21,11 @@ export class Response {
     return this.code >= 200 && this.code <= 299;
   }
 
-  static wrap(response: any): Response {
-    if (response instanceof Response) {
+  static wrap(response: any): KakapoResponse {
+    if (response instanceof KakapoResponse) {
       return response;
     } else {
-      return new Response(200, response, {
+      return new KakapoResponse(200, response, {
         "content-type": "application/json; charset=utf-8"
       });
     }

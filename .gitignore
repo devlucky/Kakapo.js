@@ -33,3 +33,4 @@ sftp-config.json
 lib
 package-lock.json
 coverage
+.vscode

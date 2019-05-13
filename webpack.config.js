@@ -6,10 +6,10 @@ module.exports = {
     publicPath: '/'
   },
   module: {
-    loaders: [
+    rules: [
       {
-        test: /\.js$/,
-        loader: 'babel',
+        test: /\.tsx?$/,
+        loader: 'ts-loader',
         include: __dirname,
         exclude: /node_modules/
       },
