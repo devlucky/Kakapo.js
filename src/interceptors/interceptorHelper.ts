@@ -1,4 +1,5 @@
-import { keys, includes } from 'lodash';
+import * as keys from 'lodash.keys';
+import * as includes from 'lodash.includes';
 import * as pathMatch from 'path-match';
 import * as parseUrl from 'parse-url';
 import * as queryString from 'query-string';

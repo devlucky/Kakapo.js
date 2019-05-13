@@ -1,4 +1,4 @@
-import { pickBy } from 'lodash';
+import * as pickBy from 'lodash.pickby';
 
 // @TODO (zzarcon): Implement 'included' support after relationships
 export const JSONApiSerializer = (record: any, type: any = null) => {

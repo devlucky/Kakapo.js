@@ -7,7 +7,7 @@ module.exports = {
     filename: './perf/dist/bundle.js',
   },
   resolve: {
-    extensions: [".ts", ".tsx"]
+    extensions: [".js", ".jsx", ".ts", ".tsx"]
   },
   module: {
     rules: [

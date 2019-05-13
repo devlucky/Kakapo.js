@@ -1,4 +1,5 @@
-import { merge, forEach } from 'lodash';
+import * as merge from 'lodash.merge';
+import * as forEach from 'lodash.foreach';
 import { interceptors, Interceptors } from '../interceptors';
 import environment from '../config/environment';
 import {

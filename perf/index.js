@@ -1,3 +1,3 @@
-import Kakapo from '../dist/src';
+const Kakapo=require('../dist');
 
 console.log(Kakapo);

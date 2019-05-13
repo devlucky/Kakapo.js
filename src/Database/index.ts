@@ -1,4 +1,7 @@
-import { sample, first, last, filter } from 'lodash';
+import * as sample from 'lodash.sample';
+import * as first from 'lodash.first';
+import * as last from 'lodash.last';
+import * as filter from 'lodash.filter';
 
 const databaseCollectionStores: WeakMap<
   Database<any>,
