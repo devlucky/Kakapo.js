@@ -1,24 +1,24 @@
 import { sample, first, last, filter } from 'lodash';
 
 const databaseCollectionStores: WeakMap<
-  Database<any>,
-  CollectionStore<any>
+Database<any>,
+CollectionStore<any>
 > = new WeakMap();
 
-export type DatabaseSchema = {
-  [collectionName: string]: Object
-};
+export interface DatabaseSchema {
+    [collectionName: string]: Record<string, any>;
+}
 
 export type DBKeys = 'key1' | 'key2';
 
 export type CollectionStore<M = DatabaseSchema> = {
-  [collectionName in keyof M]: any
+    [collectionName in keyof M]: any
 };
 
 export interface Collection<T> {
-  uuid: number,
-  factory: DataFactory<T>,
-  records: Record<T>[]
+    uuid: number;
+    factory: DataFactory<T>;
+    records: Record<T>[];
 };
 
 export type DataFactory<T> = () => T;
@@ -26,8 +26,8 @@ export type DataFactory<T> = () => T;
 export type RecordId = number;
 
 export interface Record<T> {
-  id: RecordId,
-  data: T
+    id: RecordId;
+    data: T;
 };
 
 export class Database<M extends DatabaseSchema> {
@@ -42,7 +42,7 @@ export class Database<M extends DatabaseSchema> {
 
   belongsTo<K extends keyof M>(
     collectionName: K,
-    conditions: (condition: M[K]) => boolean
+    conditions: Partial<M[K]>
   ): () => Record<M[K]> | undefined {
     return () => {
       if (conditions) {
@@ -94,7 +94,7 @@ export class Database<M extends DatabaseSchema> {
 
   find<K extends keyof M>(
     collectionName: K,
-    conditions: (condition: M[K]) => boolean
+    conditions: Partial<M[K]>
   ): Record<M[K]>[] {
     const { records } = this.getCollection(collectionName);
     return filter(records, { data: conditions }) as Record<M[K]>[];
@@ -102,7 +102,7 @@ export class Database<M extends DatabaseSchema> {
 
   findOne<K extends keyof M>(
     collectionName: K,
-    conditions: (condition: M[K]) => boolean
+    conditions: Partial<M[K]>
   ): Record<M[K]> | undefined {
     return first(this.find(collectionName, conditions));
   }

@@ -1,11 +1,11 @@
-declare var global: any
+declare var global: any;
 
 const browserEnv = typeof window === 'object';
 const nodeEnv = typeof global === 'object';
 const name = browserEnv ? 'browser' : nodeEnv ? 'node' : 'unknown';
 
 export default {
-    name,
-    browserEnv,
-    nodeEnv
+  name,
+  browserEnv,
+  nodeEnv
 };

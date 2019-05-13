@@ -20,9 +20,9 @@ const interceptorDefaultConfig: InterceptorConfig = {
     routes: { GET: {}, POST: {}, PUT: {}, DELETE: {}, HEAD: {} }
 };
 
-export type RouterConfig = {
+export interface RouterConfig {
     strategies: (keyof Interceptors)[];
-};
+}
 
 export class Router {
     interceptorConfig: InterceptorConfig;
@@ -74,6 +74,6 @@ export class Router {
 
     reset() {
     //TODO: Don't reset all 'interceptors'
-        forEach(interceptors, interceptor => interceptor.disable());
+        forEach(interceptors, (interceptor: Interceptors[keyof Interceptors]) => interceptor.disable());
     }
 }

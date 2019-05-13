@@ -1,9 +1,6 @@
 import * as Faker from 'faker';
 
-import {
-    Database,
-    DataFactory
-} from '../src/Database';
+import { Database, DataFactory } from '../src/Database';
 import { User, UserId, userFactory, someUser } from './data/users';
 
 describe('Database', () => {
@@ -108,7 +105,7 @@ describe('Database', () => {
             database.create('user', 5, () => userFactory({ firstName }));
 
             expect(database.all('user')).toHaveLength(15);
-            expect(database.find('user', (user) => user.firstName === firstName)).toHaveLength(5);
+            expect(database.find('user', { firstName })).toHaveLength(5);
         });
     });
 
@@ -122,7 +119,7 @@ describe('Database', () => {
             database.create('user', 5, () => userFactory({ firstName }));
             database.create('user', 10);
 
-            expect(database.findOne('user', (user) => user.firstName === firstName)!.data).toEqual(user);
+            expect(database.findOne('user', { firstName })!.data).toEqual(user);
         });
     });
 

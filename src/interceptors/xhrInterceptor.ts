@@ -264,11 +264,11 @@ class FakeXMLHttpRequest {
     }
 }
 
-type AddEventListenerOptions = {
+interface AddEventListenerOptions {
     capture?: boolean;
     once?: boolean;
     passive?: boolean;
-};
+}
 
 class FakeXMLHttpRequestEventTarget {
     addEventListener(

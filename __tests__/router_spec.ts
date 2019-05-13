@@ -6,7 +6,7 @@ describe('Router', () => {
     // 'host' and check that works properly
     const server = new Server();
     const router = new Router({
-      host: 'https://api.github.com',
+      host: 'https://api.github.com'
     });
 
     router.get('/comments', request => {
@@ -16,7 +16,7 @@ describe('Router', () => {
     server.use(router);
 
     const response = await fetch('https://api.github.com/comments');
-    
+
     expect(response).toBeInstanceOf(Response);
     expect(response.ok).toBeTruthy();
 
@@ -27,7 +27,7 @@ describe('Router', () => {
   test('Router # config # requestDelay', async () => {
     const server = new Server();
     const router = new Router({
-      requestDelay: 1000,
+      requestDelay: 1000
     });
 
     router.get('/comments', request => {
@@ -53,9 +53,9 @@ describe('Router', () => {
     router.get('/users/:user_id', request => {
       expect(typeof request).toEqual('object');
       expect(typeof request.params).toEqual('object');
-      
+
       return {
-        users: [{ firstName: 'hector' }],
+        users: [{ firstName: 'hector' }]
       };
     });
 
@@ -63,14 +63,16 @@ describe('Router', () => {
 
     expect(await fetch('/doesnt_exist')).toBeInstanceOf(Response);
     expect(await fetch('/comments')).toBeInstanceOf(Response);
-    
-    return fetch('/users/1').then(response => {
-      expect(response).toBeInstanceOf(Response);
-      return response.json();
-    }).then(response => {
-      const firstName = response.users[0].firstName;
-      expect(firstName).toEqual('hector');
-    });
+
+    return fetch('/users/1')
+      .then(response => {
+        expect(response).toBeInstanceOf(Response);
+        return response.json();
+      })
+      .then(response => {
+        const firstName = response.users[0].firstName;
+        expect(firstName).toEqual('hector');
+      });
   });
 
   test('Router#post', async () => {
@@ -87,13 +89,16 @@ describe('Router', () => {
 
       return {
         status: 'success',
-        record: parsedBody,
+        record: parsedBody
       };
     });
 
     server.use(router);
 
-    const response = await (await fetch('/users', { method: 'POST', body })).json();
+    const response = await (await fetch('/users', {
+      method: 'POST',
+      body
+    })).json();
     const status = response.status;
     const firstName = response.record.firstName;
 
@@ -108,7 +113,7 @@ describe('Router', () => {
 
     router.post('/hector', request => {
       const body = JSON.parse(request.body);
-      
+
       expect(body.firstName).toEqual('Joan');
     });
 
@@ -133,13 +138,15 @@ describe('Router', () => {
 
       return {
         status: 'success',
-        query,
+        query
       };
     });
 
     server.use(router);
 
-    const response = await (await fetch('/users?page=1', { method: 'PUT' })).json();
+    const response = await (await fetch('/users?page=1', {
+      method: 'PUT'
+    })).json();
     const status = response.status;
     const page = response.query.page;
 
@@ -159,13 +166,15 @@ describe('Router', () => {
 
       return {
         status: 'success',
-        params,
+        params
       };
     });
 
     server.use(router);
 
-    const response = await (await fetch('/users/1/comments/2', { method: 'DELETE' })).json();
+    const response = await (await fetch('/users/1/comments/2', {
+      method: 'DELETE'
+    })).json();
     const status = response.status;
     const userId = response.params.user_id;
 
@@ -176,7 +185,7 @@ describe('Router', () => {
   test('Router#XMLHttpRequest # config # requestDelay', () => {
     const server = new Server();
     const router = new Router({
-      requestDelay: 10,
+      requestDelay: 10
     });
 
     router.get('/comments', request => {
@@ -191,7 +200,7 @@ describe('Router', () => {
     xhr.open('GET', '/comments', true);
     xhr.send();
   });
-  
+
   test.skip('Router#XMLHttpRequest', () => {
     const server = new Server();
     const router = new Router();
@@ -202,10 +211,7 @@ describe('Router', () => {
       expect(typeof request).toEqual('object');
       expect(typeof params).toEqual('object');
 
-      return [
-        { text: 'First comment' },
-        { text: 'Second comment' },
-      ];
+      return [{ text: 'First comment' }, { text: 'Second comment' }];
     });
 
     server.use(router);
@@ -214,7 +220,9 @@ describe('Router', () => {
     const xhr2 = new XMLHttpRequest();
 
     xhr.onreadystatechange = () => {
-      if (xhr.readyState !== 4) { return; }
+      if (xhr.readyState !== 4) {
+        return;
+      }
 
       const response = xhr.responseText;
 
@@ -224,7 +232,9 @@ describe('Router', () => {
     xhr.send();
 
     xhr2.onreadystatechange = function() {
-      if (xhr2.readyState !== 4 || xhr2.status !== 200) { return; }
+      if (xhr2.readyState !== 4 || xhr2.status !== 200) {
+        return;
+      }
 
       const response = xhr2.responseText;
       const texts = response;
@@ -257,17 +267,15 @@ describe('Router', () => {
     server.use(router);
 
     const response = await (await fetch('/async_endpoint')).json();
-    
+
     expect(response.body).toEqual('async response');
   });
-
 
   test('Router # Fetch # Content-Type image/svg+xml', async () => {
     const server = new Server();
     const router = new Router();
 
     const svgData = 'svgData';
-
 
     router.get('/svg_content', request => {
       return new KakapoResponse(200, svgData, {
@@ -278,15 +286,14 @@ describe('Router', () => {
     server.use(router);
 
     const response = await fetch('/svg_content');
-    
+
     expect(response.body).toEqual(svgData);
   });
-
 
   test('Router # Fetch # No Content Type', async () => {
     const server = new Server();
     const router = new Router();
-    const expectedResponse = { foo: 'bar'};
+    const expectedResponse = { foo: 'bar' };
 
     router.get('/json_content', request => {
       return new KakapoResponse(200, expectedResponse);
@@ -295,25 +302,25 @@ describe('Router', () => {
     server.use(router);
 
     const response = await fetch('/json_content');
-    
+
     expect(response.json()).resolves.toEqual(expectedResponse);
   });
 
   test('Router # Fetch # Content Type application/json', async () => {
     const server = new Server();
     const router = new Router();
-    const expectedResponse = { foo: 'bar'};
+    const expectedResponse = { foo: 'bar' };
 
     router.get('/json_content', request => {
       return new KakapoResponse(200, expectedResponse, {
-        'content-type': 'application/json',
+        'content-type': 'application/json'
       });
     });
 
     server.use(router);
 
     const response = await fetch('/json_content');
-    
+
     expect(response.body).toEqual(JSON.stringify(expectedResponse));
   });
   // @TODO Test strategies in router.

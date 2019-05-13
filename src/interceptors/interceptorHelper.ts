@@ -1,7 +1,7 @@
 import { keys, includes } from 'lodash';
-import pathMatch from 'path-match';
-import parseUrl from 'parse-url';
-import queryString from 'query-string';
+import * as pathMatch from 'path-match';
+import * as parseUrl from 'parse-url';
+import * as queryString from 'query-string';
 import { KakapoRequest } from '../Request';
 import { KakapoResponse } from '../Response';
 import { Database } from '../Database';
@@ -11,18 +11,18 @@ export type RouteHandler = (
     db: Database<any>
 ) => KakapoResponse | any | Promise<KakapoResponse | any>;
 
-export type InterceptorConfig = {
+export interface InterceptorConfig {
     host: string;
     routes: { [method: string]: { [path: string]: RouteHandler } };
     db: any;
     requestDelay: number;
-};
+}
 
-export type UrlDetails = {
+export interface UrlDetails {
     handlers: any;
     pathname: string;
     fullpath: string;
-};
+}
 
 // @TODO (oskar): This NEEDS refactor.
 const getRoute = (
@@ -30,7 +30,7 @@ const getRoute = (
     { handlers, pathname, fullpath }: UrlDetails
 ) => {
     const matchesPathname = (path: string) => pathMatch()(path)(pathname);
-    const route = keys(handlers).reduce((result: string | undefined, key) => matchesPathname(key) ? key : result, undefined);
+    const route = keys(handlers).reduce((result: string | undefined, key: string) => matchesPathname(key) ? key : result, undefined);
     const hasHost = includes(fullpath, host);
 
     return route && hasHost ? route : null;

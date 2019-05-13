@@ -5,7 +5,10 @@ export const JSONApiSerializer = (record: any, type: any = null) => {
   const id = record.id;
   const included: any[] = [];
   const relationships = {};
-  const serializedRecord = pickBy(record, (value, key) => key !== "id");
+  const serializedRecord = pickBy(
+    record,
+    (_value: any, key: string) => key !== 'id'
+  );
 
   return {
     data: {

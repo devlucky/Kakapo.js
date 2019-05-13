@@ -6,5 +6,9 @@
   "parserOptions": {
     "ecmaVersion": 2018,
     "sourceType":  "module"
+  },
+  "rules": {
+    "indent": ["error", 2],
+    "typescript/no-explicit-any": "off"
   }
 }
