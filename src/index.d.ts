@@ -1,8 +1,12 @@
 import { ListIterateeCustom } from "lodash";
 
-export type RouterOptions = {
+export type InterceptorOptions = {
   readonly host: string;
   readonly requestDelay: number;
+}
+
+export type RouterOptions = {
+  readonly strategies: string[];
 };
 
 export type RequestHeaders = { [header: string]: string };
@@ -30,7 +34,7 @@ export type RequestHandler<M extends DatabaseSchema> = (
 ) => Response;
 
 export class Router<M extends DatabaseSchema = {}> {
-  constructor(options?: RouterOptions);
+  constructor(interceptorOptions?: InterceptorOptions, routerOptions?: RouterOptions);
   get(url: string, handler: RequestHandler<M>): void;
   post(url: string, handler: RequestHandler<M>): void;
   put(url: string, handler: RequestHandler<M>): void;
