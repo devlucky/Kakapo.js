@@ -38,7 +38,7 @@ export class Router {
       interceptorDefaultConfig,
       interceptorConfig
     );
-    this.routerConfig = merge({}, routerDefaultConfig, routerConfig);
+    this.routerConfig = {...routerDefaultConfig, ...routerConfig};
   }
 
   get(...args: any[]) {
