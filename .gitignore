@@ -34,3 +34,5 @@ lib
 package-lock.json
 coverage
 .vscode
+/.idea
+/examples/**/*.js
