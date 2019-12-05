@@ -5,40 +5,34 @@ import * as filter from 'lodash.filter';
 
 const databaseCollectionStores: WeakMap<
   Database<any>,
-  CollectionStore<any>
+  Map<any, Collection<any>>
 > = new WeakMap();
 
 export interface DatabaseSchema {
-  [collectionName: string]: any;
+  [collectionName: string]: any; // <- DataType in Collection
 }
 
-export type DBKeys = 'key1' | 'key2';
-
-export type CollectionStore<DatabaseSchema> = {
-  [collectionName in keyof DatabaseSchema]: any
-};
-
-export interface Collection<T> {
+export interface Collection<DataType> {
   uuid: number;
-  factory: DataFactory<T>;
-  records: Record<T>[];
-};
+  factory: DataFactory<DataType>;
+  records: DataRecord<DataType>[];
+}
 
-export type DataFactory<T> = () => T;
+export type DataFactory<DataType> = () => DataType;
 
 export type RecordId = number;
 
-export interface Record<T> {
+export interface DataRecord<DataType> {
   id: RecordId;
-  data: T;
-};
+  data: DataType;
+}
 
 export class Database<M extends DatabaseSchema> {
   constructor() {
     this.reset();
   }
 
-  all<K extends keyof M>(collectionName: K): Record<M[K]>[] {
+  all<K extends keyof M>(collectionName: K): DataRecord<M[K]>[] {
     const { records } = this.getCollection(collectionName);
     return records;
   }
@@ -46,7 +40,7 @@ export class Database<M extends DatabaseSchema> {
   belongsTo<K extends keyof M>(
     collectionName: K,
     conditions: Partial<M[K]>
-  ): () => Record<M[K]> | undefined {
+  ): () => DataRecord<M[K]> | undefined {
     return () => {
       if (conditions) {
         return this.findOne(collectionName, conditions);
@@ -60,7 +54,7 @@ export class Database<M extends DatabaseSchema> {
     collectionName: K,
     size: number = 1,
     factory?: DataFactory<M[K]>
-  ): Record<M[K]>[] {
+  ): DataRecord<M[K]>[] {
     const dataFactory = factory || this.getCollection(collectionName).factory;
     const records = [];
 
@@ -76,10 +70,10 @@ export class Database<M extends DatabaseSchema> {
   delete<K extends keyof M>(
     collectionName: K,
     id: RecordId
-  ): Record<M[K]> | null {
+  ): DataRecord<M[K]> | null {
     const collection = this.getCollection(collectionName);
     const { records } = collection;
-    const record = records.reduce((result: Record<M[K]> | undefined, record) => record.id === id ? record : result, undefined);
+    const record = records.reduce((result: DataRecord<M[K]> | undefined, record) => record.id === id ? record : result, undefined);
 
     if (record) {
       const index = records.indexOf(record);
@@ -92,30 +86,30 @@ export class Database<M extends DatabaseSchema> {
 
   exists<K extends keyof M>(collectionName: K): boolean {
     const collectionStore = this.getCollectionStore();
-    return !!collectionStore[collectionName];
+    return !!collectionStore.get(collectionName);
   }
 
   find<K extends keyof M>(
     collectionName: K,
     conditions: Partial<M[K]>
-  ): Record<M[K]>[] {
+  ): DataRecord<M[K]>[] {
     const { records } = this.getCollection(collectionName);
-    return filter(records, { data: conditions }) as Record<M[K]>[];
+    return filter(records, { data: conditions }) as DataRecord<M[K]>[];
   }
 
   findOne<K extends keyof M>(
     collectionName: K,
     conditions: Partial<M[K]>
-  ): Record<M[K]> | undefined {
+  ): DataRecord<M[K]> | undefined {
     return first(this.find(collectionName, conditions));
   }
 
-  first<K extends keyof M>(collectionName: K): Record<M[K]> | undefined {
+  first<K extends keyof M>(collectionName: K): DataRecord<M[K]> | undefined {
     const { records } = this.getCollection(collectionName);
     return first(records);
   }
 
-  last<K extends keyof M>(collectionName: K): Record<M[K]> | undefined {
+  last<K extends keyof M>(collectionName: K): DataRecord<M[K]> | undefined {
     const { records } = this.getCollection(collectionName);
     return last(records);
   }
@@ -123,7 +117,7 @@ export class Database<M extends DatabaseSchema> {
   push<K extends keyof M>(
     collectionName: K,
     data: M[K]
-  ): Record<M[K]> {
+  ): DataRecord<M[K]> {
     const collection = this.getCollection(collectionName);
     const { uuid, records } = collection;
     const record = {
@@ -141,22 +135,26 @@ export class Database<M extends DatabaseSchema> {
     collectionName: K,
     factory: DataFactory<M[K]>
   ) {
-    this.getCollectionStore()[collectionName] = {
+    const store = this.getCollectionStore();
+    const collection: Collection<M[K]> = {
       uuid: 0,
       records: [],
       factory
     };
+
+    store.set(collectionName, collection);
   }
 
-  reset() {
-    databaseCollectionStores.set(this, new Map());
+  reset<K extends keyof M>() {
+    const collectionStore = new Map<K, Collection<M[K]>>();
+    databaseCollectionStores.set(this, collectionStore);
   }
 
   update<K extends keyof M>(
     collectionName: K,
     id: RecordId,
     data: Partial<M[K]>
-  ): Record<M[K]> {
+  ): DataRecord<M[K]> {
     const collection = this.getCollection(collectionName);
     const { records } = collection;
     const oldRecord = this.delete(collectionName, id);
@@ -176,7 +174,7 @@ export class Database<M extends DatabaseSchema> {
     }
   }
 
-  getCollectionStore(): CollectionStore<M> {
+  getCollectionStore<K extends keyof M>(): Map<K, Collection<M[K]>> {
     const collectionStore = databaseCollectionStores.get(this);
     if (collectionStore) {
       return collectionStore;
@@ -189,7 +187,7 @@ export class Database<M extends DatabaseSchema> {
     collectionName: K
   ): Collection<M[K]> {
     const collectionStore = this.getCollectionStore();
-    const collection = collectionStore[collectionName];
+    const collection = collectionStore.get(collectionName);
     if (collection) {
       return collection;
     } else {
