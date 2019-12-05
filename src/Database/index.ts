@@ -3,28 +3,30 @@ import * as first from 'lodash.first';
 import * as last from 'lodash.last';
 import * as filter from 'lodash.filter';
 
+type DataType = any;
+
 const databaseCollectionStores: WeakMap<
-  Database<any>,
-  Map<any, Collection<any>>
+  Database<DatabaseSchema>,
+  Map<any, Collection<DataType>>
 > = new WeakMap();
 
 export interface DatabaseSchema {
-  [collectionName: string]: any; // <- DataType in Collection
+  [collectionName: string]: DataType; // <- DataType in Collection
 }
 
-export interface Collection<DataType> {
+export interface Collection<D extends DataType> {
   uuid: number;
-  factory: DataFactory<DataType>;
-  records: DataRecord<DataType>[];
+  factory: DataFactory<D>;
+  records: DataRecord<D>[];
 }
 
-export type DataFactory<DataType> = () => DataType;
+export type DataFactory<D extends DataType> = () => D;
 
 export type RecordId = number;
 
-export interface DataRecord<DataType> {
+export interface DataRecord<D extends DataType> {
   id: RecordId;
-  data: DataType;
+  data: D;
 }
 
 export class Database<M extends DatabaseSchema> {
