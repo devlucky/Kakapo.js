@@ -5,14 +5,13 @@ import * as filter from 'lodash.filter';
 
 type DataType = any;
 
-const databaseCollectionStores: WeakMap<
-  Database<DatabaseSchema>,
-  Map<any, Collection<DataType>>
-> = new WeakMap();
-
 export interface DatabaseSchema {
   [collectionName: string]: DataType; // <- DataType in Collection
 }
+
+type CollectionStore<M extends DatabaseSchema> = {
+  [P in keyof M]?: Collection<M[P]>
+};
 
 export interface Collection<D extends DataType> {
   uuid: number;
@@ -30,8 +29,10 @@ export interface DataRecord<D extends DataType> {
 }
 
 export class Database<M extends DatabaseSchema> {
+  private collectionStore: CollectionStore<M>;
+
   constructor() {
-    this.reset();
+    this.collectionStore = {};
   }
 
   all<K extends keyof M>(collectionName: K): DataRecord<M[K]>[] {
@@ -87,8 +88,7 @@ export class Database<M extends DatabaseSchema> {
   }
 
   exists<K extends keyof M>(collectionName: K): boolean {
-    const collectionStore = this.getCollectionStore();
-    return !!collectionStore.get(collectionName);
+    return !!this.collectionStore[collectionName];
   }
 
   find<K extends keyof M>(
@@ -137,19 +137,15 @@ export class Database<M extends DatabaseSchema> {
     collectionName: K,
     factory: DataFactory<M[K]>
   ) {
-    const store = this.getCollectionStore();
-    const collection: Collection<M[K]> = {
+    this.collectionStore[collectionName] = {
       uuid: 0,
       records: [],
       factory
     };
-
-    store.set(collectionName, collection);
   }
 
-  reset<K extends keyof M>() {
-    const collectionStore = new Map<K, Collection<M[K]>>();
-    databaseCollectionStores.set(this, collectionStore);
+  reset() {
+    this.collectionStore = {};
   }
 
   update<K extends keyof M>(
@@ -176,20 +172,10 @@ export class Database<M extends DatabaseSchema> {
     }
   }
 
-  getCollectionStore<K extends keyof M>(): Map<K, Collection<M[K]>> {
-    const collectionStore = databaseCollectionStores.get(this);
-    if (collectionStore) {
-      return collectionStore;
-    } else {
-      throw new Error('This database needs to be initialized.');
-    }
-  }
-
   getCollection<K extends keyof M>(
     collectionName: K
   ): Collection<M[K]> {
-    const collectionStore = this.getCollectionStore();
-    const collection = collectionStore.get(collectionName);
+    const collection = this.collectionStore[collectionName] as Collection<M[K]> | undefined;
     if (collection) {
       return collection;
     } else {
