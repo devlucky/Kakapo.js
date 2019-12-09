@@ -41,7 +41,7 @@ export class FakeFetchFactory<M extends DatabaseSchema> {
     }
 
     getFetch(): typeof fetch {
-      const fakeFetch = (
+      return (
         requestInfo: RequestInfo,
         options: RequestInit = {}
       ): Promise<Response> => {
@@ -97,22 +97,19 @@ export class FakeFetchFactory<M extends DatabaseSchema> {
           return nativeFetch(url, options);
         }
       };
-      fakeFetch.isFakeFetch = true;
-
-      return fakeFetch;
     }
 }
 
 export function isFakeFetch<M extends DatabaseSchema>(fetch: any): fetch is FakeFetchFactory<M> {
-  return !!(window.fetch as any).isFakeFetch;
+  return window.fetch !== nativeFetch;
 }
 
+const fakeFetchFactory = new FakeFetchFactory();
+
 export const enable = <M extends DatabaseSchema>(config: InterceptorConfig<M>) => {
-  const fakeFetchFactory = new FakeFetchFactory();
   if (!isFakeFetch<M>(window.fetch)) {
     window.fetch = fakeFetchFactory.getFetch();
   }
-
   fakeFetchFactory.use(config);
 };
 
