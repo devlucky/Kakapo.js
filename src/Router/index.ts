@@ -8,10 +8,10 @@ import {
 } from '../interceptors/interceptorHelper';
 import { DatabaseSchema } from '../Database';
 
-const browserStrategies = ['fetch', 'XMLHttpRequest'];
+const browserStrategies: (keyof Interceptors)[] = ['fetch', 'XMLHttpRequest'];
 //TODO: find proper name for Node.js strategies
-const nodeStrategies = ['http', 'https'];
-const routerDefaultConfig = {
+const nodeStrategies: (keyof Interceptors)[]  = ['http', 'https'];
+const routerDefaultConfig: RouterConfig = {
   strategies: environment.browserEnv ? browserStrategies : nodeStrategies
 };
 
