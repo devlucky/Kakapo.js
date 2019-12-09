@@ -66,6 +66,17 @@ describe('Router', () => {
     expect(response.ok).toBeTruthy();
   });
 
+  test('Router # config # strategies', async () => {
+    const server = new Server();
+    const router = new Router({}, {strategies: ['fetch']});
+
+    server.use(router);
+
+    expect(router.routerConfig).toEqual({
+      strategies: ['fetch']
+    })
+  })
+
   test('Router#get', async () => {
     router.get('/comments', request => {
       expect(typeof request).toEqual('object');
