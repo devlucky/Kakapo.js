@@ -75,7 +75,7 @@ describe('Router', () => {
     expect(router.routerConfig).toEqual({
       strategies: ['fetch']
     })
-  })
+  });
 
   test('Router#get', async () => {
     router.get('/comments', request => {

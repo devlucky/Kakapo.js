@@ -1,8 +1,8 @@
-import * as keys from 'lodash.keys';
-import * as includes from 'lodash.includes';
-import * as pathMatch from 'path-match';
-import * as parseUrl from 'parse-url';
-import * as queryString from 'query-string';
+import keys from 'lodash.keys';
+import includes from 'lodash.includes';
+import pathMatch from 'path-match';
+import parseUrl from 'parse-url';
+import queryString from 'query-string';
 import { KakapoRequest } from '../Request';
 import { KakapoResponse } from '../Response';
 import { Database, DatabaseSchema } from '../Database';

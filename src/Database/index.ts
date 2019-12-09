@@ -1,7 +1,7 @@
-import * as sample from 'lodash.sample';
-import * as first from 'lodash.first';
-import * as last from 'lodash.last';
-import * as filter from 'lodash.filter';
+import sample from 'lodash.sample';
+import first from 'lodash.first';
+import last from 'lodash.last';
+import filter from 'lodash.filter';
 
 type DataType = any;
 

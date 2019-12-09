@@ -1,5 +1,5 @@
-import * as merge from 'lodash.merge';
-import * as forEach from 'lodash.foreach';
+import merge from 'lodash.merge';
+import forEach from 'lodash.foreach';
 import { interceptors, Interceptors } from '../interceptors';
 import environment from '../config/environment';
 import {
@@ -28,18 +28,16 @@ export interface RouterConfig {
 
 export class Router<M extends DatabaseSchema> {
     interceptorConfig: InterceptorConfig<M>;
-    routerConfig: RouterConfig;
 
     constructor(
       interceptorConfig: Partial<InterceptorConfig<M>> = interceptorDefaultConfig,
-      routerConfig: RouterConfig = { strategies: [] }
+      public routerConfig: RouterConfig = routerDefaultConfig
     ) {
       this.interceptorConfig = merge(
         {},
         interceptorDefaultConfig,
         interceptorConfig
       );
-      this.routerConfig = merge({}, routerDefaultConfig, routerConfig);
     }
 
     get(path: string, handler: RouterHandler<M>) {
