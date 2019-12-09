@@ -1,14 +1,12 @@
-// @flow
 class Request {
 
 }
 
 class Response {
-  body: any;
-  ok = true
 
-  constructor(body: any) {
+  constructor(body) {
     this.body = body;
+    this.ok = true;
   }
 
   json() {

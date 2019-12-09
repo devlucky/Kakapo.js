@@ -97,10 +97,10 @@ import {Database, Router, Server} from 'Kakapo';
 
 const db = new Database();
 
-db.register('user', () => {
+db.register('user', () => ({
   firstName: 'Hector',
   lastName: 'Zarco'
-});
+}));
 db.create('user', 10);
 
 const router = new Router();
@@ -109,7 +109,7 @@ router.get('/users', (request, db) => {
   return db.all('user');
 });
 
-router.get('/users/:user_id', (request, db) => 
+router.get('/users/:user_id', (request, db) => {
   const userId = request.params.user_id;
   return db.findOne('user', userId);
 });
@@ -144,7 +144,7 @@ const router = new Router();
 
 router.get('/users', (request) => {
   const currentPage = request.query.page;
-  const count = request.query.count;
+  let count = request.query.count;
   let users = []
 
   while (--count) {
@@ -205,7 +205,7 @@ import {Router, Server} from 'Kakapo';
   
 const router = new Router();
 
-router.get('/users/', (request) => {
+router.get('/users/', () => {
   return 'meh';
 });
 
@@ -428,7 +428,7 @@ $.ajax({
   url: '/posts/1/comments/5?page=1&count=10',
   data: {text: 'Foo comment'},
   headers: {'X-Access-token': '12345'}
-)
+})
 ```
 
 **Options**
@@ -611,7 +611,7 @@ server.use(xhrRouter);
 
 The **scenario** concept is nothing else than the ability of having different presets of Kakapo, like router, database, etc... and later, allow the user to decide when he wants to use one of other.  
 
-Let's say you want to check how the spinners looks in your app, in that case you probably will put a higher value as a **requestDelay**, to make sure that the requests are intercepted late and you can check the UI... other good use case might be one in which you want to test the performance of a view when you have thousands of elements, in order to achieve that you will just need to pass a hight number to the **create** method of the **Database**: 
+Let's say you want to check how the spinners looks in your app, in that case you probably will put a higher value as a **requestDelay**, to make sure that the requests are intercepted late and you can check the UI... other good use case might be one in which you want to test the performance of a view when you have thousands of elements, in order to achieve that you will just need to pass a high number to the **create** method of the **Database**: 
 
 ```javascript
 import {Server, Router, Database} from 'kakapo';
@@ -666,13 +666,9 @@ db.register('user', faker => {
 });
 ```
 
-# Browser support
-
-Kakapo.js relies on [WeakMap](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/WeakMap) but we don't ship a polyfill with the library because the [current support](http://kangax.github.io/compat-table/es6/#test-WeakMap) is fine and this library should only we used for development purposes **never for production usage**, anyways you can find a [WeakMap polyfill here](https://github.com/Benvie/WeakMap).
-
 # ROADMAP
 
-**Full suport for JSONApiSerializer**
+**Full support for JSONApiSerializer**
 
 **Node.js compatibility**
 

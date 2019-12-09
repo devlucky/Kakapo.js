@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "target": "es5",
+    "lib": [
+      "dom",
+      "es5",
+      "scripthost",
+      "es2015.collection",
+      "es2015.symbol",
+      "es2015.iterable",
+      "es2015.promise"
+    ],
+    "esModuleInterop": true,
+    "allowJs": false,
+    "declaration": true,
+    "outDir": "dist",
+    "noEmitOnError": true
+  },
+  "include": [
+    "src/**/*",
+    "typings/**/*",
+    "__tests__/**/*"
+  ]
+}
