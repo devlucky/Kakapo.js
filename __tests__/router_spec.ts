@@ -1,11 +1,36 @@
 import { Server, Router, KakapoResponse } from '../src';
+import { isFakeFetch } from '../src/interceptors/fetchInterceptor';
 
 describe('Router', () => {
+
+  let server: Server<any>;
+  let router: Router<any>;
+
+  beforeEach(() => {
+    server = new Server();
+    router = new Router();
+  });
+
+  afterEach(() => {
+    router.reset();
+  });
+
+  it('should use fake fetch', () => {
+    router = new Router({
+      host: 'https://api.github.com'
+    });
+    router.get('/comments', request => {
+      expect(typeof request).toEqual('object');
+    });
+    server.use(router);
+
+    expect(isFakeFetch(fetch)).toBe(true);
+  });
+
   test('Router # config # host', async () => {
     // TODO: Create multiple servers at the same time with different
     // 'host' and check that works properly
-    const server = new Server();
-    const router = new Router({
+    router = new Router({
       host: 'https://api.github.com'
     });
 
@@ -25,8 +50,7 @@ describe('Router', () => {
   });
 
   test('Router # config # requestDelay', async () => {
-    const server = new Server();
-    const router = new Router({
+    router = new Router({
       requestDelay: 1000
     });
 
@@ -43,9 +67,6 @@ describe('Router', () => {
   });
 
   test('Router#get', async () => {
-    const server = new Server();
-    const router = new Router();
-
     router.get('/comments', request => {
       expect(typeof request).toEqual('object');
     });
@@ -76,8 +97,6 @@ describe('Router', () => {
   });
 
   test('Router#post', async () => {
-    const server = new Server();
-    const router = new Router();
     const body = JSON.stringify({ firstName: 'Joan', lastName: 'Romano' });
 
     router.post('/users', request => {
@@ -107,8 +126,6 @@ describe('Router', () => {
   });
 
   test('Router # post # XMLHttpRequest', () => {
-    const server = new Server();
-    const router = new Router();
     const body = JSON.stringify({ firstName: 'Joan', lastName: 'Romano' });
 
     router.post('/hector', request => {
@@ -127,9 +144,6 @@ describe('Router', () => {
   });
 
   test('Router#put', async () => {
-    const server = new Server();
-    const router = new Router();
-
     router.put('/users', request => {
       const query = request.query;
       const page = query.page;
@@ -155,9 +169,6 @@ describe('Router', () => {
   });
 
   test('Router#delete', async () => {
-    const server = new Server();
-    const router = new Router();
-
     router.delete('/users/:user_id/comments/:comment_id', request => {
       const params = request.params;
       const commentId = request.params.comment_id;
@@ -183,8 +194,7 @@ describe('Router', () => {
   });
 
   test('Router#XMLHttpRequest # config # requestDelay', () => {
-    const server = new Server();
-    const router = new Router({
+    router = new Router({
       requestDelay: 10
     });
 
@@ -202,9 +212,6 @@ describe('Router', () => {
   });
 
   test.skip('Router#XMLHttpRequest', () => {
-    const server = new Server();
-    const router = new Router();
-
     router.get('/comments', request => {
       const params = request.params;
 
@@ -248,12 +255,10 @@ describe('Router', () => {
     };
     xhr2.open('GET', '/comments', true);
     xhr2.send();
+    expect.assertions(8);
   });
 
   test('Router # Async support', async () => {
-    const server = new Server();
-    const router = new Router();
-
     router.get('/async_endpoint', request => {
       return new Promise(resolve => {
         setTimeout(() => {
@@ -272,9 +277,6 @@ describe('Router', () => {
   });
 
   test('Router # Fetch # Content-Type image/svg+xml', async () => {
-    const server = new Server();
-    const router = new Router();
-
     const svgData = 'svgData';
 
     router.get('/svg_content', request => {
@@ -291,8 +293,6 @@ describe('Router', () => {
   });
 
   test('Router # Fetch # No Content Type', async () => {
-    const server = new Server();
-    const router = new Router();
     const expectedResponse = { foo: 'bar' };
 
     router.get('/json_content', request => {
@@ -307,8 +307,6 @@ describe('Router', () => {
   });
 
   test('Router # Fetch # Content Type application/json', async () => {
-    const server = new Server();
-    const router = new Router();
     const expectedResponse = { foo: 'bar' };
 
     router.get('/json_content', request => {

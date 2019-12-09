@@ -6,6 +6,7 @@ import {
   interceptorHelper
 } from './interceptorHelper';
 import { canUseWindow } from '../utils';
+import { DatabaseSchema } from '../Database';
 
 type ProgressEventType = keyof XMLHttpRequestEventTargetEventMap;
 type ProgressEventHandler<K extends ProgressEventType> = (
@@ -22,20 +23,28 @@ const hasHandleEvent = <K extends ProgressEventType>(
 
 if (!canUseWindow) {
   throw new Error(
-    `You're trying to use XHR intercepter in non-browser environment`
+    `You're trying to use XHR interceptor in non-browser environment`
   );
 }
 
 const NativeXMLHttpRequest = XMLHttpRequest;
 const NativeXMLHttpRequestEventTarget = XMLHttpRequestEventTarget;
 
-class FakeXMLHttpRequest {
-    static interceptors: Interceptor[] = [];
-    static use(interceptor: Interceptor): void {
-      FakeXMLHttpRequest.interceptors.push(interceptor);
+
+class FakeXMLHttpRequest<M extends DatabaseSchema> {
+
+    interceptors: Interceptor<M>[];
+
+    constructor() {
+      this.interceptors = [];
     }
-    static shouldIntercept(method: string, url: string): boolean {
-      return FakeXMLHttpRequest.interceptors.some(
+
+    use(config: InterceptorConfig<M>) {
+      this.interceptors.push(interceptorHelper(config));
+    }
+
+    shouldIntercept(method: string, url: string): boolean {
+      return this.interceptors.some(
         interceptor => !!interceptor.getHandler(url, method)
       );
     }
@@ -119,7 +128,7 @@ class FakeXMLHttpRequest {
 
     send(data?: any): void {
       const { _method: method, _url: url } = this;
-      const interceptors = FakeXMLHttpRequest.interceptors.filter(
+      const interceptors = this.interceptors.filter(
         interceptor => url && method && !!interceptor.getHandler(url, method)
       );
 
@@ -127,9 +136,9 @@ class FakeXMLHttpRequest {
         interceptors.forEach(interceptor => {
           if (url && method) {
             const handler = interceptor.getHandler(url, method);
+            const db = interceptor.getDB();
 
-            if (handler) {
-              const db = interceptor.getDB();
+            if (handler && db) {
               const delay = interceptor.getDelay();
 
               const request = new KakapoRequest({
@@ -280,12 +289,15 @@ class FakeXMLHttpRequestEventTarget {
   }
 }
 
-export const enable = (config: InterceptorConfig) => {
-  const interceptor = interceptorHelper(config);
-  FakeXMLHttpRequest.use(interceptor);
-  (window as any).XMLHttpRequest = FakeXMLHttpRequest;
+export const enable = <M extends DatabaseSchema>(config: InterceptorConfig<M>) => {
+  (window as any).XMLHttpRequest = function () {
+    const fakeXMLHttpRequest = new FakeXMLHttpRequest();
+    fakeXMLHttpRequest.use(config);
+    return fakeXMLHttpRequest;
+  };
   (window as any).XMLHttpRequestEventTarget = FakeXMLHttpRequestEventTarget;
 };
+
 export const disable = () => {
   (window as any).XMLHttpRequest = NativeXMLHttpRequest;
   (window as any).XMLHttpRequestEventTarget = NativeXMLHttpRequestEventTarget;

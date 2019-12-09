@@ -4,8 +4,9 @@ import { interceptors, Interceptors } from '../interceptors';
 import environment from '../config/environment';
 import {
   InterceptorConfig,
-  RouteHandler
+  RouterHandler
 } from '../interceptors/interceptorHelper';
+import { DatabaseSchema } from '../Database';
 
 const browserStrategies = ['fetch', 'XMLHttpRequest'];
 //TODO: find proper name for Node.js strategies
@@ -14,7 +15,7 @@ const routerDefaultConfig = {
   strategies: environment.browserEnv ? browserStrategies : nodeStrategies
 };
 
-const interceptorDefaultConfig: InterceptorConfig = {
+const interceptorDefaultConfig: InterceptorConfig<any> = {
   db: null,
   host: '',
   requestDelay: 0,
@@ -25,12 +26,12 @@ export interface RouterConfig {
     strategies: (keyof Interceptors)[];
 }
 
-export class Router {
-    interceptorConfig: InterceptorConfig;
+export class Router<M extends DatabaseSchema> {
+    interceptorConfig: InterceptorConfig<M>;
     routerConfig: RouterConfig;
 
     constructor(
-      interceptorConfig: Partial<InterceptorConfig> = interceptorDefaultConfig,
+      interceptorConfig: Partial<InterceptorConfig<M>> = interceptorDefaultConfig,
       routerConfig: RouterConfig = { strategies: [] }
     ) {
       this.interceptorConfig = merge(
@@ -41,27 +42,27 @@ export class Router {
       this.routerConfig = merge({}, routerDefaultConfig, routerConfig);
     }
 
-    get(path: string, handler: RouteHandler) {
+    get(path: string, handler: RouterHandler<M>) {
       this.register('GET', path, handler);
     }
 
-    post(path: string, handler: RouteHandler) {
+    post(path: string, handler: RouterHandler<M>) {
       this.register('POST', path, handler);
     }
 
-    put(path: string, handler: RouteHandler) {
+    put(path: string, handler: RouterHandler<M>) {
       this.register('PUT', path, handler);
     }
 
-    delete(path: string, handler: RouteHandler) {
+    delete(path: string, handler: RouterHandler<M>) {
       this.register('DELETE', path, handler);
     }
 
-    head(path: string, handler: RouteHandler) {
+    head(path: string, handler: RouterHandler<M>) {
       this.register('HEAD', path, handler);
     }
 
-    register(method: string, path: string, handler: RouteHandler) {
+    register(method: string, path: string, handler: RouterHandler<M>) {
       this.interceptorConfig.routes[method][path] = handler;
     }
 

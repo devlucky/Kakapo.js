@@ -5,17 +5,17 @@ import * as parseUrl from 'parse-url';
 import * as queryString from 'query-string';
 import { KakapoRequest } from '../Request';
 import { KakapoResponse } from '../Response';
-import { Database } from '../Database';
+import { Database, DatabaseSchema } from '../Database';
 
-export type RouteHandler = (
+export type RouterHandler<M extends DatabaseSchema> = (
     request: KakapoRequest,
-    db: Database<any>
+    db: Database<M>
 ) => KakapoResponse | any | Promise<KakapoResponse | any>;
 
-export interface InterceptorConfig {
+export interface InterceptorConfig<M extends DatabaseSchema> {
     host: string;
-    routes: { [method: string]: { [path: string]: RouteHandler } };
-    db: any;
+    routes: { [method: string]: { [path: string]: RouterHandler<M> } };
+    db: Database<M> | null;
     requestDelay: number;
 }
 
@@ -25,9 +25,8 @@ export interface UrlDetails {
     fullpath: string;
 }
 
-// @TODO (oskar): This NEEDS refactor.
-const getRoute = (
-  { host }: InterceptorConfig,
+const getRoute = <M extends DatabaseSchema>(
+  { host }: InterceptorConfig<M>,
   { handlers, pathname, fullpath }: UrlDetails
 ) => {
   const matchesPathname = (path: string) => pathMatch()(path)(pathname);
@@ -37,8 +36,8 @@ const getRoute = (
   return route && hasHost ? route : null;
 };
 
-const extractUrl = (
-  { routes }: InterceptorConfig,
+const extractUrl = <M extends DatabaseSchema>(
+  { routes }: InterceptorConfig<M>,
   url: string,
   method: string
 ) => ({
@@ -47,15 +46,15 @@ const extractUrl = (
   fullpath: parseUrl(url).href
 });
 
-export interface Interceptor {
-    getDB(): any;
+export interface Interceptor<M extends DatabaseSchema> {
+    getDB(): Database<M> | null;
     getDelay(): number;
-    getHandler(url: string, method: string): RouteHandler | null;
+    getHandler(url: string, method: string): RouterHandler<M> | null;
     getParams(url: string, method: string): any;
     getQuery(url: string): any;
 }
 
-export const interceptorHelper = (config: InterceptorConfig): Interceptor => ({
+export const interceptorHelper = <M extends DatabaseSchema>(config: InterceptorConfig<M>): Interceptor<M> => ({
   getDB() {
     return config.db;
   },

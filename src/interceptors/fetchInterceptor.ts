@@ -6,9 +6,10 @@ import {
   InterceptorConfig
 } from './interceptorHelper';
 import { mapRequestInfoToUrlString, canUseWindow } from '../utils';
+import { Database, DatabaseSchema } from '../Database';
 
 if (!canUseWindow) {
-  throw new Error(`You're trying to use fetch intercepter in non-browser environment`);
+  throw new Error(`You're trying to use fetch interceptor in non-browser environment`);
 }
 
 const nativeFetch: typeof fetch = window.fetch;
@@ -21,8 +22,6 @@ const fakeResponse = (
     headers['content-type'] &&
         headers['content-type'].indexOf('application/json') == -1
   ) {
-    console.log(response);
-
     return new Response(response, { headers });
   }
 
@@ -30,19 +29,19 @@ const fakeResponse = (
   return new Response(JSON.stringify(response), { headers });
 };
 
-export class FakeFetch {
-    interceptors: Interceptor[];
+export class FakeFetchFactory<M extends DatabaseSchema> {
+    interceptors: Interceptor<M>[];
 
     constructor() {
       this.interceptors = [];
     }
 
-    use(config: InterceptorConfig) {
+    use(config: InterceptorConfig<M>) {
       this.interceptors.push(interceptorHelper(config));
     }
 
-    fake(): typeof fetch {
-      return (
+    getFetch(): typeof fetch {
+      const fakeFetch = (
         requestInfo: RequestInfo,
         options: RequestInit = {}
       ): Promise<Response> => {
@@ -50,7 +49,7 @@ export class FakeFetch {
         const method = options.method || 'GET';
 
         const interceptor = this.interceptors.reduce(
-          (result: Interceptor | undefined, interceptor) =>
+          (result: Interceptor<M> | undefined, interceptor) =>
             interceptor.getHandler(url, method) !== null ? interceptor : result,
           undefined
         );
@@ -65,7 +64,7 @@ export class FakeFetch {
               body: options.body || '',
               headers: options.headers || {}
             });
-            const db = interceptor.getDB();
+            const db = interceptor.getDB() || new Database<M>();
             const response = handler(request, db);
 
             if (response instanceof Promise) {
@@ -98,21 +97,23 @@ export class FakeFetch {
           return nativeFetch(url, options);
         }
       };
+      fakeFetch.isFakeFetch = true;
+
+      return fakeFetch;
     }
 }
 
-function isFakeFetch(fetch: any): boolean {
-  return window.fetch instanceof FakeFetch;
+export function isFakeFetch<M extends DatabaseSchema>(fetch: any): fetch is FakeFetchFactory<M> {
+  return !!(window.fetch as any).isFakeFetch;
 }
 
-const fakeFetch = new FakeFetch();
-
-export const enable = (config: InterceptorConfig) => {
-  if (!isFakeFetch(window.fetch)) {
-    window.fetch = fakeFetch.fake();
+export const enable = <M extends DatabaseSchema>(config: InterceptorConfig<M>) => {
+  const fakeFetchFactory = new FakeFetchFactory();
+  if (!isFakeFetch<M>(window.fetch)) {
+    window.fetch = fakeFetchFactory.getFetch();
   }
 
-  fakeFetch.use(config);
+  fakeFetchFactory.use(config);
 };
 
 export const disable = () => {

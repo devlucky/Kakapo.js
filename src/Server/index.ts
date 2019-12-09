@@ -1,17 +1,16 @@
 import { Router } from '../Router';
 import { Database, DatabaseSchema } from '../Database';
 
-const isRouter = (entity: any): entity is Router => entity instanceof Router;
-const isDb = <M extends DatabaseSchema>(entity: any): entity is Database<M> =>
-  entity instanceof Database;
+const isRouter = <M extends DatabaseSchema>(entity: any): entity is Router<M> => entity instanceof Router;
+const isDb = <M extends DatabaseSchema>(entity: any): entity is Database<M> => entity instanceof Database;
 
-export class Server {
-    db: Database<DatabaseSchema> | null = null;
-    router: Router | null = null;
+export class Server<M extends DatabaseSchema> {
+    db: Database<M> | null = null;
+    router: Router<M> | null = null;
 
     constructor(readonly config: any = {}) {}
 
-    use(entity: any) {
+    use(entity: Database<M> | Router<M>) {
       if (isDb(entity)) {
         this.db = entity;
       } else if (isRouter(entity)) {
@@ -26,11 +25,10 @@ export class Server {
       this.linkEntities();
     }
 
-    remove(entity: any) {
-      if (
-        isDb(entity) &&
-      this.router &&
-      this.router.interceptorConfig.db === entity
+    remove(entity: Database<M> | Router<M>) {
+      if ( isDb(entity) &&
+          this.router &&
+          this.router.interceptorConfig.db === entity
       ) {
         this.router.interceptorConfig.db = null;
       } else if (isRouter(entity) && this.router == entity) {
