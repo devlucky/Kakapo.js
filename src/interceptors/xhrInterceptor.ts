@@ -21,16 +21,6 @@ const hasHandleEvent = <K extends ProgressEventType>(
 ): listener is { handleEvent: ProgressEventHandler<K> } =>
     'handleEvent' in listener;
 
-if (!canUseWindow) {
-  throw new Error(
-    `You're trying to use XHR interceptor in non-browser environment`
-  );
-}
-
-const NativeXMLHttpRequest = XMLHttpRequest;
-const NativeXMLHttpRequestEventTarget = XMLHttpRequestEventTarget;
-
-
 class FakeXMLHttpRequest<M extends DatabaseSchema> {
 
     interceptors: Interceptor<M>[];
@@ -289,7 +279,20 @@ class FakeXMLHttpRequestEventTarget {
   }
 }
 
+let NativeXMLHttpRequest: typeof XMLHttpRequest;
+let NativeXMLHttpRequestEventTarget: typeof XMLHttpRequestEventTarget;
+
 export const enable = <M extends DatabaseSchema>(config: InterceptorConfig<M>) => {
+  if (!canUseWindow) {
+    throw new Error(
+      `You're trying to use XHR interceptor in non-browser environment`
+    );
+  }
+  if (!NativeXMLHttpRequest || !NativeXMLHttpRequestEventTarget) {
+    NativeXMLHttpRequest = XMLHttpRequest;
+    NativeXMLHttpRequestEventTarget = XMLHttpRequestEventTarget;
+  }
+
   (window as any).XMLHttpRequest = function () {
     const fakeXMLHttpRequest = new FakeXMLHttpRequest();
     fakeXMLHttpRequest.use(config);
