@@ -8,11 +8,6 @@ import {
 import { mapRequestInfoToUrlString, canUseWindow } from '../utils';
 import { Database, DatabaseSchema } from '../Database';
 
-if (!canUseWindow) {
-  throw new Error(`You're trying to use fetch interceptor in non-browser environment`);
-}
-
-const nativeFetch: typeof fetch = window.fetch;
 const fakeResponse = (
   response: string | any = {},
   headers: { [k: string]: string } = {}
@@ -100,6 +95,8 @@ export class FakeFetchFactory<M extends DatabaseSchema> {
     }
 }
 
+let nativeFetch: typeof fetch;
+
 export function isFakeFetch<M extends DatabaseSchema>(fetch: any): fetch is FakeFetchFactory<M> {
   return window.fetch !== nativeFetch;
 }
@@ -107,6 +104,13 @@ export function isFakeFetch<M extends DatabaseSchema>(fetch: any): fetch is Fake
 const fakeFetchFactory = new FakeFetchFactory();
 
 export const enable = <M extends DatabaseSchema>(config: InterceptorConfig<M>) => {
+  if (!canUseWindow) {
+    throw new Error(`You're trying to use fetch interceptor in non-browser environment`);
+  }
+  if (!nativeFetch) {
+    nativeFetch = window.fetch
+  }
+
   if (!isFakeFetch<M>(window.fetch)) {
     window.fetch = fakeFetchFactory.getFetch();
   }
