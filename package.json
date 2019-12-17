@@ -1,6 +1,6 @@
 {
   "name": "kakapo",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "description": "Next generation mocking framework in Javascript",
   "main": "dist/index.js",
   "atlaskit:src": "dist/index.js",
