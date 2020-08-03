@@ -48,7 +48,7 @@
     "eslint": "^5.16.0",
     "faker": "^3.1.0",
     "jest": "^24.8.0",
-    "jquery": "^2.2.4",
+    "jquery": "^3.5.0",
     "superagent": "^2.0.0",
     "ts-jest": "^24.0.2",
     "ts-loader": "^6.0.0",
