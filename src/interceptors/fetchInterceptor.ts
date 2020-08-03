@@ -64,7 +64,12 @@ export class FakeFetchFactory<M extends DatabaseSchema> {
 
             if (response instanceof Promise) {
               //TODO: Should we handle 'requestDelay' also for async responses?
-              return response.then(data => fakeResponse(data));
+              return response.then(data => {
+                if (data instanceof KakapoResponse) {
+                  return fakeResponse(data.body, data.headers);
+                }
+                return fakeResponse(data)
+              });
             }
 
             if (!(response instanceof KakapoResponse)) {
